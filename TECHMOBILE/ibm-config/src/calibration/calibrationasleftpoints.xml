@@ -1,0 +1,368 @@
+<page padding="true" id="calibrationasleftpoints" title="As left values" controller="./calibration/CalibrationPointsController">
+  <states id="dm3pr">
+    <state name="functionDesc" value="" type="string" id="rv_qv"/>
+    <state name="asleftcalstatus" value="" type="string" id="akxm_"/>
+    <state name="asserterror" value="" type="boolean" id="b2xzv"/>
+    <state name="calpointtitle" value="" type="string" id="r479h"/>
+    <state name="isNoAdjMadeEnabled" value="false" type="boolean" id="q_xmx"/>
+    <state name="saveInProgress" value="false" type="boolean" id="vdxbm"/>
+    <state name="isdirty" value="false" type="boolean" id="dqib9v"/>
+    <state name="isCalledFromAddDeleteCalibrationPoint" value="false" type="boolean" id="jrb9j"/>
+  </states>
+  <maximo-datasource id="unitspointsLookupDs" lookup-data="true" object-structure="mxapialndomain" page-size="100" selection-mode="single">
+    <schema id="ezd9a">
+      <attribute name="value" unique-id="true" id="vxznv"/>
+      <attribute name="tolError" computed="true" computed-function="calculateTolError" id="j4yx4"/>
+      <attribute name="valueid" id="d8yw4"/>
+      <attribute name="description" id="m_njj"/>
+      <attribute name="domainid" searchable="true" id="b2yxg"/>
+      <attribute name="siteid" id="k75ym"/>
+      <attribute name="orgid" id="j3zwv"/>
+    </schema>
+  </maximo-datasource>
+  <dialogs id="mb76_">
+    <lookup id="unitspointsLookup" show-search="false" lookup-heading="Select value" datasource="unitspointsLookupDs" on-item-click="selectUnits" border="true" lookup-attributes="{['value', 'description']}" height="400" width="100"/>
+    <dialog id="saveAsLeftDiscardRules" title="Save or discard changes?" primary-action-text="Save" on-primary-action="saveChanges" primary-icon="carbon:checkmark" primary-kind="primary" on-secondary-action="discardChanges" secondary-action-text="Discard" secondary-icon="carbon:trash-can">
+      <label wrap="true" label="To leave this page, you must first discard or save your changes." id="egvqr"/>
+    </dialog>
+  </dialogs>
+  <header-template title="As left values" hide-breadcrumb="true" show-current-page-in-bread-crumb="false" icon-name="carbon:chevron--left" icon-action="goBackfromleft" title-column-width="{app.state.screen.size === 'lg' ? 45 : 80}" id="xq88g">
+    <button slot="buttons" label="Save" icon="carbon:save" loading="{page.state.saveInProgress}" disabled="{!page.state.isdirty || page.state.saveInProgress || (page.state.isNoAdjMadeEnabled &amp;&amp; page.state.calPointFlag)}" on-click="saveUpdate" on-click-arg="{{'item':pluscWoDs.item,'datasource':pluscWoDs}}" id="wq_wk"/>
+  </header-template>
+  <inline-notification use-with-mobile="true" kind="info" title="The As Found values are copied to As Left, and all fields are read-only." hide-close-button="true" hidden="{!(page.state.isNoAdjMadeEnabled &amp;&amp; page.state.calPointFlag)}" id="p9rey"/>
+  <content-docker docked-to-header="true" transparent="true" id="v2533">
+    <box background-color="ui-background" id="be6p7">
+      <box id="bdaz3" vertical-align="center" padding-top="0.25" padding-bottom="0.25" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0.5' : '0'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0.5' : '0'}" fill-parent-horizontal="true">
+        <border-layout id="e2zv2">
+          <start direction="column" horizontal-align="start" vertical-align="center" horizontal-overflow="hidden" width="{page.state.calDynamicFlag ? 100 : 80}" grow="0.75" id="qadx7">
+            <label label="Asset function" padding="none" color="gray60" theme="16-regular" id="ry_78"/>
+            <label label="{page.state.calpointtitle}" padding="none" wrap="false" theme="16-regular" id="ed7dk"/>
+          </start>
+          <end horizontal-align="end" vertical-align="center" id="jjgb4">
+            <tag-group hidden="{page.state.calDynamicFlag || app.state.nopointexist}" tags="{[{label: `${page.state.asleftcalstatus ? page.state.asleftcalstatus: '-'}` , type: page.state.asleftcallabel}]}" align="end" id="e2ba9"/>
+          </end>
+        </border-layout>
+      </box>
+    </box>
+  </content-docker>
+  <!-- Page load spinner -->
+  <loading active="{page.state.loading}" kind="spinner" small="false" id="ndw2cvcu"/>
+  <box hidden="{!page.state.calPointFlag}" padding-top="-0.5" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" id="yvq28">
+    <!-- Listing calibration points -->
+    <data-list datasource="{app.state.calpointsds}" expand-all="true" row-space="1" margin="false" padding="false" show-search="false" id="z5bj_">
+      <list-item renderer-type="default" id="nya9d">
+        <border-layout fill-parent="true" id="a6yd4">
+          <top vertical-align="center" id="bbdga">
+            <box padding-start="0.5" padding-end="0.5" fill-parent="true" vertical-align="center" id="pp878">
+              <border-layout padding="false" fill-parent="true" id="zjbxz">
+                <start vertical-align="center" hidden="true" id="my9wb">
+                  <box padding-start="1" padding-end="-0.5" id="d_56w">
+                    <icon icon="carbon:warning--filled" fill="#DA1E28" size="24" id="rgkyz"/>
+                  </box>
+                </start>
+                <middle id="nq8db" vertical-align="center">
+                  <box manage-children="true" children-sizes="20,80" direction="row" id="mkzn7">
+                    <box id="e_524">
+                      <label id="de588" label="{item.point}." theme="16-regular"/>
+                    </box>
+                    <box id="enw_2">
+                      <label label="{item.pointdescription || ''}" theme="16-bold" id="aa75b" wrap="true"/>
+                    </box>
+                  </box>
+                </middle>
+                <end vertical-align="center" id="j98b6">
+                  <box direction="row" vertical-align="center" horizontal-align="end" id="xz9qb">
+                    <box id="xrq52" padding-end="1">
+                      <icon hidden="{!(page.callController('isToleranceWarningShownOnTabOut', item.aslefterror, item.isDataValid) || item.showWarningOnOutputChange || item.showWarningOnInputChange)}" icon="carbon:warning--alt--filled" fill="#FF832B" size="24" id="pv6ey"/>
+                    </box>
+                    <box id="j2g9q">
+                      <menu-button id="n_m_8" hidden="{!item.isadded}" kind="ghost" icon="{item.isCalPointMenuOpen ? 'carbon:close' : 'carbon:overflow-menu--vertical'}" on-toggle-menu="toggleCalibrationPointActionMenu" on-toggle-menu-arg="{item}" icon-position="end">
+                        <menu-item label="Edit" on-click="openEditCalibrationPointDialog" on-click-arg="{item}" icon="carbon:edit" id="b6ez2"/>
+                        <menu-item label="Delete" icon="carbon:trash-can" theme="danger" on-click="deleteCalibrationPoint" on-click-arg="{item}" id="ae9yw"/>
+                      </menu-button>
+                    </box>
+                    <box id="a7v3d">
+                      <button icon="{item.asleftDetailsHidden ? 'Carbon:chevron--down' : 'Carbon:chevron--up'}" on-click="{item.asleftDetailsHidden = !item.asleftDetailsHidden}" id="wwd_6"/>
+                    </box>
+                  </box>
+                </end>
+              </border-layout>
+            </box>
+          </top>
+          <bottom hidden="{item.asleftDetailsHidden}" id="nybbx">
+            <box direction="column" fill-parent="true" id="a3nvj">
+              <box hidden="{item.plantype == 'DISCRETE'}" border-top="true" fill-parent="true" direction="column" id="gwqdq">
+                <box fill-parent="true" padding-top="1" padding-bottom="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row'}" id="q82jd">
+                  <box direction="column" fill-parent="true" padding-start="1" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="q3pv7">
+                    <field label="Nominal input" value="{(page.callController('getLocaleNumber',item.inputvalue,'input', item.inputvalue))}" id="z_7rv"/>
+                    <smart-input label="Input ({page.state.instrcalrangeeu})" value="{item.asleftinput}" readonly="{page.state.isNoAdjMadeEnabled || page.state.saveInProgress}" on-change="onCalpointValueChanged" on-blur="validateCalPointValuesAndCalculateTolerancesAsync" on-blur-arg="{{ item: item, whichFieldTypeChanged: 'input' }}" invalid-text="{page.state.message}" id="qe3y5"/>
+                    <warning-label hidden="{!item.showWarningOnInputChange}" label="Data has already been entered for this field. (BMXAR0061)" id="a4g_p"/>
+                  </box>
+                  <box direction="column" fill-parent="true" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" padding-end="1" id="a76d7">
+                    <field label="Desired Output" value="{(page.callController('getLocaleNumber',item.outputvalue,'output', item.outputvalue))}" id="w_r3m"/>
+                    <smart-input label="Output ({page.state.instroutrangeeu})" value="{item.asleftoutput}" readonly="{page.state.isNoAdjMadeEnabled || page.state.saveInProgress}" on-change="onCalpointValueChanged" on-blur="validateCalPointValuesAndCalculateTolerancesAsync" on-blur-arg="{{ item: item, whichFieldTypeChanged: 'output' }}" id="mw4rq"/>
+                    <box fill-parent="true" padding-start="0.5" padding-bottom="0.5" hidden="{!page.callController('isToleranceWarningShownOnTabOut', item.aslefterror, item.isDataValid)}" id="d759d">
+                      <border-layout padding="false" id="pbr5b">
+                        <start id="jyzmk">
+                          <icon icon="carbon:warning--alt--filled" fill="#F1C21B" size="20" id="ya9m8"/>
+                        </start>
+                        <middle id="ge478">
+                          <label label="One or more As Left tolerance limits have been exceeded on this calibration point. (BMXAR0020)" color="text-02" padding="none" wrap="true" id="xqyz9"/>
+                        </middle>
+                      </border-layout>
+                    </box>
+                    <warning-label hidden="{!(item.showWarningOnOutputChange &amp;&amp; !page.callController('isToleranceWarningShownOnTabOut', item.aslefterror, item.isDataValid))}" label="Data has already been entered for this field. (BMXAR0061)" id="bg5ra"/>
+                  </box>
+                </box>
+              </box>
+              <box hidden="{item.plantype == 'ANALOG'}" direction="column" fill-parent="true" border-top="true" id="bk2gm">
+                <box fill-parent="true" padding-top="1" padding-bottom="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row'}" id="nxp8g">
+                  <box fill-parent="true" direction="column" padding-start="1" padding-end="1" id="y_4qr">
+                    <field label="Set point ({page.state.instrcalrangeeu})" value="{(page.callController('getLocaleNumber',item.setpointvalue,'input', item.setpointvalue))}" id="jvv7e"/>
+                  </box>
+                  <box fill-parent="true" direction="column" padding-start="1" padding-end="1" id="d7dka">
+                    <smart-input label="As left set point" value="{item.asleftsetpoint}" readonly="{page.state.isNoAdjMadeEnabled || page.state.saveInProgress}" on-change="onCalpointValueChanged" on-blur="validateCalPointValuesAndCalculateTolerancesAsync" on-blur-arg="{{ item: item, whichFieldTypeChanged: 'input' }}" invalid-text="{page.state.message}" id="x2qen"/>
+                    <box fill-parent="true" padding-start="0.5" padding-bottom="0.5" hidden="{!page.callController('isToleranceWarningShownOnTabOut', item.aslefterror, item.isDataValid)}" id="bqxay">
+                      <border-layout padding="false" id="ndd4d">
+                        <start id="qrzge">
+                          <icon icon="carbon:warning--alt--filled" fill="#F1C21B" size="20" id="ra4kw"/>
+                        </start>
+                        <middle id="dq4bj">
+                          <label label="One or more As Left tolerance limits have been exceeded on this calibration point. (BMXAR0020)" color="text-02" padding="none" wrap="true" id="zy2z2"/>
+                        </middle>
+                      </border-layout>
+                    </box>
+                    <warning-label hidden="{!(item.showWarningOnInputChange &amp;&amp; !page.callController('isToleranceWarningShownOnTabOut', item.aslefterror, item.isDataValid))}" label="Data has already been entered for this field. (BMXAR0061)" id="x_yqw"/>
+                  </box>
+                </box>
+              </box>
+              <box fill-parent="true" border-top="true" vertical-align="center" id="ry4wy">
+                <box fill-parent="true" padding-start="1" id="em9q8">
+                  <label label="Tolerances" theme="16-bold" padding="none" id="kqar2"/>
+                </box>
+                <box horizontal-align="end" id="wxmqa">
+                  <button icon="{page.state.asserterror ? 'carbon:chevron--up':'carbon:chevron--down'}" padding="false" on-click="toggleAssert" id="vqwdy"/>
+                </box>
+              </box>
+              <box hidden="{!page.state.asserterror}" border-top="true" fill-parent="true" id="kenjg">
+                <adaptive-row id="vvqd6">
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="dqm_n">
+                    <box fill-parent="true" padding-start="1" id="qegbr">
+                      <label label="Tolerance 1" id="yn2rp"/>
+                    </box>
+                  </adaptive-column>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="mdxr4">
+                    <field label="From" value="{item.aslefttol1lower ? item.aslefttol1lower : 'NA'}" id="eww8x"/>
+                  </adaptive-column>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="ypgvj">
+                    <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="mn_n7">
+                      <field label="To" value="{item.aslefttol1upper ? item.aslefttol1upper : 'NA'}" id="adx2w"/>
+                    </box>
+                  </adaptive-column>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="vp_j9">
+                    <box vertical-align="center" id="p2nk4">
+                      <field label="Error" value="{item.aslefterror1}" id="ad3x5"/>
+                      <icon icon="carbon:warning--alt--filled" fill="#FF832B" size="20" hidden="true" id="geedy"/>
+                    </box>
+                  </adaptive-column>
+                </adaptive-row>
+              </box>
+              <box hidden="{!page.state.asserterror}" border-top="true" fill-parent="true" id="djwy_">
+                <adaptive-row id="n3z4y">
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="bmep8">
+                    <box fill-parent="true" padding-start="1" id="mvpz4">
+                      <label label="Tolerance 2" id="xv6n6"/>
+                    </box>
+                  </adaptive-column>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="n_989">
+                    <field label="From" value="{item.aslefttol2lower ? item.aslefttol2lower : 'NA'}" id="aqk2p"/>
+                  </adaptive-column>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="q9q66">
+                    <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="njkgj">
+                      <field label="To" value="{item.aslefttol2upper ? item.aslefttol2upper : 'NA'}" id="w5ezb"/>
+                    </box>
+                  </adaptive-column>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="mkyay">
+                    <box vertical-align="center" id="eqa3z">
+                      <field label="Error" value="{item.aslefterror2}" id="kkqb9"/>
+                      <icon icon="carbon:warning--alt--filled" fill="#FF832B" size="20" hidden="true" id="y33w2"/>
+                    </box>
+                  </adaptive-column>
+                </adaptive-row>
+              </box>
+              <box hidden="{!page.state.asserterror}" border-top="true" fill-parent="true" id="kx4gd">
+                <adaptive-row id="d4k27">
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="yp5yz">
+                    <box fill-parent="true" padding-start="1" id="nrn2x">
+                      <label label="Tolerance 3" id="yaw8d"/>
+                    </box>
+                  </adaptive-column>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="rpk8n">
+                    <field label="From" value="{item.aslefttol3lower ? item.aslefttol3lower : 'NA'}" id="v6e99"/>
+                  </adaptive-column>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="er9m5">
+                    <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="w6bkk">
+                      <field label="To" value="{item.aslefttol3upper ? item.aslefttol3upper : 'NA'}" id="debz_"/>
+                    </box>
+                  </adaptive-column>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="gb_j6">
+                    <box vertical-align="center" id="e7rep">
+                      <field label="Error" value="{item.aslefterror3}" id="aaky2"/>
+                      <icon icon="carbon:warning--alt--filled" fill="#FF832B" size="20" hidden="true" id="jq7dr"/>
+                    </box>
+                  </adaptive-column>
+                </adaptive-row>
+              </box>
+              <box hidden="{!page.state.asserterror}" border-top="true" fill-parent="true" id="jymdw">
+                <adaptive-row id="kkyg_">
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="q4v6y">
+                    <box fill-parent="true" padding-start="1" id="k5y2r">
+                      <label label="Tolerance 4" id="wm6jr"/>
+                    </box>
+                  </adaptive-column>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="e5w46">
+                    <field label="From" value="{item.aslefttol4lower ? item.aslefttol4lower : 'NA'}" id="w6abv"/>
+                  </adaptive-column>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="n7ddb">
+                    <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="m3w9_">
+                      <field label="To" value="{item.aslefttol4upper ? item.aslefttol4upper : 'NA'}" id="xgby2"/>
+                    </box>
+                  </adaptive-column>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="v6zxr">
+                    <box vertical-align="center" id="y5d8d">
+                      <field label="Error" value="{item.aslefterror4}" id="xnw3k"/>
+                      <icon icon="carbon:warning--alt--filled" fill="#FF832B" size="20" hidden="true" id="nykrz"/>
+                    </box>
+                  </adaptive-column>
+                </adaptive-row>
+              </box>
+              <box hidden="{!page.state.asserterror}" border-top="true" fill-parent="true" id="pegaq">
+                <adaptive-row id="b43n2">
+                  <adaptive-column hidden="{app.state.screen.size === 'sm' ? 'true' : 'false'}" xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="p55r4"/>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="yp96j">
+                    <field label="Asset error" value="{item.asleftouterror ? item.asleftouterror : 'NA'}" id="n_97j"/>
+                  </adaptive-column>
+                  <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="d4_83">
+                    <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="z627n">
+                      <field label="Process error" value="{item.asleftproerror ? item.asleftproerror : 'NA'}" id="n7pz5"/>
+                    </box>
+                  </adaptive-column>
+                  <adaptive-column hidden="{app.state.screen.size === 'sm' ? 'true' : 'false'}" xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="jqk8v"/>
+                </adaptive-row>
+              </box>
+            </box>
+          </bottom>
+        </border-layout>
+      </list-item>
+    </data-list>
+  </box>
+  <!-- dynamic check-->
+  <box hidden="{!page.state.calDynamicFlag}" padding-top="-0.5" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" id="mp57b">
+    <data-list datasource="{app.state.calpointsds}" expand-all="true" row-space="1" padding="false" on-item-click="openCalibrationPoints" show-search="false" no-select-behavior="true" id="e54gy">
+      <list-item renderer-type="default" id="vxkwm">
+        <border-layout fill-parent="true" id="rwj4k">
+          <top vertical-align="center" id="k7bnx">
+            <box padding-start="0.5" padding-end="0.5" fill-parent="true" vertical-align="center" id="qgjjv">
+              <border-layout padding="false" fill-parent="true" id="nabp_">
+                <start vertical-align="center" hidden="true" id="ydr36">
+                  <box padding-start="1" padding-end="-0.5" id="wpa47">
+                    <icon icon="carbon:warning--filled" fill="#DA1E28" size="24" id="v73bw"/>
+                  </box>
+                </start>
+                <middle vertical-align="center" id="gyqa5">
+                  <box manage-children="true" children-sizes="20,80" direction="row" id="anbj7">
+                    <box id="qmbka">
+                      <label id="zxv4v" label="{item.point}." theme="16-regular"/>
+                    </box>
+                    <box id="zwbnx">
+                      <label label="{item.pointdescription || ''}" theme="16-bold" id="xx7r3" wrap="true"/>
+                    </box>
+                  </box>
+                </middle>
+                <end vertical-align="center" id="q7d5e">
+                  <box direction="row" vertical-align="center" horizontal-align="end" id="bdj2y">
+                    <box id="j9bx5" padding-end="1">
+                      <icon hidden="{!item.aslefterror}" icon="carbon:warning--alt--filled" fill="#FF832B" size="24" id="gbnna"/>
+                    </box>
+                    <box id="zj_xn">
+                      <menu-button id="pja72" hidden="{!item.isadded}" kind="ghost" icon="{item.isCalPointMenuOpen ? 'carbon:close' : 'carbon:overflow-menu--vertical'}" on-toggle-menu="toggleCalibrationPointActionMenu" on-toggle-menu-arg="{item}" icon-position="end">
+                        <menu-item label="Edit" on-click="openEditCalibrationPointDialog" on-click-arg="{item}" icon="carbon:edit" id="a88qn"/>
+                        <menu-item label="Delete" icon="carbon:trash-can" theme="danger" on-click="deleteCalibrationPoint" on-click-arg="{item}" id="rey7a"/>
+                      </menu-button>
+                    </box>
+                    <box id="zjzn5">
+                      <button icon="{item.asleftDetailsHidden ? 'Carbon:chevron--down' : 'Carbon:chevron--up'}" on-click="{item.asleftDetailsHidden = !item.asleftDetailsHidden}" id="m63q8"/>
+                    </box>
+                  </box>
+                </end>
+              </border-layout>
+            </box>
+          </top>
+          <bottom hidden="{item.asleftDetailsHidden}" id="vv748">
+            <box direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row'}" border-top="true" fill-parent="true" padding-bottom="1" id="zyjjk">
+              <box padding-start="1" padding-end="1" padding-top="1" fill-parent="true" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row'}" id="j8wev">
+                <box id="aegbm" fill-parent="true">
+                  <border-layout padding="false" id="xzb7j">
+                    <start id="mebya" direction="column">
+                      <smart-input label="Value" value="{item.asleftinput}"
+                        on-change="onCalpointValueChanged"
+                        on-blur="validateCalPointValuesAndCalculateTolerancesAsync"
+                        on-blur-arg="{{ item: item, whichFieldTypeChanged: 'input' }}" 
+                        readonly="{page.state.saveInProgress}" id="rzznx" />
+                      <box padding-start="1" fill-parent-horizontal="true"
+                        manage-children="true" children-sizes="1,99"
+                        hidden="{!item.isCalibrationInputValueExceeded}" id="ga4k8">
+                        <icon icon="carbon:warning--alt--filled" fill="#F1C21B" size="20" id="jvk6v" />
+                        <label label="{item._output_exceeded}" color="text-02" padding="none"
+                          wrap="true" id="xy7z2" />
+                      </box>
+                    </start>
+                  </border-layout>
+                </box>
+                <box id="d_kgg">
+                  <smart-input label="Unit" value="{item.asleftunit}" enable-lookup-buttongroup="true" select-lookup-attribute="value" on-change="validateType" on-change-arg="value" readonly="{page.state.saveInProgress}" id="qww4q">
+                    <button slot="button-group" kind="secondary" label="Search" icon="Carbon:search" on-click="openTypeLookup" on-click-arg="{{'item': item, 'changeText': 'asleftunit'}}" id="dydz8"/>
+                  </smart-input>
+                </box>
+              </box>
+            </box>
+          </bottom>
+        </border-layout>
+      </list-item>
+    </data-list>
+  </box>
+  <!-- functional check-->
+  <box hidden="{!page.state.calFunctionFlag}" padding-top="-0.5" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" id="bbxdn">
+    <data-list datasource="{app.state.calpointsds}" row-space="1" padding="false" show-search="false" no-select-behavior="true" id="rwd5a">
+      <list-item id="pz_jd">
+        <border-layout fill-parent="true" padding="false" id="a7xda">
+          <start id="gp23w" width="45" vertical-align="center" horizontal-align="start" direction="row">
+            <box padding-start="1" id="zy8ge">
+              <label id="d7gv_" label="{item.point}. {item.pointdescription || ''}" theme="16-regular" padding="none" spacing="none" wrap="true"/>
+            </box>
+          </start>
+          <end id="gz2ra" width="55" vertical-align="center" horizontal-align="end" direction="row">
+            <box id="k_6bb">
+              <menu-button hidden="{!item.isadded}" id="drbaz" kind="ghost" icon="{item.isCalPointMenuOpen ? 'carbon:close' : 'carbon:overflow-menu--vertical'}" on-toggle-menu="toggleCalibrationPointActionMenu" on-toggle-menu-arg="{item}" icon-position="end">
+                <menu-item label="Edit" on-click="openEditCalibrationPointDialog" on-click-arg="{item}" icon="carbon:edit" id="mz5q6"/>
+                <menu-item label="Delete" icon="carbon:trash-can" theme="danger" on-click="deleteCalibrationPoint" on-click-arg="{item}" id="yrdn5"/>
+              </menu-button>
+            </box>
+            <box id="b7_5y">
+              <button-toggle-group
+                options="{[{ id: 'asleftpass', iconName: 'carbon:thumbs-up', toggled: item.asleftpass }, { id: 'asleftfail', iconName: 'carbon:thumbs-down', toggled: item.asleftfail }]}"
+                on-change="funcCheckToggle"
+                on-change-arg="{{'item':item, 'condition':'asleft', 'event':event}}" id="gvm4x" />
+            </box>
+          </end>
+        </border-layout>
+      </list-item>
+    </data-list>
+  </box>
+  <box fill-parent-horizontal="true" manage-children="false" padding-top="1" padding-bottom="4" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" vertical-align="center" background-color="ui-01" id="abbbz">
+    <box padding-start="1" fill-parent-horizontal="true" id="g67qj">
+      <label label="Add {page.state.assetFunctionTypePointLabel}" theme="20-regular" id="zmpnr"/>
+    </box>
+    <button icon="carbon:add" disabled="{page.state.isNoAdjMadeEnabled}" on-click="validateAndLaunchInsertPointDialog" id="zv7_a"/>
+  </box>
+</page>

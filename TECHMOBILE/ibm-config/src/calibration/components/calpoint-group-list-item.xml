@@ -1,0 +1,28 @@
+<templates id="calpoint_group_list_item">
+  <template name="calpoint-group-list-item" id="acwdsrzo">
+
+    <!-- Params -->
+    <template-param name="label" type="string" id="mnsojlr8" />
+    <template-param name="error" type="bool" id="ryhmqal6"/>
+    <template-param name="warning" type="bool" id="nxouyege"/>
+
+    <!-- Content -->
+    <template-content id="xmqlq2lh">
+      <box padding-start="0.5" padding-end="0.5" fill-parent="true" vertical-align="center" id="wyvjz846">
+        <border-layout fill-parent="true" padding="false" id="yij36kwu">
+          <start vertical-align="center" hidden="{!template.error}" id="kirlusqz">
+            <box padding-start="1" padding-end="-0.5" id="a59j8f2m">
+              <icon icon="carbon:warning--filled" fill="#DA1E28" size="24" id="fs9ir2wu"/>
+            </box>
+          </start>
+          <middle vertical-align="center" id="kr74danz">
+            <label wrap="true" label="{template.label}" theme="16-bold" id="or3sdcyx"/>
+          </middle>
+          <end vertical-align="center" hidden="{!template.warning}" id="durpfapd">
+            <icon icon="carbon:warning--alt--filled" fill="#FF832B" size="24" id="shjdhqti"/>
+          </end>
+        </border-layout>
+      </box>
+    </template-content>
+  </template>
+</templates>

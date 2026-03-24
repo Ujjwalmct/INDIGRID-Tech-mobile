@@ -1,0 +1,22 @@
+<templates id="warning_label">
+  <template name="warning-label" id="nuiqozv">
+
+    <!-- Params -->
+    <template-param name="label" type="string" id="mnvk9sda"/>
+    <template-param name="hidden" type="bool" id="msvdv8oz"/>
+
+    <!-- Content -->
+    <template-content id="tz2phlu">
+      <box hidden="{template.hidden}" fill-parent="true" padding-start="0.5" padding-bottom="0.5" id="qugsbzbg">
+        <border-layout padding="false" id="xrm56">
+          <start id="n59z9">
+            <icon icon="carbon:warning--alt--filled" fill="#F1C21B" size="20" id="dx7pm"/>
+          </start>
+          <middle id="z8kvy">
+            <label label="{template.label}" color="text-02" padding="none" wrap="true" id="j4e3g"/>
+          </middle>
+        </border-layout>
+      </box>
+    </template-content>
+  </template>
+</templates>

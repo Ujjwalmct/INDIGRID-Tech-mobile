@@ -1,0 +1,44 @@
+<maximo-datasource id="maxlib_assetmeters_parent" object-structure="MXAPIASSET" saved-query="MOBILEASSETWITHMETER" offline-immediate-download="true" can-load="{app.state.meterReading.canLoad_asset}" selection-mode="none" id-attribute="assetuid" default="true">
+  <schema id="maxlib_p63x9">
+    <attribute name="assetuid" unique-id="true" index="true" id="maxlib_mx_6r"/>
+    <attribute name="assetnum" search-type="EXACT" id="maxlib_gnkry"/>
+    <attribute name="description" id="maxlib_nvj33"/>
+    <attribute name="assetmeter{metername,lastreading,measureunitid,deltareading,lastreadingdate,assetnum,active,newreading,rollover,remarks,newreadingdate,meter.description,meter.metertype,meter.domainid,meter.measureunit.description--unitdescription,index,href,assetmeterid,dorollover,assetmeterdomain.value,assetmeterdomain.description,readingtype,isdelta,siteid,sequence}" id="maxlib_jmk42"/>
+  </schema>
+  <maximo-datasource id="maxlib_assetmeters" relationship="int_assetmeter" where="active=true" object-name="assetmeter" order-by="sequence" selection-mode="none" id-attribute="assetmeterid" depends-on="maxlib_assetmeters_parent" controller="sharedResources/maximo/AssetMeterDataController.js">
+    <schema id="maxlib_n2ydz">
+      <mobile-child-filter related-path="asset.int_assetmeter" where="active=true" id="maxlib_z9ben"/>
+      <attribute name="metername" id="maxlib_brrmm"/>
+      <attribute name="lastreading" id="maxlib_j5g69"/>
+      <attribute name="measureunitid" id="maxlib_pjy87"/>
+      <attribute name="lastreadingdate" id="maxlib_k793d"/>
+      <attribute name="assetnum" id="maxlib_x_2e4"/>
+      <attribute name="active" id="maxlib_r2p7g"/>
+      <attribute name="newreading" id="maxlib_bag89"/>
+      <attribute name="rollover" id="maxlib_d2_ev"/>
+      <attribute name="remarks" id="maxlib_pxm94"/>
+      <attribute name="newreadingdate" id="maxlib_zgzz7"/>
+      <attribute name="meter" id="maxlib_z2j63">
+        <attribute name="description" id="maxlib_p5np8"/>
+        <attribute name="metertype" id="maxlib_gz3pj"/>
+        <attribute name="domainid" id="maxlib_jw68d"/>
+        <attribute name="measureunit.description--unitdescription" id="maxlib_nzv5b"/>
+      </attribute>
+      <attribute name="index" id="maxlib_jjm3j"/>
+      <attribute name="href" id="maxlib_jk2v2"/>
+      <attribute name="assetmeterid" unique-id="true" id="maxlib_xz8qk"/>
+      <attribute name="dorollover" id="maxlib_zjr58"/>
+      <attribute name="assetmeterdomain.value" id="maxlib_wrqb5"/>
+      <attribute name="assetmeterdomain.description" id="maxlib_eqga7"/>
+      <attribute name="readingtype" id="maxlib_z_7qv"/>
+      <attribute name="isdelta" id="maxlib_xzrpd"/>
+      <attribute name="siteid" id="maxlib_rbmmd"/>
+      <attribute name="sequence" sortable="true" id="maxlib_bqrj3"/>
+      <attribute name="deltareading" id="w4xqr"/>
+      <attribute name="computedReading" computed-function="computedReading" id="maxlib_wxgnr"/>
+      <attribute name="computedReadingDate" computed-function="computedReading" id="maxlib_y6q_x"/>
+      <attribute name="computedHelperText" computed-function="computeHelperText" id="maxlib_wajad"/>
+    </schema>
+  </maximo-datasource>
+  <maximo-datasource-override id="maxlib_assetmeters_parent_single" page-size="1" download-page-size="1" offline-immediate-download="false" pre-load="false"/>
+</maximo-datasource>

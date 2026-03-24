@@ -1,0 +1,130 @@
+<card-group datasource="{page.state.multiAssetData}" can-sort="true" enable-barcode-scanner="true" readers="{[`ean_reader`]}" timeout="{45}" hide-count-search="{(page.state.selectedSwitch===1)}" no-select-behavior="true" id="kj5n5">
+  <filter-button slot="actions" kind="ghost" datasource="{page.state.multiAssetData}" id="dq9n7"/>
+  <multi-sort-button slot="actions" kind="ghost" datasource="{page.state.multiAssetData}" icon="Carbon:caret--sort" id="mryw3"/>
+  <common-card-template slot="item" chevron-kind="ghost" show-chevron="{item.asset}" on-chevron-click="navigateMultiAssetToAssetDetails" on-chevron-click-arg="{item}" id="cardtemplate2">
+    <border-layout slot="slot1" fill-parent="true" id="bm_6v">
+      <start id="b6rp7" horizontal-overflow="visible" width="5">
+        <box vertical-align="center" direction="row" horizontal-align="start" fill-parent="true" id="gqyn6">
+          <icon id="xb956" icon="Carbon:asset" hidden="{(item.location &amp;&amp; !item.assetnum) || item.cinum}"/>
+          <icon id="n629r" icon="Carbon:location" hidden="{(item.assetnum) || item.cinum}"/>
+        </box>
+      </start>
+      <middle id="e95vg" horizontal-overflow="visible" width="85">
+        <box vertical-align="center" direction="row" horizontal-overflow="hidden" horizontal-align="start" fill-parent="true" id="k97ew">
+          <field value="{item.computedInputDesc}" wrap="true" field-class-name="16-bold" hide-label="true" id="zv_kd"/>
+        </box>
+      </middle>
+      <end hidden="{!app.device.isMaximoMobile}" id="annky" direction="row" width="10">
+        <box vertical-align="center" horizontal-align="end" fill-parent="true" id="pnem3">
+          <button id="yakxx" hidden="{!item.progress}" icon="Carbon:checkmark--outline" padding="true" kind="secondary" loading="{page.state.assetComplete &amp;&amp; item.multiid === page.state.currentAsset}" on-click="updateMultiAssetProgress" on-click-arg="{{'assetItem': item}}"/>
+        </box>
+        <box vertical-align="center" horizontal-align="end" fill-parent="true" id="anvdv">
+          <button id="rjedd" hidden="{item.progress}" icon="carbon:checkmark" padding="true" kind="secondary" loading="{page.state.assetComplete &amp;&amp; item.multiid === page.state.currentAsset}" on-click="updateMultiAssetProgress" on-click-arg="{{'assetItem': item}}"/>
+        </box>
+      </end>
+    </border-layout>
+    <border-layout slot="slot2" id="a27nz">
+      <end hidden="{app.device.isMaximoMobile}" id="e3jwq">
+        <box id="kxra3">
+          <button-group padding="false" align="end" wrap="true" id="qyyej">
+            <button id="kw45k" hidden="{!item.progress}" icon="Carbon:checkmark--outline" padding="true" kind="secondary" loading="{page.state.assetComplete &amp;&amp; item.multiid === page.state.currentAsset}" on-click="updateMultiAssetProgress" on-click-arg="{{'assetItem': item}}"/>
+            <button id="e5dxn" hidden="{item.progress}" icon="carbon:checkmark" padding="true" kind="secondary" loading="{page.state.assetComplete &amp;&amp; item.multiid === page.state.currentAsset}" on-click="updateMultiAssetProgress" on-click-arg="{{'assetItem': item}}"/>
+          </button-group>
+        </box>
+      </end>
+    </border-layout>
+    <border-layout slot="slot3" fill-parent="true" id="z2me_">
+      <middle id="bd5yj" horizontal-overflow="hidden">
+        <box direction="column" vertical-align="center" id="pe52n">
+          <adaptive-row id="kvx_4">
+            <adaptive-column id="e744a">
+              <action-tag label="Up" type="green" icon="Carbon:arrow--up" hidden="{!item.assetnum || !item.asset[0].isrunning || item.cinum}" id="e748g"/>
+              <action-tag label="Down" type="red" icon="Carbon:arrow--down" hidden="{!item.assetnum || item.asset[0].isrunning || item.cinum}" id="ggyzr"/>
+              <action-tag label="{item.assetstatus}" icon-hidden="true" hidden="{item.location &amp;&amp;(!item.assetnum || !item.assetstatus) || item.cinum}" type="warm-gray" id="evb2g"/>
+              <action-tag label="{item.locationstatus}" icon-hidden="true" hidden="{item.assetnum || item.cinum}" type="warm-gray" id="r8g8y"/>
+              <adaptive-row id="kx9v9">
+                <adaptive-column small-width="100" id="yk_ew">
+                  <action-tag hidden="{item.location &amp;&amp; (!item.assetnum || !item.asset[0].islinear) || item.cinum}" label="Linear" icon-hidden="true" type="dark-gray" id="v6x58"/>
+                </adaptive-column>
+                <adaptive-column id="vpj6v"/>
+              </adaptive-row>
+            </adaptive-column>
+            <adaptive-column id="de6jk"/>
+          </adaptive-row>
+        </box>
+      </middle>
+    </border-layout>
+    <border-layout slot="slot4" id="n6a8w">
+      <middle id="zrrwn" horizontal-overflow="hidden">
+        <border-layout fill-parent="true" padding="false" id="yyjj2">
+          <top vertical-align="start" id="a36zp">
+            <box hidden="{(item.assetnum &amp;&amp; item.asset[0].islinear &amp;&amp; !item.cinum)}" direction="column" vertical-align="center" fill-parent-horizontal="true" padding-top="0.5" padding-bottom="0.5" id="aykqj">
+              <field hide-label="true" padding="top" value="{item.location}" id="any_3"/>
+              <field value="Location" hidden="{item.cinum}" padding="bottom" id="m7bdk"/>
+              <field value="CI" hidden="{!item.cinum}" padding="bottom" id="v8xjk"/>
+              <field label="Description" wrap="true" id="dne8_">
+                <sub-field value="{item.locationdesc}" id="bv3y7"/>
+              </field>
+            </box>
+            <box hidden="{!(item.assetnum &amp;&amp; item.asset[0].islinear &amp;&amp; !item.cinum)}" direction="column" vertical-align="center" padding-top="0.5" padding-bottom="0.5" id="wygpm">
+              <field hide-label="true" padding="top" value="{item.location}" id="qqewg"/>
+              <field value="Location" padding="bottom" id="x4469"/>
+              <field label="Description" id="g4re2">
+                <sub-field value="{item.locationdesc}" id="eywmb"/>
+              </field>
+              <box vertical-align="center" padding-top="0.5" padding-bottom="0.5" id="qn5k2">
+                <adaptive-row id="a444k">
+                  <adaptive-column id="d54vd">
+                    <field label="Start Measure" id="e8mr9">
+                      <sub-field value="{item.startmeasure}" id="vj8aj"/>
+                    </field>
+                  </adaptive-column>
+                  <adaptive-column id="vqyp2">
+                    <field label="End Measure" id="rp9rq">
+                      <sub-field value="{item.endmeasure}" id="qmygz"/>
+                    </field>
+                  </adaptive-column>
+                </adaptive-row>
+              </box>
+              <box vertical-align="center" padding-top="0.5" padding-bottom="0.5" id="e2pn8">
+                <adaptive-row id="zb_kj">
+                  <adaptive-column id="e42bk">
+                    <field label="Start reference point" id="xepyk">
+                      <sub-field value="{item.startfeaturelabel}" id="n9evg"/>
+                    </field>
+                  </adaptive-column>
+                  <adaptive-column id="ze6xy">
+                    <field label="End reference point" id="n4b5r">
+                      <sub-field value="{item.endfeaturelabel}" id="j2zrr"/>
+                    </field>
+                  </adaptive-column>
+                </adaptive-row>
+              </box>
+              <box vertical-align="center" id="np4qz">
+                <adaptive-row id="jk4kz">
+                  <adaptive-column id="xkxp4">
+                    <field wrap="true" label="Start reference point offset" id="k3xje">
+                      <sub-field value="{item.startoffset}" id="enb2a"/>
+                    </field>
+                  </adaptive-column>
+                  <adaptive-column id="qxdgr">
+                    <field wrap="true" label="End reference point offset" id="w4kj2">
+                      <sub-field value="{item.endoffset}" id="vvbkx"/>
+                    </field>
+                  </adaptive-column>
+                </adaptive-row>
+              </box>
+            </box>
+          </top>
+        </border-layout>
+      </middle>
+    </border-layout>
+    <border-layout slot="slot5" fill-parent="true" padding="false" id="v5_kq"/>
+    <button-group slot="slot6" wrap="true" padding="false" id="ngjd3">
+      <button id="wagwp" small="true" icon="maximo:gauge" kind="secondary" hidden="{(!item.assetmetercount &amp;&amp; !item.locationmetercount) || item.cinum}" on-click="openMeterReadingDrawer" on-click-arg="{{'item':item}}" disabled="{!app.checkSigOption(`${app.state.woOSName}.ENTERREADINGS`)}"/>
+      <button id="zp578" icon="carbon:map" kind="secondary" padding="false" hidden="{(item.assetnum &amp;&amp; !item.assetautolocate) || !app.state.isMapValid || item.cinum}" on-click="openMapPage" on-click-arg="{{'item': item, 'prevPage': 'multiAssetLocCi'}}"/>
+      <button id="wmdyj" icon="maximo:follow-up-work-order" padding="false" kind="secondary" hidden="{item.cinum}" on-click="openMultiAssetFollowupPage" on-click-arg="{{'item':item}}"/>
+      <button id="bpd44" small="true" icon="maximo:inspections" kind="secondary" padding="false" hidden="{!item.inspectionresult || !page.state.inspectionAccess || item.cinum}" on-click="loadApp" on-click-arg="{{appName: app.state.appnames.inspection, context: {page: 'execution_panel', inspectionresultid: item.inspectionresult[0].inspresultid, href: item.inspectionresult[0].href}}}"/>
+    </button-group>
+  </common-card-template>
+</card-group>

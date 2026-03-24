@@ -1,0 +1,35 @@
+<templates id="calpoint_tolerance_summary">
+  <template name="calpoint-tolerance-summary" id="y8kww">
+
+    <!-- Parameters -->
+    <template-param name="visible" type="bool" id="qrbnd"/>
+    <template-param name="padding" type="string" id="app53"/>
+    <template-param name="title" type="string" id="gpdtiyi2"/>
+
+    <!-- Content -->
+    <template-content id="nz_jy">
+      <box hidden="{!template.visible}" border-top="true" fill-parent="true" direction="column" id="zrjr6">
+        <!-- Tolerance header -->
+        <box fill-parent="true" padding-start="0.5" id="ze3wz">
+          <border-layout fill-parent="true" id="w84nk" padding="false">
+            <start vertical-align="center" id="jn2qn">
+              <box padding-start="0.5" id="xed2v">
+                <label label="{template.title}" theme="16-bold" padding="none" id="jpbj4"/>
+              </box>
+            </start>
+            <end horizontal-align="end" id="xg5q7">
+              <box vertical-align="center" direction="column" horizontal-align="end" fill-parent="true" id="wwqgk">
+                <template-slot name="toggle" id="r9wn2"/>
+              </box>
+            </end>
+          </border-layout>
+        </box>
+
+        <!-- Listing tolerance errors from 1 to 4 -->
+        <box direction="column" fill-parent="true" id="x8npy">
+          <template-slot name="details" id="r10wn2"/>
+        </box>
+      </box>
+    </template-content>
+  </template>
+</templates>

@@ -1,0 +1,145 @@
+<templates id="assetfunction_tolerance">
+  <template name="assetfunction-tolerance" id="ekyqp">
+
+    <!-- Parameters -->
+    <template-param name="description" type="string" id="pdypv"/>
+    <template-param name="gbfrom" type="string" id="yp6eq"/>
+    <template-param name="gbsumdirection" type="string" id="epd_3"/>
+    <template-param name="gbto" type="string" id="grveb"/>
+    <template-param name="lowervalue" type="string" id="rx9qj"/>
+    <template-param name="paddingStart" type="number" id="e7npy"/>
+    <template-param name="status" type="string" id="xwdyq"/>
+    <template-param name="sumdirection" type="string" id="e6r4v"/>
+    <template-param name="sumeu" type="string" id="dd395"/>
+    <template-param name="sumread" type="string" id="wr62q"/>
+    <template-param name="sumspan" type="string" id="xb6m_"/>
+    <template-param name="sumurv" type="string" id="b4_e9"/>
+    <template-param name="type" type="string" id="d4456"/>
+    <template-param name="uppervalue" type="string" id="g2kvy"/>
+
+    <!-- Content -->
+    <template-content id="kz5dv">
+        <box id="i6ht1rbz" fill-parent="true">
+            <border-layout fill-parent="true" padding="false" vertical-borders="true" id="nmz6g">
+                <middle id="mpz_r">
+                    <box direction="column" fill-parent="true" id="wz8x_">
+
+                        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                        <!-- Single Tolerance Limit                                      -->
+                        <!--                                                             -->
+                        <!-- The lower range of the input value that determines the      -->
+                        <!-- tolerance limit. The value must be less than or equal to 0. -->
+                        <!-- If you specify a single tolerance limit, the Summed EU,     -->
+                        <!-- %Span, %URV, and %Reading fields are read-only.             -->
+                        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+                        <box hidden="{!template.type}" fill-parent="true" id="qdd_8">
+                            <adaptive-row id="ynn2x">
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="xgk5n">
+                                    <box fill-parent="true" padding-start="1" id="yakxe">
+                                        <label label="{template.description}" theme="16-bold" id="v6qjb"/>
+                                    </box>
+                                </adaptive-column>
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="n28yxa">
+                                    <field wrap="true" label="Status when exceeded" label-placement="top" value="{template.status}" id="aobwp7jb"/>
+                                </adaptive-column>
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="eb_2v">
+                                    <box padding-start="{template.paddingStart}" id="x7gzx">
+                                        <field label="Single from" label-placement="top" value="{template.lowervalue}" id="ew966"/>
+                                    </box>
+                                </adaptive-column>
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="kqn95">
+                                    <box id="a7gzx">
+                                        <field label="To" label-placement="top" value="{template.uppervalue}" id="jyb57"/>
+                                    </box>
+                                </adaptive-column>
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="p2mw5">
+                                    <box padding-start="{template.paddingStart}" id="ke57m">
+                                        <field label="As" label-placement="top" value="{template.type}" id="wk24j"/>
+                                    </box>
+                                </adaptive-column>
+                            </adaptive-row>
+                        </box>
+
+                        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                        <!-- Formula Tolerance Limit                                    -->
+                        <!--                                                             -->
+                        <!-- An engineering unit is a specific calibration formula that  -->
+                        <!-- calculates tolerance limits. Summed EU is a combination of  -->
+                        <!-- EU, %Span, %URV, and %Reading to determine the tolerance    -->
+                        <!-- level.                                                      -->
+                        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+                        <box hidden="{template.type}" fill-parent="true" id="j1z95">
+                            <adaptive-row id="m5zd3">
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="a25gr">
+                                    <box fill-parent="true" padding-start="1" id="ebk2g">
+                                        <label label="{template.description}" theme="16-bold" id="p7pv6"/>
+                                    </box>
+                                </adaptive-column>
+                                <adaptive-column xlarge-width="0" large-width="0" medium-width="0" small-width="50" id="a06n8"/>
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="n28yx">
+                                    <box fill-parent="true" padding-start="{template.paddingStart}" id="ebk2i">
+                                        <field wrap="true" label="Status when exceeded" label-placement="top" value="{template.status}" id="aobwp7je"/>
+                                    </box>
+                                </adaptive-column>
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="p2dsyhok">
+                                    <box padding-start="{template.paddingStart}" id="be57m">
+                                        <field label="Applied As" label-placement="top" value="{template.sumdirection}" id="a5n5q"/>
+                                    </box>
+                                </adaptive-column>
+                            </adaptive-row>
+                        </box>
+
+                        <box hidden="{template.type}" border-top="{!template.type}" fill-parent="true" id="j_z95">
+                            <adaptive-row id="zn675">
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="0" id="a96n8"/>
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="p3pyk">
+                                    <box padding-start="{template.paddingStart}" id="de57m">
+                                        <field label="Summed EU+" label-placement="top" value="{template.sumeu}" id="er6yz"/>
+                                    </box>
+                                </adaptive-column>
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="j4x7_">
+                                    <field label="%Span +" label-placement="top" value="{template.sumspan}" id="my8wy"/>
+                                </adaptive-column>
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="ybkzz">
+                                    <box padding-start="{template.paddingStart}" id="fe57m">
+                                        <field label="%URV +" label-placement="top" value="{template.sumurv}" id="m4wdy"/>
+                                    </box>
+                                </adaptive-column>
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="m9w68">
+                                    <field label="%Reading +" label-placement="top" value="{template.sumread}" id="nvjng"/>
+                                </adaptive-column>
+                            </adaptive-row>
+                        </box>
+
+                        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                        <!-- Guardband                                                   -->
+                        <!--                                                             -->
+                        <!-- The range of the input value that determines the guardband  -->
+                        <!-- tolerance limit. The guardband tolerance values are added   -->
+                        <!-- to or subtracted from the Single or Summed tolerance values -->
+                        <!-- and used to determine the tolerance levels.                 -->
+                        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+                        <box hidden="{!template.gbsumdirection}" fill-parent="true" id="e7_g6">
+                            <adaptive-row id="nqvnk">
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="r83q5"/>
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="a_a_8">
+                                    <field label="Guardband From" label-placement="top" value="{template.gbfrom}" id="my9yn"/>
+                                </adaptive-column>
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="rw_44">
+                                    <field label="To" label-placement="top" value="{template.gbto}" id="baqy2"/>
+                                </adaptive-column>
+                                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="mq74r">
+                                    <field label="Applied As" label-placement="top" value="{template.gbsumdirection}" id="b3jgb"/>
+                                </adaptive-column>
+                            </adaptive-row>
+                        </box>
+                    </box>
+                </middle>
+            </border-layout>
+        </box>
+    </template-content>
+  </template>
+</templates>

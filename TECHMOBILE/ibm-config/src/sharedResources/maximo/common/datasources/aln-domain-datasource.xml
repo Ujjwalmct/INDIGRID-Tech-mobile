@@ -1,0 +1,8 @@
+<maximo-datasource id="maxlib_aln_domain_lookupDS" lookup-data="true" object-structure="MXAPIALNDOMAIN" selection-mode="single">
+  <schema id="maxlib_wx8g4">
+    <attribute name="domainid" searchable="true" id="maxlib_nk68w"/>
+    <attribute name="value" unique-id="true" id="maxlib_d9w5m"/>
+    <attribute name="valueid" id="maxlib_dp347"/>
+    <attribute name="description" id="maxlib_qg_94"/>
+  </schema>
+</maximo-datasource>

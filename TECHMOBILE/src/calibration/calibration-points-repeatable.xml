@@ -1,0 +1,176 @@
+<page id="calpointrepeatable" path="/calpointrepeatable" padding="true" title="REPEATABLE" controller="./calibration/CalibrationPointsRepeatableController">
+  <states id="wjwr3">
+    <!-- 
+    | Attribute          | Description                                                                                    |
+    |- - - - - - - - - - |- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
+    | asserterror        | Indicates calpoint-tolerance-summary should be collapsed/revealed.                             |
+    | assetfunction      | Holds assetfunction data.                                                                      |
+    | colwidth           | Holds the column width used in this page based on screen size.                                 |
+    | condition          | Holds which condition user is  using  now: As Found or As Left.                                |
+    | dsconfig           | Holds datasheet config "PLUSCDSCONFIG" datasource with data loaded and ready in current item.  |
+    | focusedItem        | Holds data of the calibration point where the user is trying to change unit.                   |
+    | formvalid          | Defines whether form is valid or not. Used to validate state before saving changes.            |
+    | groupedCalpointsDS | Holds calibration points datasource grouped by  "point"  attribute.                            |
+    | isdirty            | Indicates  if  any of the model 's attributes have been changed since the model was retrieved. |
+    | loading            | Indicates whether page is loading or not.                                                      |
+    | padding            | Holds calculated padding value based on screen size.                                           |
+    | title              | Holds title of  this  page.                                                                    |
+    | calpointtitle      | Holds title of  this  page.                                                                    |
+    | saving             | Indicates if work is being saved.                                                              |
+    -->
+    <state name="asserterror" value="true" type="boolean" id="i0afawjd"/>
+    <state name="assetfunction" value="" type="object" id="zw8n157o"/>
+    <state name="calpointtitle" value="" type="string" id="r479q"/>
+    <state name="colwidth" value="" type="string" id="g91o5"/>
+    <state name="condition" value="" type="string" id="gwagr"/>
+    <state name="dsconfig" value="" type="object" id="fwoai9b8"/>
+    <state name="focusedItem" value="" type="object" id="f7hko"/>
+    <state name="formvalid" value="true" type="boolean" id="fc7hko"/>
+    <state name="groupedCalpointsDS" value="" type="object" id="m9ed5"/>
+    <state name="isdirty" value="false" type="boolean" id="dgfqie9v"/>
+    <state name="loading" value="false" type="string" id="db73g"/>
+    <state name="padding" value="" type="string" id="z7dem"/>
+    <state name="saving" value="false" type="boolean" id="uxlld7tj"/>
+    <state name="title" value="" type="string" id="c2i4g"/>
+  </states>
+  <dialogs id="h1h2y">
+    <dialog id="discardChanges" title="Save or discard changes?" primary-action-text="Save" on-primary-action="saveChanges" primary-kind="secondary" on-secondary-action="discardChanges" secondary-action-text="Discard">
+      <label wrap="true" label="To leave this page, you must first discard or save your changes." id="sfapkuzy"/>
+    </dialog>
+  </dialogs>
+  <header-template title="{page.state.title}" title-column-width="{page.state.colwidth}" icon-name="carbon:chevron--left" icon-action="goBack" hide-breadcrumb="true" show-current-page-in-bread-crumb="false" id="blcqh">
+    <button slot="buttons" label="Save" icon="carbon:save" loading="{page.state.loading || page.state.saving}" disabled="{!page.state.isdirty || page.state.loading || page.state.saving || (page.state.assetfunction.noadjmade &amp;&amp; page.state.assetfunction.calpoint)}" on-click="save" id="bj44"/>
+  </header-template>
+  <inline-notification use-with-mobile="true" kind="info" title="The As Found values are copied to As Left, and all fields are read-only." hide-close-button="true" hidden="{!(page.state.assetfunction.noadjmade &amp;&amp; page.state.assetfunction.calpoint)}" id="w6q76"/>
+  <content-docker docked-to-header="true" transparent="true" id="jy8a8">
+    <box background-color="ui-background" id="ee9y5">
+      <box id="ixrg91o5" vertical-align="center" padding-top="0.25" padding-bottom="0.25" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0.5' : '0'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0.5' : '0'}" fill-parent-horizontal="true">
+        <border-layout id="qpxgb">
+          <start direction="column" horizontal-align="start" vertical-align="center" horizontal-overflow="hidden" width="{page.state.calDynamicFlag ? 100 : 80}" grow="0.75" id="we2xn">
+            <label label="Asset function" padding="none" color="gray60" theme="16-regular" id="mr4_k"/>
+            <label label="{page.state.calpointtitle}" padding="none" wrap="false" theme="16-regular" id="sz2koigg"/>
+          </start>
+          <end horizontal-align="end" vertical-align="center" id="b4xmd">
+            <tag-group tags="{page.state.condition === 'asleft' ? [{label: `${page.state.asleftcalstatus ? page.state.asleftcalstatus: '-'}` , type: page.state.asleftcallabel}] : [{label: `${page.state.asfoundcalstatus ? page.state.asfoundcalstatus: '-'}` , type: page.state.asfoundcallabel}]}" align="end" id="ewd56"/>
+          </end>
+        </border-layout>
+      </box>
+    </box>
+  </content-docker>
+  <loading active="{page.state.loading}" kind="spinner" small="false" id="xpzm_"/>
+  <box hidden="{page.state.loading}" fill-parent="true" direction="column" padding-top="-0.5" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" id="gj3_7">
+    <box fill-parent="true" id="bn5bm">
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+      <!-- Calibration point groups                              -->
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+      <data-list datasource="{page.state.groupedCalpointsDS}" no-select-behavior="true" expand-all="true" row-space="1" padding="false" show-search="false" id="yye87">
+        <list-item id="a729_">
+          <calpoint-group-list-item label="{item.pointdescription}" error="{item.haserror}" warning="{page.state.condition == 'asfound' ? item.avgpoint.asfounderror : item.avgpoint.aslefterror || item.showWarningOnOutputChange || item.showWarningOnInputChange}" id="jcqrbg4r"/>
+        </list-item>
+        <list-details id="a76kq">
+          <box fill-parent="true" padding="0" direction="column" border-top="true" id="tk0csx2c">
+            <box fill-parent="true" padding-start="1" padding-end="1" padding-bottom="1" id="mlbfbmta">
+              <data-list datasource="{item.calpointsDS}" row-space="0.5" padding="false" show-search="false" id="dbja_">
+                <list-item id="px3qp">
+                  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                  <!-- Calibration point                                     -->
+                  <!--                                                       -->
+                  <!-- Listing calibration points based on asset function    -->
+                  <!-- type (function, point or dynamic) and condition       -->
+                  <!-- (asleft, asfound).                                    -->
+                  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                  <!-- Condition AS FOUND -->
+                  <box hidden="{item.isaverage || page.state.condition !== 'asfound'}" padding="0" fill-parent="true" direction="column" id="hdo5wgzg">
+                    <calpoint visible="{page.state.assetfunction.calpoint}"
+                      plantype="{item.plantype}" 
+                      inputvalue="{(page.callController('getLocaleNumber',item.inputvalue,'input', item.inputvalue))}"
+                      outputvalue="{(page.callController('getLocaleNumber',item.outputvalue,'output', item.outputvalue))}"
+                      setpointvalue="{(page.callController('getLocaleNumber',item.setpointvalue,'input', item.setpointvalue))}"
+                      asfoundoutputexceeded="{page.callController('isToleranceWarningShownOnTabOut', item.asfounderror, item.isDataValid)}"
+                      showWarningOnInputChange="{item.showWarningOnInputChange}"
+                      showWarningOnOutputChange="{(item.showWarningOnOutputChange &amp;&amp; !page.callController('isToleranceWarningShownOnTabOut', item.asfounderror, item.isDataValid))}"
+                      id="vutoubv8">
+                      <smart-input slot="input" label="Input ({page.state.assetfunction.instrcalrangeeu})" value="{item.asfoundinput}" on-change="onCalpointValueChanged" on-blur="validateCalPointValuesAndCalculateTolerancesAsync" on-blur-arg="{{item: item, field: 'asfoundinput'}}" readonly="{page.state.assetfunction.noadjmade || page.state.saving}" id="blx1wbzg"/>
+                      <smart-input slot="output" label="Output ({page.state.assetfunction.instroutrangeeu})" value="{item.asfoundoutput}" on-change="onCalpointValueChanged" on-blur="validateCalPointValuesAndCalculateTolerancesAsync" on-blur-arg="{{item: item, field: 'asfoundoutput'}}" readonly="{page.state.assetfunction.noadjmade || page.state.saving}" id="qzywpw8b"/>
+                      <smart-input slot="setpoint" label="Set point ({page.state.assetfunction.instrcalrangeeu})" value="{item.asfoundsetpoint}" on-change="onCalpointValueChanged" on-blur="validateCalPointValuesAndCalculateTolerancesAsync" on-blur-arg="{{item: item, field: 'asfoundsetpoint'}}" readonly="{page.state.assetfunction.noadjmade || page.state.saving}" id="bwp5j"/>
+                    </calpoint>
+                  </box>
+                  <!-- Condition AS LEFT -->
+                  <box hidden="{item.isaverage || page.state.condition !== 'asleft'}" padding="0" fill-parent="true" direction="column" id="j6jzmncj">
+                    <calpoint visible="{page.state.assetfunction.calpoint}"
+                      plantype="{item.plantype}"
+                      inputvalue="{(page.callController('getLocaleNumber',item.inputvalue,'input', item.inputvalue))}"
+                      outputvalue="{(page.callController('getLocaleNumber',item.outputvalue,'output', item.outputvalue))}"
+                      setpointvalue="{(page.callController('getLocaleNumber',item.setpointvalue,'input', item.setpointvalue))}"
+                      asleftoutputexceeded="{page.callController('isToleranceWarningShownOnTabOut', item.aslefterror, item.isDataValid)}"
+                      showWarningOnInputChange="{item.showWarningOnInputChange}"
+                      showWarningOnOutputChange="{(item.showWarningOnOutputChange &amp;&amp; !page.callController('isToleranceWarningShownOnTabOut', item.aslefterror, item.isDataValid))}"
+                      id="x_vj3">
+                      <smart-input slot="input" label="Input ({page.state.assetfunction.instrcalrangeeu})" value="{item.asleftinput}" on-change="onCalpointValueChanged" on-blur="validateCalPointValuesAndCalculateTolerancesAsync" on-blur-arg="{{item: item, field: 'asleftinput'}}" readonly="{page.state.assetfunction.noadjmade || page.state.saving}" id="iutxoxui"/>
+                      <smart-input slot="output" label="Output ({page.state.assetfunction.instroutrangeeu})" value="{item.asleftoutput}" on-change="onCalpointValueChanged" on-blur="validateCalPointValuesAndCalculateTolerancesAsync" on-blur-arg="{{item: item, field: 'asleftoutput'}}" readonly="{page.state.assetfunction.noadjmade || page.state.saving}" id="qy5jmviy"/>
+                      <smart-input slot="setpoint" label="Set point ({page.state.assetfunction.instrcalrangeeu})" value="{item.asleftsetpoint}" on-change="onCalpointValueChanged" on-blur="validateCalPointValuesAndCalculateTolerancesAsync" on-blur-arg="{{item: item, field: 'asleftsetpoint'}}" readonly="{page.state.assetfunction.noadjmade || page.state.saving}" id="g6hgprhu"/>
+                    </calpoint>
+                  </box>
+                </list-item>
+              </data-list>
+            </box>
+            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+            <!-- Tolerance summary                                     -->
+            <!--                                                       -->
+            <!-- Display tolerance summary when calibration point      -->
+            <!-- "calpoint" is True and "plantype" is "ANALOG"         -->
+            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+            <!-- Condition AS FOUND -->
+            <box fill-parent="true" direction="column" id="r2jvzuij">
+              <calpoint-tolerance-summary title="Tolerances" visible="{page.state.condition === 'asfound'}" id="qnkqp">
+                <button slot="toggle" on-click="toggleAssert" icon="{page.state.asserterror ? 'carbon:chevron--up' : 'carbon:chevron--down'}" id="z37by"/>
+                <box slot="details" hidden="{!page.state.asserterror}" fill-parent="true" direction="column" id="ewborb9">
+                  <calpoint-standard-deviation hidden="{!page.state.assetfunction.isstandarddeviation}"
+                    plantype="{page.state.assetfunction.plantype}"
+                    inputlimit="{page.state.assetfunction.standarddeviationinputlimit}"
+                    inputdeviation="{item.avgpoint.asfinputstddev}"
+                    inputerror="{item.avgpoint.asfoundinputstddeverror}"
+                    outputlimit="{page.state.assetfunction.standarddeviationoutputlimit}"
+                    outputdeviation="{item.avgpoint.asfoutputstddev}"
+                    outputerror="{item.avgpoint.asfoundoutputstddeverror}"
+                    deviation="{item.avgpoint.asfsetptstddev}"
+                    setpointerror="{item.avgpoint.asfoundsetpointstddeverror}"
+                    id="vj758"/>
+                  <tolerance-error label="Tolerance 1" lowertol="{item.avgpoint.asfoundtol1lower}" uppertol="{item.avgpoint.asfoundtol1upper}" tolerror="{item.avgpoint.asfounderror1}" id="rq6xq"/>
+                  <tolerance-error label="Tolerance 2" lowertol="{item.avgpoint.asfoundtol2lower}" uppertol="{item.avgpoint.asfoundtol2upper}" tolerror="{item.avgpoint.asfounderror2}" id="qxott"/>
+                  <tolerance-error label="Tolerance 3" lowertol="{item.avgpoint.asfoundtol3lower}" uppertol="{item.avgpoint.asfoundtol3upper}" tolerror="{item.avgpoint.asfounderror3}" id="intmb"/>
+                  <tolerance-error label="Tolerance 4" lowertol="{item.avgpoint.asfoundtol4lower}" uppertol="{item.avgpoint.asfoundtol4upper}" tolerror="{item.avgpoint.asfounderror4}" id="ewrfp"/>
+                  <asset-process-error processerr="{item.avgpoint.asfoundproerror}" asseterr="{item.avgpoint.asfoundouterror}" smallscreen="{app.state.screen.size=== 'sm' || app.state.screen.size=== 'md'}" id="mjk36"/>
+                </box>
+              </calpoint-tolerance-summary>
+            </box>
+            <!-- Condition AS LEFT -->
+            <box fill-parent="true" direction="column" id="h1pylczb">
+              <calpoint-tolerance-summary title="Tolerances" visible="{page.state.condition === 'asleft'}" id="owzk4cxe">
+                <button slot="toggle" on-click="toggleAssert" icon="{page.state.asserterror ? 'carbon:chevron--up' : 'carbon:chevron--down'}" id="i5ys9p7x"/>
+                <box slot="details" hidden="{!page.state.asserterror}" fill-parent="true" direction="column" id="jg8b3fzz">
+                  <calpoint-standard-deviation hidden="{!page.state.assetfunction.isstandarddeviation}"
+                    plantype="{page.state.assetfunction.plantype}"
+                    inputlimit="{page.state.assetfunction.standarddeviationinputlimit}"
+                    inputdeviation="{item.avgpoint.aslinputstddev}"
+                    inputerror="{item.avgpoint.asleftinputstddeverror}"
+                    outputlimit="{page.state.assetfunction.standarddeviationoutputlimit}"
+                    outputdeviation="{item.avgpoint.asloutputstddev}"
+                    outputerror="{item.avgpoint.asleftoutputstddeverror}"
+                    deviation="{item.avgpoint.aslsetptstddev}"
+                    setpointerror="{item.avgpoint.asleftsetpointstddeverror}"
+                    id="nmmnq"/>
+                  <tolerance-error label="Tolerance 1" lowertol="{item.avgpoint.aslefttol1lower}" uppertol="{item.avgpoint.aslefttol1upper}" tolerror="{item.avgpoint.aslefterror1}" id="z2fh97jj"/>
+                  <tolerance-error label="Tolerance 2" lowertol="{item.avgpoint.aslefttol2lower}" uppertol="{item.avgpoint.aslefttol2upper}" tolerror="{item.avgpoint.aslefterror2}" id="js5ecndi"/>
+                  <tolerance-error label="Tolerance 3" lowertol="{item.avgpoint.aslefttol3lower}" uppertol="{item.avgpoint.aslefttol3upper}" tolerror="{item.avgpoint.aslefterror3}" id="dxqfb5se"/>
+                  <tolerance-error label="Tolerance 4" lowertol="{item.avgpoint.aslefttol4lower}" uppertol="{item.avgpoint.aslefttol4upper}" tolerror="{item.avgpoint.aslefterror4}" id="b3i8ykzz"/>
+                  <asset-process-error processerr="{item.avgpoint.asleftproerror}" asseterr="{item.avgpoint.asleftouterror}" smallscreen="{app.state.screen.size=== 'sm' || app.state.screen.size=== 'md'}" id="mbqnx"/>
+                </box>
+              </calpoint-tolerance-summary>
+            </box>
+          </box>
+        </list-details>
+      </data-list>
+    </box>
+  </box>
+</page>

@@ -1,0 +1,64 @@
+<templates id="calpoint">
+  <template name="calpoint" id="kxmxb">
+    <!-- Params -->
+    <template-param name="condition" type="string" id="lzoib"/>
+    <template-param name="plantype" type="string" id="b2vpr"/>
+    <template-param name="visible" type="bool" id="m6766"/>
+    <template-param name="inputvalue" type="string" id="s03zsbov"/>
+    <template-param name="outputvalue" type="string" id="pbbuzdfa"/>
+    <template-param name="setpointvalue" type="string" id="x801v6rd"/>
+    <template-param name="asfoundoutputexceeded" type="bool" id="kabdhs4f"/>
+    <template-param name="asleftoutputexceeded" type="bool" id="avzxhtuh"/>
+    <template-param name="showWarningOnInputChange" type="bool" id="ebznm"/>
+    <template-param name="showWarningOnOutputChange" type="bool" id="z8_ag"/>
+    <!-- Content -->
+    <template-content id="ewjx7">
+      <box hidden="{!template.visible}" fill-parent="true" direction="column" id="pnvpa">
+        <!-- Calibration point is ANALOG -->
+        <box hidden="{template.plantype !== 'ANALOG'}" padding="0" fill-parent="true" direction="column" id="xxwez">
+          <box fill-parent="true" padding="0" id="bnrwr">
+            <adaptive-row id="ygvp8">
+              <adaptive-column small-width="100" medium-width="50" id="qw_za">
+                <box fill-parent-horizontal="true" direction="column" id="qza6r">
+                  <field label="Nominal input" value="{template.inputvalue}" id="ywrvx"/>
+                  <template-slot name="input" id="xlsgn1ak"/>
+                  <warning-label hidden="{!template.showWarningOnInputChange}" label="Data has already been entered for this field. (BMXAR0061)" id="xve_r"/>
+                </box>
+              </adaptive-column>
+              <adaptive-column small-width="100" medium-width="50" id="ajza5">
+                <box fill-parent-horizontal="true" direction="column" id="zapj9">
+                  <field label="Desired output" value="{template.outputvalue}" id="v2p5v"/>
+                  <template-slot name="output" id="zdorhpdr"/>
+                  <!-- WARNING MESSAGE should be displayed when output is exceeded -->
+                  <warning-label hidden="{!template.asfoundoutputexceeded}" label="One or more As Found tolerance limits have been exceeded on this calibration point. (BMXAR0010)" id="whwzvyu"/>
+                  <warning-label hidden="{!template.asleftoutputexceeded}" label="One or more As Left tolerance limits have been exceeded on this calibration point. (BMXAR0010)" id="vso9nh7t"/>
+                  <warning-label hidden="{!template.showWarningOnOutputChange}" label="Data has already been entered for this field. (BMXAR0061)" id="r8yy4"/>
+                </box>
+              </adaptive-column>
+            </adaptive-row>
+          </box>
+        </box>
+        <!-- Calibration point is DISCRETE -->
+        <box hidden="{template.plantype !== 'DISCRETE'}" border-bottom="true" fill-parent="true" direction="column" id="qmmma">
+          <box fill-parent="true" padding-top="0" id="hacekrpu">
+            <adaptive-row id="ygvp9">
+              <adaptive-column small-width="100" medium-width="50" id="qw_zc">
+                <box fill-parent-horizontal="true" fill-parent="true" direction="column" id="qxm8o6yq">
+                  <field label="Set point" value="{template.setpointvalue}" id="pi9pdajj"/>
+                </box>
+              </adaptive-column>
+              <adaptive-column small-width="100" medium-width="50" id="qw_zb">
+                <box fill-parent-horizontal="true" direction="column" id="tmq8glcm">
+                  <template-slot name="setpoint" id="qenx0uti"/>
+                  <warning-label hidden="{!template.asfoundoutputexceeded}" label="One or more As Found tolerance limits have been exceeded on this calibration point. (BMXAR0010)" id="djkn5"/>
+                  <warning-label hidden="{!template.asleftoutputexceeded}" label="One or more As Left tolerance limits have been exceeded on this calibration point. (BMXAR0010)" id="b87zd"/>
+                  <warning-label hidden="{!(template.showWarningOnInputChange &amp;&amp; !(template.asfoundoutputexceeded || template.asleftoutputexceeded))}" label="Data has already been entered for this field. (BMXAR0061)" id="m89qw"/>
+                </box>
+              </adaptive-column>
+            </adaptive-row>
+          </box>
+        </box>
+      </box>
+    </template-content>
+  </template>
+</templates>

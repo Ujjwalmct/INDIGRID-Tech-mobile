@@ -1,0 +1,72 @@
+<templates id="calpoint_standard_deviation">
+  <template name="calpoint-standard-deviation" id="y4zvk">
+    <template-param name="plantype" type="string" id="rj2zz"/>
+    <template-param name="outputlimit" type="string" id="dnwj9"/>
+    <!-- ANALOG params -->
+    <template-param name="inputlimit" type="string" id="ma8en"/>
+    <template-param name="inputdeviation" type="string" id="gk7kw"/>
+    <template-param name="inputerror" type="string" id="rrryn"/>
+    <template-param name="outputdeviation" type="string" id="ag9nk"/>
+    <template-param name="outputerror" type="string" id="z4b84"/>
+    <!-- DISCRETE params -->
+    <template-param name="deviation" type="string" id="wj2k8"/>
+    <template-param name="setpointerror" type="string" id="jjekq"/>
+    <template-content id="apyqd">
+      <box border-top="true" fill-parent="true" id="nkd5d">
+        <box padding-start="1" padding-end="1" padding-top="0.25" padding-bottom="0.25" fill-parent="true" vertical-align="center" id="qwe9j">
+          <adaptive-row id="x9rxy">
+            <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="qq359">
+              <box fill-parent="true" id="xgeyx">
+                <label label="Standard deviation" id="dd4px"/>
+              </box>
+            </adaptive-column>
+            <!-- ANALOG Fields -->
+            <adaptive-column hidden="{template.plantype != 'ANALOG'}" xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="eagdy">
+              <field label="Input limit" value="{template.inputlimit}" id="m8yw5"/>
+            </adaptive-column>
+            <adaptive-column hidden="{template.plantype != 'ANALOG'}" xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="n4kbx">
+              <field label="Input deviation" value="{template.inputdeviation}" id="gpp94"/>
+            </adaptive-column>
+            <adaptive-column hidden="{template.plantype != 'ANALOG'}" xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="dyam6">
+              <box vertical-align="center" id="b5v3b">
+                <field label="Input error" value="{template.inputerror}" id="mkjy5"/>
+              </box>
+            </adaptive-column>
+            <adaptive-column hidden="{template.plantype != 'ANALOG'}" xlarge-width="25" large-width="25" medium-width="0" small-width="0" id="n7x4n"/>
+            <adaptive-column hidden="{template.plantype != 'ANALOG'}" xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="y959p">
+              <box vertical-align="center" id="wqm39">
+                <field label="Output limit" value="{template.outputlimit}" id="g37_g"/>
+              </box>
+            </adaptive-column>
+            <adaptive-column hidden="{template.plantype != 'ANALOG'}" xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="d3mbw">
+              <box vertical-align="center" id="x33y9">
+                <field label="Output deviation" value="{template.outputdeviation}" id="e7d9q"/>
+              </box>
+            </adaptive-column>
+            <adaptive-column hidden="{template.plantype != 'ANALOG'}" xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="eqxmj">
+              <box vertical-align="center" id="wg3x8">
+                <field label="Output error" value="{template.outputerror}" id="xae7p"/>
+              </box>
+            </adaptive-column>
+            <!-- DISCRETE Fields -->
+            <adaptive-column hidden="{template.plantype != 'DISCRETE'}" xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="yyg73">
+              <box vertical-align="center" id="xeqyx">
+                <field label="Limit" value="{template.outputlimit}" id="eqwq2"/>
+              </box>
+            </adaptive-column>
+            <adaptive-column hidden="{template.plantype != 'DISCRETE'}" xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="qr9bd">
+              <box vertical-align="center" id="b4555">
+                <field label="Deviation" value="{template.deviation}" id="akxqx"/>
+              </box>
+            </adaptive-column>
+            <adaptive-column hidden="{template.plantype != 'DISCRETE'}" xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="k58yy">
+              <box vertical-align="center" id="z2w6w">
+                <field label="Set point error" value="{template.setpointerror}" id="aw5yb"/>
+              </box>
+            </adaptive-column>
+          </adaptive-row>
+        </box>
+      </box>
+    </template-content>
+  </template>
+</templates>

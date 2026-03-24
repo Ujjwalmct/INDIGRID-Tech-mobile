@@ -1,0 +1,46 @@
+<maximo-datasource id="maxlib_locationmeters_parent" object-structure="MXAPIOPERLOC" saved-query="MOBILELOCATIONWITHMETER" offline-immediate-download="true" can-load="{app.state.meterReading.canLoad_location}" selection-mode="none" id-attribute="locationsid" default="true">
+  <schema id="maxlib_w8m7a">
+    <attribute name="locationsid" unique-id="true" index="true" id="maxlib_dbkbj"/>
+    <attribute name="location" search-type="EXACT" id="maxlib_d33x5"/>
+    <attribute name="description" id="maxlib_jjaea"/>
+    <attribute name="locationmeter{metername,lastreading,deltareading,measureunitid,lastreadingdate,location,active,newreading,rollover,remarks,newreadingdate,meter.description,meter.metertype,meter.domainid,meter.measureunit.description--unitdescription,index,href,locationmeterid,dorollover,locationmeterdomain.value,locationmeterdomain.description,readingtype,isdelta,siteid,sequence}" id="maxlib_jgmzz"/>
+  </schema>
+  <maximo-datasource id="maxlib_locationmeters" relationship="int_locationmeter" where="active=true" object-name="locationmeter" id-attribute="locationmeterid" selection-mode="none" depends-on="maxlib_locationmeters_parent" order-by="sequence" controller="sharedResources/maximo/LocationMeterDataController.js">
+    <schema id="maxlib_djzzw">
+      <mobile-child-filter related-path="locations.int_locationmeter" where="active=true" id="maxlib_g5m6m"/>
+      <attribute name="metername" id="maxlib_y5jpq"/>
+      <attribute name="lastreading" id="maxlib_kxxzd"/>
+      <attribute name="measureunitid" id="maxlib_dmn95"/>
+      <attribute name="lastreadingdate" id="maxlib_apy8y"/>
+      <attribute name="location" id="maxlib_kakjx"/>
+      <attribute name="newreading" id="maxlib_vkamx"/>
+      <attribute name="rollover" id="maxlib_emqwn"/>
+      <attribute name="active" id="maxlib_vv88_"/>
+      <attribute name="remarks" id="maxlib_v9xkj"/>
+      <attribute name="newreadingdate" id="maxlib_jz2gm"/>
+      <attribute name="meter" id="maxlib_rm5g9">
+        <attribute name="description" id="maxlib_mxqy7"/>
+        <attribute name="metertype" id="maxlib_yzxjm"/>
+        <attribute name="domainid" id="maxlib_nr4ad"/>
+        <attribute name="measureunit.description--unitdescription" id="maxlib_q6g7k"/>
+      </attribute>
+      <attribute name="domainid" id="maxlib_xwmkp"/>
+      <attribute name="href" id="maxlib_p2rez"/>
+      <attribute name="index" id="maxlib_mrx_g"/>
+      <attribute name="locationmeterid" unique-id="true" id="maxlib_bvd4k"/>
+      <attribute name="locations" id="maxlib_vbv45"/>
+      <attribute name="locationmeterdomain.value" id="maxlib_py8ba"/>
+      <attribute name="locationmeterdomain.description" id="maxlib_gvdd8"/>
+      <attribute name="readingtype" id="maxlib_q2qq8"/>
+      <attribute name="isdelta" local="true" id="maxlib_xx9kk"/>
+      <attribute name="siteid" id="maxlib_ezdea"/>
+      <attribute name="dorollover" id="maxlib_r59x8"/>
+      <attribute name="sequence" sortable="true" id="maxlib_xez_a"/>
+      <attribute name="deltareading" local="true" id="maxlib_dvga6"/>
+      <attribute name="computedReading" computed-function="computedReading" id="maxlib_d4b7v"/>
+      <attribute name="computedReadingDate" computed-function="computedReading" id="maxlib_w_49b"/>
+      <attribute name="computedHelperText" computed="true" computed-function="computeHelperText" id="maxlib_ga4wq"/>
+    </schema>
+  </maximo-datasource>
+  <maximo-datasource-override id="maxlib_locationmeters_parent_single" page-size="1" download-page-size="1" offline-immediate-download="false" pre-load="false"/>
+</maximo-datasource>

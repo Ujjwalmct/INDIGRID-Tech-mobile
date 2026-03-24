@@ -1,0 +1,54 @@
+<page padding="true" id="loopassetlist" title="Loop Asset List" controller="./calibration/LoopAssetListController">
+  <states id="qex_j">
+    <state name="dataSheetTitle" type="string" url-alias="title" url-enabled="true" id="y2n4b"/>
+    <state name="loading" type="boolean" value="false" id="dg_b4"/>
+    <state name="autoupdate" type="boolean" value="false" id="p8m6r"/>
+  </states>
+  <maximo-datasource id="dsLoop" object-structure="mxapiwodetail" item-url="{page.params.href}" selection-mode="none">
+    <schema id="jv3qp">
+      <attribute name="wonum" sortable="true" searchable="true" id="rgd5w"/>
+      <attribute name="description" sortable="true" searchable="true" id="ek2_3"/>
+      <attribute name="locationnum" sortable="false" id="dd5w8"/>
+      <attribute name="location.description--locationdesc" searchable="true" sortable="false" id="y9qm5"/>
+      <attribute name="location.location--locationnum" sortable="false" id="g8yx3"/>
+      <attribute name="pluscphyloc" sortable="false" searchable="true" id="wvp_4"/>
+      <attribute name="workorderid" sortable="false" unique-id="true" id="z4bvj"/>
+      <attribute name="completedwodscount" sortable="false" id="wkj5d"/>
+      <attribute name="pluscwods{_dbcount--pluscwodscount,asfoundcalstatus,asleftcalstatus,assetnum,pluscdsasset.description--assetdesc,pluscdsasset.location--location}" id="q8r4w"/>
+    </schema>
+  </maximo-datasource>
+  <json-datasource id="dsLoopWODS" selection-mode="single" items="member" src="{[]}">
+    <schema id="d_p5n">
+      <attribute name="assetnum" id="m47jz"/>
+      <attribute name="assetdesc" sortable="false" id="jyy7p"/>
+      <attribute name="location" id="xa4k_"/>
+      <attribute name="completedwodscount" sortable="false" id="ne74k"/>
+      <attribute name="totalwodscount" id="pdb4v"/>
+    </schema>
+  </json-datasource>
+  <header-template title="Assets" hide-breadcrumb="true" show-current-page-in-bread-crumb="false" icon-name="carbon:chevron--left" icon-action="goBack" title-column-width="{app.state.screen.size === 'lg' ? 45 : 80}" id="mobcalloopassetlistpagetitle"/>
+  <box id="yqyjk" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}">
+    <data-list datasource="dsLoopWODS" row-space="0" enable-barcode-scanner="true" show-search="true" show-count="true" record-count-label="{`{0} records`}" padding="false" id="d9e9j">
+      <list-item id="zjg4q">
+        <border-layout fill-parent="true" padding="false" id="akxy_">
+          <start id="kkxme">
+            <field hide-label="true" padding="top" value="{item.assetnum}" field-class-name="16-bold" id="x_e3e"/>
+            <field wrap="true" hide-label="true" padding="none" value="{item.assetdesc}" id="meyqg"/>
+            <field wrap="true" hide-label="true" padding="bottom" value="{item.location}" id="g_de8"/>
+          </start>
+          <end horizontal-align="end" id="qq3qd">
+            <border-layout fill-parent="true" id="qjkn3">
+              <middle horizontal-align="end" vertical-align="center" id="x3g7w"/>
+              <end horizontal-align="end" vertical-align="center" id="jwj8b">
+                <box vertical-align="center" direction="row" id="a69e2">
+                  <tag-group hidden="{page.state.loading}" tags="{[{label: `${item.completedwodscount}/${item.totalwodscount}`}]}" type="{item.completedwodscount == item.totalwodscount ? 'green' : 'dark-gray'}" id="d5z6n"/>
+                  <button icon="carbon:chevron--right" on-click="navigateToCalibrationFromAssetList" on-click-arg="{item}" padding="false" id="z8pwy"/>
+                </box>
+              </end>
+            </border-layout>
+          </end>
+        </border-layout>
+      </list-item>
+    </data-list>
+  </box>
+</page>

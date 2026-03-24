@@ -1,0 +1,207 @@
+<dialogs id="maxlib_meterReading">
+  <!-- Meter List Drawer-->
+  <sliding-drawer id="maxlib_meterReadingDrawer" content-padding="false" align="start" header-text="Meters readings" controller="sharedResources/maximo/MeterReadingDrawerController.js">
+    <panel id="maxlib_rk3n5">
+      <button-bar label="Refresh meter readings" hidden="{!app.state.networkConnected || !(app.state.meterReading.assetnum || app.state.meterReading.location)}" icon="Carbon:renew" on-click="getLatestReadings" id="maxlib_d49py"/>
+      <!-- an empty box to adjust top and bottom space of datalist header - due to row-space -->
+      <box id="maxlib_z6dd3" padding-top=".5"/>
+      <data-list datasource="maxlib_assetmeters" padding="false" show-search="false" title="{dialog.state.assetHeader}" hidden="{(maxlib_assetmeters_parent.state.hasData &amp;&amp; maxlib_assetmeters.state.hasData  &amp;&amp; !maxlib_assetmeters.state.itemCount) || !app.state.meterReading.assetnum}" id="maxlib_vqd3e">
+        <border-layout padding="false" slot="item" fill-parent="true" id="maxlib_zgg39">
+          <start width="70" horizontal-overflow="hidden" id="maxlib_mgjvv">
+            <border-layout padding="true" fill-parent="true" id="maxlib_dvx5w">
+              <top id="maxlib_r_y92">
+                <box direction="column" padding-start=".5" padding-top=".5" vertical-align="center" fill-parent="true" id="maxlib_ea_x3">
+                  <field value="{item.metername}" field-class-name="16-bold" override-required="true" padding="none" qualifier="{item.unitdescription ? item.unitdescription : item.measureunitid}" hide-label="true" id="maxlib_dm8_a"/>
+                </box>
+              </top>
+              <bottom id="maxlib_z_2px">
+                <box id="maxlib_mzn4k" padding-start=".5" padding-bottom=".5" padding-top=".25">
+                  <field padding="none" id="maxlib_zb5ma">
+                    <sub-field value="{item.computedReadingDate.computedMeterReadingDate}" type="date_full_month" id="maxlib_g2p2p"/>
+                  </field>
+                  <field padding="none" id="maxlib_gq2q6">
+                    <sub-field value="{item.computedReadingDate.computedMeterReadingDate}" type="datetime_time_only" id="maxlib_jjgj4"/>
+                  </field>
+                </box>
+              </bottom>
+            </border-layout>
+          </start>
+          <end vertical-align="center" horizontal-align="end" id="maxlib_jdepy">
+            <box vertical-align="center" direction="row" fill-parent="true" id="maxlib_ga2d3" padding-end=".5">
+              <label label="{item.computedReading.computedMeterReading}" id="maxlib_p72jx"/>
+            </box>
+          </end>
+        </border-layout>
+      </data-list>
+      <data-list datasource="maxlib_locationmeters" padding="false" show-search="false" title="{dialog.state.locationHeader}" hidden="{(maxlib_locationmeters_parent.state.hasData &amp;&amp; maxlib_locationmeters.state.hasData  &amp;&amp; !maxlib_locationmeters.state.itemCount) || !app.state.meterReading.location}" id="maxlib_emykx">
+        <border-layout padding="false" slot="item" fill-parent="true" id="maxlib_m3v6g">
+          <start width="70" horizontal-overflow="hidden" id="maxlib_jwmbj">
+            <border-layout padding="true" fill-parent="true" id="maxlib_kmb7k">
+              <top id="maxlib_zq__e">
+                <box direction="column" padding-start=".5" padding-top=".5" vertical-align="center" fill-parent="true" id="maxlib_dw5yb">
+                  <field value="{item.metername}" field-class-name="16-bold" override-required="true" padding="none" qualifier="{item.unitdescription ? item.unitdescription : item.measureunitid}" hide-label="true" id="maxlib_ygnak"/>
+                </box>
+              </top>
+              <bottom id="maxlib_peyx7">
+                <box id="maxlib_k5q76" padding-start=".5" padding-bottom=".5" padding-top=".25">
+                  <field padding="none" id="maxlib_gq9vx">
+                    <sub-field value="{item.computedReadingDate.computedMeterReadingDate}" type="date_full_month" id="maxlib_r2_72"/>
+                  </field>
+                  <field padding="none" id="maxlib_e2xbv">
+                    <sub-field value="{item.computedReadingDate.computedMeterReadingDate}" type="datetime_time_only" id="maxlib_bbrg9"/>
+                  </field>
+                </box>
+              </bottom>
+            </border-layout>
+          </start>
+          <end vertical-align="center" horizontal-align="end" id="maxlib_brjbd">
+            <box vertical-align="center" direction="row" fill-parent="true" id="maxlib_gnbyn" padding-end=".5">
+              <label label="{item.computedReading.computedMeterReading}" id="maxlib_x7_7p"/>
+            </box>
+          </end>
+        </border-layout>
+      </data-list>
+    </panel>
+    <box direction="column" slot="header-button" hidden="{!(maxlib_assetmeters.state.itemCount || maxlib_locationmeters.state.itemCount) || app.state.meterReading.restrictNewReading}" id="maxlib_v_b34">
+      <border-layout id="maxlib_g7jpa">
+        <start id="maxlib_vx62a">
+          <button-group id="maxlib_wqy4p">
+            <button icon="Carbon:add" kind="secondary" on-click="openEnterReadingDrawer" disabled="{maxlib_assetmeters.state.loading || maxlib_locationmeters.state.loading}" id="maxlib_pbd42"/>
+          </button-group>
+        </start>
+        <end id="maxlib_mzrxp">
+          <menu-button kind="ghost" icon-position="end" icon="Carbon:overflow-menu--vertical" disabled="{maxlib_assetmeters.state.loading || maxlib_locationmeters.state.loading}" id="maxlib_dkg2g">
+            <menu-item label="Enter old readings" on-click="openEnterReadingDrawer" on-click-arg="{{'isOldReading': true}}" id="maxlib_gjr4p"/>
+          </menu-button>
+        </end>
+      </border-layout>
+    </box>
+  </sliding-drawer>
+  <!-- drawer to record meter reading -->
+  <sliding-drawer id="maxlib_updateMeterReadingDrawer" align="start" header-text="{dialog.state.readingDrawerTitle}" validate="validateRecordDialog" content-padding="false" header-chevron="false" on-close-action="closeUpdateMeterDialog" controller="sharedResources/maximo/UpdateMeterReadingDrawerController.js">
+    <panel id="maxlib_qr3p7">
+      <panel id="maxlib_p9g3m">
+        <box background-color="field-01" id="maxlib_pqypk" fill-parent-horizontal="true" hidden="{!dialog.state.isOldReading}">
+          <box padding=".75" direction="column" fill-parent-horizontal="true" id="maxlib_v3yzd">
+            <smart-input label="Date" value="{maxlib_reading_dates.item.readingdate}" on-blur="validateMeterDate" id="maxlib_nkkq9"/>
+            <smart-input label="Time" value="{maxlib_reading_dates.item.readingtime}" on-blur="validateMeterTime" id="maxlib_yr7kv"/>
+          </box>
+        </box>
+        <data-list datasource="maxlib_assetmeters" row-space="1" show-search="false" title="{dialog.state.assetHeader}" hidden="{!app.state.meterReading.assetnum}" id="maxlib_nx_rb">
+          <border-layout slot="item" fill-parent="true" padding="false" id="maxlib_paj7n">
+            <start horizontal-overflow="hidden" id="maxlib_yrr24">
+              <box padding-end=".75" fill-parent="true" id="maxlib_m88yw">
+                <border-layout fill-parent="true" padding="true" id="maxlib_b5dz6">
+                  <start width="100" vertical-align="center" horizontal-overflow="hidden" id="maxlib_e3qpm">
+                    <box direction="row" hidden="{item.meter.metertype_maxvalue === 'CHARACTERISTIC'}" vertical-align="center" fill-parent="true" id="maxlib_zmw3v">
+                      <border-layout fill-parent="true" width="100" padding="false" id="maxlib_g2684">
+                        <top id="maxlib_e23q6">
+                          <box direction="column" padding-top="0" vertical-align="center" fill-parent="true" id="maxlib_xd3rg">
+                            <smart-input input-kind="DECIMAL" value="{item.newreading}" helper-text="{item.computedHelperText}" label="{item.metername}" on-blur="validateNewReading" on-blur-arg="{item}" hide-step-buttons="true" theme="dark" max="10000000000" id="maxlib_vye9_"/>
+                          </box>
+                        </top>
+                        <start id="maxlib_dj73m">
+                          <box direction="column" padding-bottom="0.5" hidden="{item.meter.metertype_maxvalue !== 'CONTINUOUS'}" vertical-align="center" fill-parent="true" id="maxlib_ky_gz">
+                            <toggle label="Only Delta?" type="TrueFalse" left-align-label="true" toggled="{item.isdelta}" on-toggle="toggleDelta" on-toggle-arg="{{'evt': event, 'item':item}}" id="maxlib_verx2"/>
+                          </box>
+                        </start>
+                        <bottom id="maxlib_vz2w6">
+                          <text-area max-length="{maxlib_assetmeters.getFieldSize('remarks')}" readonly="{!(item.newreading || item.newreading === 0)}" size="medium" value="{item.remarks}" id="maxlib_eyj24"/>
+                        </bottom>
+                      </border-layout>
+                    </box>
+                    <box direction="row" hidden="{item.meter.metertype_maxvalue !== 'CHARACTERISTIC'}" vertical-align="center" fill-parent="true" id="maxlib_ex779">
+                      <border-layout fill-parent="true" padding="true" id="maxlib_jp7wd">
+                        <start width="80" horizontal-overflow="hidden" id="maxlib_pw_jq">
+                          <box fill-parent="true" id="maxlib_mmwyj" direction="column">
+                            <field value="{item.meter.description || item.metername}" field-class-name="16-bold" padding="top" hide-label="true" id="maxlib_we4q2"/>
+                            <field value="{item.newreading}" hide-label="true" padding="none" id="maxlib_mj8mg"/>
+                          </box>
+                        </start>
+                        <middle width="1" horizontal-align="end" id="maxlib_bj8e6">
+                          <button icon="Carbon:close--outline" kind="ghost" on-click="clearCharacterMeterReading" on-click-arg="{item}" hidden="{!item.newreading}" padding="false" id="maxlib_zrjj2"/>
+                        </middle>
+                        <end id="maxlib_pej7g">
+                          <box vertical-align="center" direction="row" horizontal-align="end" fill-parent="true" id="maxlib_xa5we">
+                            <button icon="carbon:chevron--right" kind="ghost" on-click="selectCharacteristic" on-click-arg="{item}" padding="false" id="maxlib_zznvy"/>
+                          </box>
+                        </end>
+                        <bottom id="maxlib_nj7wv">
+                          <text-area max-length="{maxlib_assetmeters.getFieldSize('remarks')}" readonly="{!(item.newreading || item.newreading === 0)}" size="medium" value="{item.remarks}" id="maxlib_pr4rr"/>
+                        </bottom>
+                      </border-layout>
+                    </box>
+                  </start>
+                </border-layout>
+              </box>
+            </start>
+          </border-layout>
+        </data-list>
+      </panel>
+      <panel id="maxlib_gb5j_">
+        <box padding-top=".25" id="maxlib_mq6yg"/>
+        <data-list datasource="maxlib_locationmeters" show-search="false" title="{dialog.state.locationHeader}" hidden="{!app.state.meterReading.location}" id="maxlib_brz95">
+          <border-layout slot="item" fill-parent="true" padding="false" id="maxlib_pmge_">
+            <start id="maxlib_dwez4" horizontal-overflow="hidden">
+              <box padding-end=".75" fill-parent="true" id="maxlib_kexdk">
+                <border-layout fill-parent="true" padding="true" id="maxlib_m37bd">
+                  <start width="100" vertical-align="center" horizontal-overflow="hidden" id="maxlib_xvwe4">
+                    <box direction="row" hidden="{item.meter.metertype_maxvalue === 'CHARACTERISTIC'}" vertical-align="center" fill-parent="true" id="maxlib_pd8z3">
+                      <border-layout fill-parent="true" width="100" padding="false" id="maxlib_q22j6">
+                        <top id="maxlib_a4gq5">
+                          <box direction="column" padding-top="0" vertical-align="center" fill-parent="true" id="maxlib_azdnq">
+                            <smart-input input-kind="DECIMAL" value="{item.newreading}" required="false" helper-text="{item.computedHelperText}" label="{item.metername}" on-blur="validateNewReading" on-blur-arg="{item}" hide-step-buttons="true" theme="dark" id="maxlib_j7xgk"/>
+                          </box>
+                        </top>
+                        <start id="maxlib_kpdmd">
+                          <box direction="column" padding-bottom="0.5" hidden="{item.meter.metertype_maxvalue !== 'CONTINUOUS'}" vertical-align="center" fill-parent="true" id="maxlib_m8m_3">
+                            <toggle label="Only Delta?" type="TrueFalse" left-align-label="true" toggled="{item.isdelta}" on-toggle="toggleDelta" on-toggle-arg="{{'evt': event, 'item':item}}" id="maxlib_vd953"/>
+                          </box>
+                        </start>
+                        <bottom id="maxlib_v2y_y">
+                          <text-area max-length="{maxlib_locationmeters.getFieldSize('remarks')}" readonly="{!(item.newreading || item.newreading === 0)}" size="medium" value="{item.remarks}" id="maxlib_eeb8q"/>
+                        </bottom>
+                      </border-layout>
+                    </box>
+                    <box direction="row" hidden="{item.meter.metertype_maxvalue !== 'CHARACTERISTIC'}" vertical-align="center" fill-parent="true" id="maxlib_jk5vx">
+                      <border-layout fill-parent="true" padding="true" id="maxlib_vz8q6">
+                        <start width="80" horizontal-overflow="hidden" id="maxlib_yp892">
+                          <box fill-parent="true" id="maxlib_vr8dy" direction="column">
+                            <field value="{item.meter.description}" field-class-name="16-bold" padding="top" hide-label="true" id="maxlib_j2nyb"/>
+                            <field value="{item.newreading}" hide-label="true" padding="none" id="maxlib_ar58w"/>
+                          </box>
+                        </start>
+                        <middle width="1" horizontal-align="end" id="maxlib_beg_n">
+                          <button icon="Carbon:close--outline" kind="ghost" on-click="clearCharacterMeterReading" on-click-arg="{item}" hidden="{!item.newreading}" padding="false" id="maxlib_e_xm6"/>
+                        </middle>
+                        <end id="maxlib_yzkkv">
+                          <box vertical-align="center" direction="row" horizontal-align="end" fill-parent="true" id="maxlib_zg33j">
+                            <button icon="carbon:chevron--right" kind="ghost" on-click="selectCharacteristic" on-click-arg="{item}" padding="false" id="maxlib_jr64z"/>
+                          </box>
+                        </end>
+                        <bottom id="maxlib_w7kkz">
+                          <text-area max-length="{maxlib_assetmeters.getFieldSize('remarks')}" readonly="{!(item.newreading || item.newreading === 0)}" size="medium" value="{item.remarks}" id="maxlib_b7kkz"/>
+                        </bottom>
+                      </border-layout>
+                    </box>
+                  </start>
+                </border-layout>
+              </box>
+            </start>
+          </border-layout>
+        </data-list>
+      </panel>
+    </panel>
+    <button slot="header-button" icon="carbon:checkmark" on-click="saveUpdateMeterDialog" kind="primary" disabled="{dialog.state.disableSave}" id="maxlib_yrgxe"/>
+  </sliding-drawer>
+  <!-- Error confirmatin dialog for closing Update Meter Reading Drawer-->
+  <dialog id="maxlib_saveDiscardMeterReadingList" title="Save or discard changes?" primary-action-text="Save" on-primary-action="saveUpdateMeterDialogApp" primary-kind="secondary" on-secondary-action="discardUpdateMeterDialogApp" secondary-action-text="Discard">
+    <label wrap="true" label="To leave this page, you must first discard or save your changes." id="maxlib_yy8rd"/>
+  </dialog>
+  <!-- Meter Rollover dialog - May not required after adding delta switch in new design -->
+  <dialog id="maxlib_rollOverDialog" title="System Message" primary-action-text="Yes" secondary-action-text="No" on-primary-action="saveRollOverReadingsApp" on-primary-action-arg="{true}" on-secondary-action="saveRollOverReadingsApp" on-secondary-action-arg="{false}">
+    <label wrap="true" label="{app.state.meterReading.rollover.newReading} for {app.state.meterReading.rollover.meterName} is less than the last reading of {app.state.meterReading.rollover.lastReading}. Is this a rollover reading?" id="maxlib_vb7ez"/>
+  </dialog>
+  <!-- Meter Reading Lookup for Characteristic meters -->
+  <lookup id="maxlib_characteristicMeterLookup" lookup-heading="{app.state.meterReading.meterHeadername}" show-search="false" datasource="maxlib_aln_domain_lookupDS" on-item-click="onCharactersticSelectionApp" border="true" tight="true" lookup-attributes="{['value', 'description']}" height="400" width="40"/>
+</dialogs>

@@ -1,0 +1,236 @@
+<page id="generateCalibrationLabel" title="{calibrationDetailsDS.item.wonum}" controller="./calibration/CalibrationLabelController">
+  <states id="vx5kg">
+    <state name="calstatus" value="" type="string" id="wjdj2"/>
+    <state name="canLoadPmWorkorderDS" value="true" type="boolean" id="jpx74"/>
+  </states>
+  <maximo-datasource id="calibrationDetailsDS" object-structure="MXAPIWODETAIL" selection-mode="single" item-url="{page.params.href}">
+    <schema id="p2axb">
+      <attribute name="workorderid" unique-id="true" id="j6v_z"/>
+      <attribute name="wonum" id="g7ywy"/>
+      <attribute name="asset.iscalibration--iscalibration" id="p6dpw"/>
+      <attribute name="asset.parent--assetparent" id="jyxm2"/>
+      <attribute name="asset.description--assetdesc" id="vr_8v"/>
+      <attribute name="assetnum" id="yn_3k"/>
+      <attribute name="location" id="y_pkd"/>
+      <attribute name="location.parent--locationparent" id="k4v63"/>
+      <attribute name="location.description--locationdesc" id="jdpqq"/>
+      <attribute name="pmnum" id="nz5ma"/>
+      <attribute name="pm.lastcompdate--lastcompdate" id="jvx5y"/>
+      <attribute name="pm.pmuid--pmuid" id="apnbg"/>
+      <attribute name="pluscloop" id="m88jg"/>
+      <attribute name="actfinish" sub-type="DATE" id="djmdq"/>
+      <attribute name="pluscphyloc" id="pwvgd"/>
+      <attribute name="changeby" id="xdyb6"/>
+      <attribute name="status" id="jyv67"/>
+      <attribute name="pluscnextdate" id="kwv22"/>
+      <attribute name="rel.wostatus{href, wostatusid, changeby, changedate, status}" id="w4g9m"/>
+      <attribute name="rel.pluscwods{pluscwodsid,wodsnum,wonum,dsplannum,revisionnum,asfoundcalstatus,asleftcalstatus}" id="xxay_"/>
+    </schema>
+  </maximo-datasource>
+  <!-- Helper datasource for workorders sharing same PM -->
+  <maximo-datasource id="pmWorkorderDS" object-structure="MXAPIWODETAIL" can-load="{page.state.canLoadPmWorkorderDS}" cache-expiry-ms="86400000" selection-mode="none">
+    <schema id="db3rx">
+      <attribute name="workorderid" unique-id="true" id="nyrzx"/>
+      <attribute name="href" id="mn678"/>
+      <attribute name="wonum" id="egmk8"/>
+      <attribute name="pm.pmuid--pmuid" searchable="true" search-type="EXACT" id="n8a8k"/>
+      <attribute name="actfinish" sub-type="DATE" searchable="true" id="z3j5y"/>
+    </schema>
+  </maximo-datasource>
+  <header-template id="z82qv">
+    <button slot="buttons" icon="carbon:printer" label="Print" on-click="generateCalibrationLabel" loading="{page.state.loading || calibrationDetailsDS.state.loading}" hidden="{page.state.noDataFoundErrMsg}" id="g56vn"/>
+  </header-template>
+  <loading active="{page.state.loading || calibrationDetailsDS.state.loading}" kind="spinner" small="false" id="bgqj_"/>
+  <border-layout hidden="{page.state.loading || page.state.noDataFoundErrMsg || calibrationDetailsDS.state.loading}" fill-parent="true" id="ya388">
+    <middle vertical-align="center" horizontal-align="center" id="vxzke">
+      <box min-width="{app.state.screen.size == 'sm' ? '80%' : '50%'}" direction="column" border="true" background-color="ui-01" id="n8a29">
+        <box vertical-align="center" children-sizes="90,10" manage-children="true" padding="1" direction="row" id="vk4rw">
+          <box horizontal-align="start" id="v_ap2">
+            <label label="CALIBRATION LABEL" theme="16-bold" id="callabel_header"/>
+          </box>
+          <icon icon="{page.callController('getCalibrationstatusIcon')}" id="qmgzd"/>
+        </box>
+        <box border-top="true" padding-start="1" padding-end="1" direction="column" id="kay3d">
+          <box children-sizes="50, 50" direction="row" manage-children="true" id="bbxxr">
+            <box id="kn32x">
+              <label spacing="none" theme="header-small" label="Status" id="callabel_status"/>
+            </box>
+            <border-layout id="ya_6x">
+              <start horizontal-align="start" id="qx4gp">
+                <label label="{':'}" id="vb6qm"/>
+              </start>
+              <middle horizontal-align="start" id="p9m2z">
+                <label wrap="true" theme="16-bold" label="{page.state.calstatus}" id="g567a"/>
+              </middle>
+            </border-layout>
+          </box>
+          <box children-sizes="50, 50" manage-children="true" direction="row" hidden="{calibrationDetailsDS.item.pluscloop}" id="pgngd">
+            <box id="g7ev4">
+              <label spacing="none" theme="header-small" label="Asset ID" id="callabel_asset_id"/>
+            </box>
+            <border-layout id="kqnjb">
+              <start horizontal-align="start" id="mn_ae">
+                <label label="{':'}" id="mkd32"/>
+              </start>
+              <middle horizontal-align="start" id="mzn6a">
+                <label wrap="true" label="{calibrationDetailsDS.item.assetnum}" id="gzp_z"/>
+              </middle>
+            </border-layout>
+          </box>
+          <box children-sizes="50, 50" manage-children="true" direction="row" hidden="{!calibrationDetailsDS.item.assetparent || calibrationDetailsDS.item.pluscloop}" id="p4wjq">
+            <box id="g83xa">
+              <label spacing="none" theme="header-small" label="Parent Asset" id="callabel_parent_asset"/>
+            </box>
+            <border-layout id="zj848">
+              <start horizontal-align="start" id="gjmw9">
+                <label label="{':'}" id="xabkp"/>
+              </start>
+              <middle horizontal-align="start" id="m7a26">
+                <label wrap="true" label="{calibrationDetailsDS.item.assetparent}" id="zn75x"/>
+              </middle>
+            </border-layout>
+          </box>
+          <box children-sizes="50, 50" manage-children="true" direction="row" hidden="{calibrationDetailsDS.item.pluscloop}" id="wbj2z">
+            <box id="me75b">
+              <label spacing="none" theme="header-small" label="Description" id="callabel_asset_desc"/>
+            </box>
+            <border-layout id="vj86k">
+              <start horizontal-align="start" id="emnj6">
+                <label label="{':'}" id="aand4"/>
+              </start>
+              <middle horizontal-align="start" id="gjakw">
+                <label wrap="true" label="{calibrationDetailsDS.item.assetdesc}" id="b46rw"/>
+              </middle>
+            </border-layout>
+          </box>
+          <box children-sizes="50, 50" manage-children="true" direction="row" hidden="{!calibrationDetailsDS.item.pluscloop}" id="rqnmj">
+            <box id="qq_24">
+              <label spacing="none" theme="header-small" label="Location ID" id="callabel_loc_id"/>
+            </box>
+            <border-layout id="r4zy8">
+              <start horizontal-align="start" id="pm_4x">
+                <label label="{':'}" id="r3epg"/>
+              </start>
+              <middle horizontal-align="start" id="qe6qx">
+                <label wrap="true" label="{calibrationDetailsDS.item.location}" id="qrb84"/>
+              </middle>
+            </border-layout>
+          </box>
+          <box children-sizes="50, 50" manage-children="true" direction="row" hidden="{!calibrationDetailsDS.item.locationparent || !calibrationDetailsDS.item.pluscloop}" id="z2g6p">
+            <box id="dp793">
+              <label spacing="none" theme="header-small" label="Parent Location" id="callabel_parent_loc"/>
+            </box>
+            <border-layout id="en5g8">
+              <start horizontal-align="start" id="kp3ek">
+                <label label="{':'}" id="xbbex"/>
+              </start>
+              <middle horizontal-align="start" id="x2m66">
+                <label wrap="true" label="{calibrationDetailsDS.item.locationparent}" id="xzxxp"/>
+              </middle>
+            </border-layout>
+          </box>
+          <box children-sizes="50, 50" manage-children="true" direction="row" hidden="{!calibrationDetailsDS.item.pluscloop}" id="rw7_6">
+            <box id="kndp2">
+              <label spacing="none" theme="header-small" label="Description" id="callabel_loc_desc"/>
+            </box>
+            <border-layout id="n8_4d">
+              <start id="qknm5" horizontal-align="start">
+                <label label="{':'}" id="rq9xv"/>
+              </start>
+              <middle horizontal-align="start" id="w3_nw">
+                <label wrap="true" label="{calibrationDetailsDS.item.locationdesc}" id="a6q_y"/>
+              </middle>
+            </border-layout>
+          </box>
+          <box children-sizes="50, 50" manage-children="true" direction="row" id="vv4py">
+            <box id="wz926">
+              <label spacing="none" theme="header-small" label="WO number" id="callabel_wonum"/>
+            </box>
+            <border-layout id="gk9_z">
+              <start horizontal-align="start" id="rvbnv">
+                <label label="{':'}" id="are6d"/>
+              </start>
+              <middle horizontal-align="start" id="wa6zb">
+                <label wrap="true" label="{calibrationDetailsDS.item.wonum}" id="yvyy4"/>
+              </middle>
+            </border-layout>
+          </box>
+          <box children-sizes="50, 50" manage-children="true" direction="row" id="nz7jd">
+            <box id="jd9gd">
+              <label spacing="none" theme="header-small" label="Calibration On" id="callabel_actfinish"/>
+            </box>
+            <border-layout id="xery_">
+              <start horizontal-align="start" id="w38zb">
+                <label label="{':'}" id="wvmg3"/>
+              </start>
+              <middle horizontal-align="start" id="r3jzv">
+                <label wrap="true" label="{page.callController('getWorkOrderFieldValue', 'actfinish', 'DATE')}" id="wy228"/>
+              </middle>
+            </border-layout>
+          </box>
+          <box children-sizes="50, 50" manage-children="true" direction="row" id="gz4yy">
+            <box id="dnw5d">
+              <label spacing="none" theme="header-small" label="Next Due date" id="callabel_pluscnextdate"/>
+            </box>
+            <border-layout id="ray6d">
+              <start horizontal-align="start" id="bgj59">
+                <label label="{':'}" id="bdv3z"/>
+              </start>
+              <middle horizontal-align="start" id="e5nq6">
+                <label wrap="true" label="{page.callController('getWorkOrderFieldValue', 'pluscnextdate', 'DATE')}" id="eg2dw"/>
+              </middle>
+            </border-layout>
+          </box>
+          <box children-sizes="50, 50" manage-children="true" direction="row" hidden="{!calibrationDetailsDS.item.pluscphyloc}" id="m2qxp">
+            <box id="qndwm">
+              <label spacing="none" theme="header-small" label="Physical Location" id="callabel_pluscphyloc"/>
+            </box>
+            <border-layout id="j7ewb">
+              <start horizontal-align="start" id="gdgrg">
+                <label label="{':'}" id="mn8_r"/>
+              </start>
+              <middle horizontal-align="start" id="mjpag">
+                <label wrap="true" label="{calibrationDetailsDS.item.pluscphyloc}" id="e95z6"/>
+              </middle>
+            </border-layout>
+          </box>
+          <box border-top="true" children-sizes="50, 50" manage-children="true" direction="row" id="xqj8g">
+            <box id="dgmdx">
+              <label spacing="none" theme="header-small" label="Signature" id="callabel_signature"/>
+            </box>
+            <border-layout id="dgaj4">
+              <start horizontal-align="start" id="w25n3">
+                <label label="{':'}" id="enad8"/>
+              </start>
+              <middle horizontal-align="start" id="v596g">
+                <label wrap="true" label="{page.state.signature}" id="z7rq4"/>
+              </middle>
+            </border-layout>
+          </box>
+          <box children-sizes="50, 50" manage-children="true" direction="row" id="n45nw">
+            <box id="pp4gw">
+              <label spacing="none" theme="header-small" label="Date" id="callabel_date"/>
+            </box>
+            <border-layout id="brq63">
+              <start horizontal-align="start" id="pxy_v">
+                <label label="{':'}" id="z38xq"/>
+              </start>
+              <middle horizontal-align="start" id="ra2bj">
+                <label wrap="true" label="{page.callController('getWorkOrderFieldValue', 'actfinish', 'DATE')}" id="q7x_5"/>
+              </middle>
+            </border-layout>
+          </box>
+        </box>
+      </box>
+    </middle>
+  </border-layout>
+  <no-data empty-set-string="Record not found" sub-label="Record not available on this app" hidden="{!page.state.noDataFoundErrMsg}" id="w75y_"/>
+  <dialogs id="z5wjq">
+    <dialog id="newerRecordForPM" title="More recent work order found" primary-action-text="Yes" primary-icon="carbon:checkmark" primary-kind="primary" on-primary-action="refreshLabelPage" on-primary-action-arg="{item}" secondary-action-text="Cancel" secondary-icon="carbon:close">
+      <label wrap="true" label="A more recent work order {item.wonum} was found for this loop location. Do you want to generate the calibration label by using WO#{item.wonum}?" id="vx_xa"/>
+    </dialog>
+    <dialog id="callabel_offline_msg" title="Label cannot be generated offline" primary-kind="primary" primary-action-text="OK" primary-icon="carbon:checkmark" on-primary-action="navigate-back">
+      <label wrap="true" label="The calibration label was not generated because the device is offline. Connect to a network and try again." id="q_5aj"/>
+    </dialog>
+  </dialogs>
+</page>

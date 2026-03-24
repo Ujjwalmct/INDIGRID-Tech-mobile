@@ -1,0 +1,12 @@
+<maximo-datasource id="maxlib_location_map_layer_datasource" offline-immediate-download="true" lookup-data="true" object-structure="MXAPIOPERLOC" saved-query="MOBILELOCATION" selection-mode="single" geometry-format="geojson" has-position="{true}">
+  <schema id="maxlib_y35r9">
+    <attribute name="locationsid" unique-id="true" id="maxlib_y7jma"/>
+    <attribute name="location" searchable="true" index="true" id="maxlib_y72yd"/>
+    <attribute name="description" searchable="true" id="maxlib_kzbwb"/>
+    <attribute name="type" searchable="true" id="maxlib_z753v"/>
+    <attribute name="status" searchable="true" id="maxlib_y6q3q"/>
+    <attribute name="siteid" searchable="true" id="maxlib_pbngz"/>
+    <attribute name="orgid" searchable="true" id="maxlib_a4244"/>
+    <attribute name="autolocate" id="maxlib_a4p28"/>
+  </schema>
+</maximo-datasource>

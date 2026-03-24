@@ -1,0 +1,405 @@
+<page padding="true" id="assetfunctions" title="Asset Function" controller="./calibration/AssetFunctionsController">
+  <states id="bkqrv">
+    <!-- TODO: GRAPHITE-70934 feat: concentrate data access in a single source of truth -->
+    <state name="assetFunctionsDetailsDS" type="object" id="mgmgp" />
+    <state name="assetfunctiontitle" type="string" id="vxbak" />
+    <state name="loading" value="false" type="string" id="nmmaq8rd" />
+
+    <state name="selectedStatus" value="" type="string" id="ncj7j1yx" />
+    <state name="assetfunction" value="" type="object" id="r1iosaxd"/>
+    <state name="condition" value="" type="string" id="l9mxi2e3"/>
+  </states>
+  <maximo-datasource id="unitsLookupDs" lookup-data="true" object-structure="mxapialndomain" page-size="100" selection-mode="single">
+    <schema id="dn7bq">
+      <attribute name="value" unique-id="true" id="m9aer"/>
+      <attribute name="valueid" id="qpj2b"/>
+      <attribute name="description" id="nwnve"/>
+      <attribute name="domainid" searchable="true" id="ervzg"/>
+      <attribute name="siteid" id="v345y"/>
+      <attribute name="orgid" id="q3erp"/>
+    </schema>
+  </maximo-datasource>
+  <json-datasource id="assetFunctionStatusListDS" src="{[]}" items="statusItems" selection-mode="single" id-attribute="value">
+    <schema id="lsdbpz9p">
+      <attribute name="value" id="oicwufgd"/>
+      <attribute name="description" id="fsnppibe"/>
+      <attribute name="maxvalue" id="ybhicii6"/>
+    </schema>
+  </json-datasource>
+  <dialogs id="e_6k_">
+    <lookup id="unitsLookup" show-search="false" lookup-heading="Select value" datasource="unitsLookupDs" on-item-click="selectUnits" border="true" lookup-attributes="{['value', 'description']}" height="400" width="100"/>
+    <dialog id="noAdjLimit" title="Warning" primary-action-text="Continue" on-primary-action="copyCalibrationPoints" on-primary-action-arg="{{'item':pluscWoDs.item,'datasource':pluscWoDs}}" primary-kind="secondary" primary-icon="carbon:checkmark" secondary-action-text="Cancel" secondary-icon="carbon:close">
+      <label wrap="true" label="The As Found values will be copied to the As Left values and all input and output fields will become read only." id="eq6bb"/>
+    </dialog>
+    <dialog id="assetFunctionLDDialog" title="Long description" size="lg">
+          <rich-text-viewer content="{app.state.assetFunctionsDetailsDS.item.description_longdescription}" id="xjy7d"/>
+    </dialog>
+    <dialog id="noAdjLimitOff" title="Warning" primary-action-text="Continue" on-primary-action="clearCalibrationPoints" primary-kind="secondary" primary-icon="carbon:checkmark" secondary-action-text="Cancel" secondary-icon="carbon:close">
+      <label wrap="true" label="The As Left values will be cleared and all input and output fields will become editable." id="wmq6_"/>
+    </dialog>
+    <sliding-drawer id="assetFunctionStatusDialog" align="start" header-text="Change status" content-padding="false">
+      <box direction="column" id="lhdwcap0">
+        <panel id="sg9t7won">
+          <data-list datasource="assetFunctionStatusListDS" show-single-select-icon="true" on-item-click="changeAssetFunctionStatus" selected-icon="maximo:select--end" unselected-icon="maximo:select--end" show-search="false" id="s3z4gql3">
+            <list-item id="mciwi7cc">
+              <border-layout fill-parent="true" padding="false" id="ztobb77s">
+                <middle horizontal-overflow="hidden" id="grzggexq">
+                  <label label="{item.value}" theme="16-regular" padding="none" id="vpn0vlk5"/>
+                </middle>
+              </border-layout>
+            </list-item>
+          </data-list>
+        </panel>
+        <border-layout fill-parent="true" id="jvnnz">
+          <end horizontal-align="end" id="qebpa">
+            <button label="Reset Status" on-click="resetAssetFunctionStatus" id="e96gp"/>
+          </end>
+        </border-layout>
+      </box>
+    </sliding-drawer>
+  </dialogs>
+  <header-template title="Asset functions" hide-breadcrumb="true" show-current-page-in-bread-crumb="false" icon-name="carbon:chevron--left" icon-action="goBack" title-column-width="{app.state.screen.size === 'lg' ? 45 : 80}" id="y9yx9"/>
+  <loading active="{page.state.loading}" kind="spinner" small="false" id="xpzmv"/>
+  <box vertical-align="center" direction="column" padding-top="1.5" padding-bottom="0.75" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0.5' : '0'}" id="rw439">
+    <border-layout fill-parent="true" id="gk49v">
+      <start horizontal-align="start" vertical-align="center" horizontal-overflow="scroll" id="q7zyr">
+        <label label="Data sheet" padding="none" color="gray60" theme="16-regular" id="myx5x"/>
+        <label label="{page.state.assetfunctiontitle}" padding="none" theme="16-regular" id="nq9ea"/>
+      </start>
+      <end horizontal-align="end" vertical-align="center" id="bbkpa">
+        <tag-group tags="{[{label: `Revision ${page.state.revisionnum}`}]}" type="{'gray'}" align="end" id="byjed"/>
+      </end>
+    </border-layout>
+  </box>
+  <box hidden="{page.state.loading}" id="xr8dsb" padding-top="0.5" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}">
+    <data-list datasource="{app.state.assetFunctionsDetailsDS}" padding="false" row-space="1" tight="true" item-to-open="{page.state.itemToOpen}" show-search="false" no-select-behavior="true" id="q6aap4ne">
+      <!-- renderer for item details -->
+      <list-details id="de63498">
+        <border-layout vertical-borders="true" padding="false" fill-parent="true" id="d9b9e">
+          <middle id="xxz9v">
+            <box border-top="true" fill-parent="true" id="w8gzb">
+              <adaptive-row id="dgkk6" hidden="{!item.description_longdescription}">
+                <adaptive-column id="a_qdv6" xlarge-width="80" large-width="80" medium-width="80" small-width="80">
+                    
+                  <box border-top="false" fill-parent="true" padding-start="1" id="qa57d">
+                      <border-layout fill-parent="true" id="gk49n">
+                        <start horizontal-align="start" vertical-align="start" id="q7zyn">
+                          <label label="Long Description" padding="default" color="gray60" theme="16-regular" id="myx5n"/>
+                           <rich-text-viewer content="{item.description_longdescription}" content-limit="256" padding-start="0.5" stripped="true" id="qxw9f"/>
+                        </start>
+                      </border-layout>
+                  </box>
+                </adaptive-column>
+                <adaptive-column id="jzwm6" xlarge-width="20" large-width="20" medium-width="20" small-width="20" xlarge-horizontal-align="end" large-horizontal-align="end" medium-horizontal-align="end" small-horizontal-align="end">
+                  <box padding-end="1" id="ebkmn">
+                      <button icon="carbon:maximize" dialog="assetFunctionLDDialog" kind="secondary" id="bynjn"/>
+                  </box>
+                </adaptive-column>
+              </adaptive-row>
+            </box>
+            <box border-top="true" fill-parent="true" id="w8gzd">
+              <adaptive-row id="dgkk2">
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="a_qdv">
+                  <box border-top="false" fill-parent="true" padding-start="1" id="qa57e">
+                    <label label="Asset function" theme="16-bold" id="bdgqk"/>
+                  </box>
+                </adaptive-column>
+                <adaptive-column xlarge-width="0" large-width="0" medium-width="50" small-width="50" id="aqxgq"/>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="jzwm_">
+                  <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="ebkma">
+                    <field label="Repeatable" value="{item.repeatable === 'true' ? 'Yes' : 'No'}" id="y6kr9"/>
+                  </box>
+                </adaptive-column>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="bzjb6">
+                  <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="e5ae9">
+                    <field label="Type" label-placement="top" value="{item.plantype}" id="zb5vg"/>
+                  </box>
+                </adaptive-column>
+                <adaptive-column hidden="{(!item.repeatable || !item.isstandarddeviation) || item.plantype === 'DISCRETE'}" xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="rnddr">
+                  <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="bevva">
+                    <field wrap='true' label="Standard deviation input limit" label-placement="top" value="{item.standarddeviationinputlimit}" id="y4dkk"/>
+                  </box>
+                </adaptive-column>
+                <adaptive-column hidden="{!item.repeatable || !item.isstandarddeviation}" xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="x7_24">
+                  <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="gx8er">
+                    <field wrap='true' label="Standard deviation output limit" label-placement="top" value="{item.standarddeviationoutputlimit}" id="x3zbg"/>
+                  </box>
+                </adaptive-column>
+              </adaptive-row>
+            </box>
+            <box border-top="true" fill-parent="true" id="akk3p">
+              <adaptive-row id="qxv2b">
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="kqa2p">
+                  <box border-top="false" fill-parent="true" id="kekxj" padding-start="1">
+                    <label label="Input range" theme="16-bold" id="q_3dd"/>
+                  </box>
+                </adaptive-column>
+                <adaptive-column xlarge-width="0" large-width="0" medium-width="50" small-width="50" id="agxxe"/>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="w4xyq">
+                  <box id="z6_w3" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}">
+                    <field id="wqgw4" label="From" qualifier="{item.instrcalrangeeu}">
+                      <sub-field id="w5en7" value="{(page.callController('getLocaleNumber',item.instrcalrangefrom,'instrcalrangefrom', item.instrcalrangefrom))}"/>
+                    </field>
+                  </box>
+                </adaptive-column>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="zmjq5">
+                  <field id="bqqkk" label="To" qualifier="{item.instrcalrangeeu}">
+                    <sub-field id="v3w4y" value="{(page.callController('getLocaleNumber',item.instrcalrangeto,'instrcalrangeto', item.instrcalrangeto))}"/>
+                  </field>
+                </adaptive-column>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="mdyzp">
+                  <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="rwnmg">
+                    <field label="Min Field Resolution" label-placement="top" value="{item.inputprecision}" id="bm7qz"/>
+                  </box>
+                </adaptive-column>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="r7nb2">
+                  <field label="Tolerances" label-placement="top" value="{item.inputrange}" id="pp43p"/>
+                </adaptive-column>
+              </adaptive-row>
+            </box>
+            <box border-top="true" fill-parent="true" id="xz6y5">
+              <adaptive-row id="v3y5p">
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="eqvnb">
+                  <box border-top="false" fill-parent="true" id="zry2_" padding-start="1">
+                    <label label="Output range" theme="16-bold" id="p3px5"/>
+                  </box>
+                </adaptive-column>
+                <adaptive-column xlarge-width="0" large-width="0" medium-width="50" small-width="50" id="knkp8"/>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="jd8me">
+                  <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="dqqbw">
+                    <field id="ernp8" label="From" qualifier="{item.instroutrangeeu}">
+                      <sub-field id="j_3rn" value="{(page.callController('getLocaleNumber',item.instroutrangefrom,'instroutrangefrom', item.instroutrangefrom))}"/>
+                    </field>
+                  </box>
+                </adaptive-column>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="xnvwq">
+                  <field id="jm45n" label="To" qualifier="{item.instroutrangeeu}">
+                    <sub-field id="d8mw6" value="{(page.callController('getLocaleNumber',item.instroutrangeto,'instroutrangeto', item.instroutrangeto))}"/>
+                  </field>
+                </adaptive-column>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="kkmya">
+                  <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="ab95j">
+                    <field label="Min Field Resolution" label-placement="top" value="{item.outputprecision}" id="e9dm_"/>
+                  </box>
+                </adaptive-column>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="akvzp">
+                  <field label="Tolerances" label-placement="top" value="{item.outputrange}" id="p_a72"/>
+                </adaptive-column>
+              </adaptive-row>
+            </box>
+            <box border-top="true" fill-parent="true" id="p_5vp">
+              <adaptive-row id="g5g_d">
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="y86nr">
+                  <box border-top="false" fill-parent="true" id="yzz38" padding-start="1">
+                    <label label="Range Limit" theme="16-bold" id="kz7z6"/>
+                  </box>
+                </adaptive-column>
+                <adaptive-column xlarge-width="0" large-width="0" medium-width="50" small-width="50" id="y9vew"/>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="v5k9j">
+                  <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="aw6pv">
+                    <field id="e6a37" label="From" qualifier="{item.ron1type}">
+                      <sub-field id="g7xjr" value="{(page.callController('getLocaleNumber',item.ron1lowervalue,'ron1lowervalue', item.ron1lowervalue))}"/>
+                    </field>
+                  </box>
+                </adaptive-column>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="eez6k">
+                  <field id="da_33" label="To" qualifier="{item.ron1type}">
+                    <sub-field id="ppjq5" value="{(page.callController('getLocaleNumber',item.ron1uppervalue,'ron1uppervalue', item.ron1uppervalue))}"/>
+                  </field>
+                </adaptive-column>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="wwkem">
+                  <box padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="w_28z">
+                    <field label="Limits clipped" label-placement="top" value="{item.cliplimitsin}" id="w_538"/>
+                  </box>
+                </adaptive-column>
+              </adaptive-row>
+            </box>
+            <box border-top="true" border-end="true" fill-parent="true" id="er956">
+              <adaptive-row id="j54jq">
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="0" small-width="0" id="ma8nj"/>
+                <adaptive-column xlarge-width="20" large-width="20" medium-width="50" small-width="50" id="q87zn">
+                  <field label="Resolution" label-placement="top" value="{(page.callController('getLocaleNumber',item.ron1uppervalue,'ron1uppervalue', item.ron1uppervalue))}" id="akjx_"/>
+                </adaptive-column>
+              </adaptive-row>
+            </box>
+
+            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+            <!--                                                             -->
+            <!-- Asset Function Tolerances                                   -->
+            <!--                                                             -->
+            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+            <box border-top="true" fill-parent="true" id="er957"/>
+            <assetfunction-tolerance description="Tolerance 1" status="{item.tol1status}" lowervalue="{(page.callController('getLocaleNumber',item.tol1lowervalue,'tol1lowervalue', item.tol1lowervalue))}" uppervalue="{(page.callController('getLocaleNumber',item.tol1uppervalue,'tol1uppervalue', item.tol1uppervalue))}" type="{item.tol1type}" sumeu="{(page.callController('getLocaleNumber',item.tol1sumeu,'tol1sumeu', item.tol1sumeu))}" sumspan="{(page.callController('getLocaleNumber',item.tol1sumspan,'tol1sumspan', item.tol1sumspan))}" sumurv="{(page.callController('getLocaleNumber',item.tol1sumurv,'tol1sumurv', item.tol1sumurv))}" sumread="{(page.callController('getLocaleNumber',item.tol1sumread,'tol1sumread', item.tol1sumread))}" sumdirection="{item.tol1sumdirection}" gbfrom="{(page.callController('getLocaleNumber',item.gbfrom1,'gbfrom1', item.gbfrom1))}" gbto="{(page.callController('getLocaleNumber',item.gbto1,'gbto1', item.gbto1))}" gbsumdirection="{item.gbsumdirection1}" paddingStart="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="ehhw8qz3"/>
+            <assetfunction-tolerance description="Tolerance 2" status="{item.tol2status}" lowervalue="{(page.callController('getLocaleNumber',item.tol2lowervalue,'tol2lowervalue', item.tol2lowervalue))}" uppervalue="{(page.callController('getLocaleNumber',item.tol2uppervalue,'tol2uppervalue', item.tol2uppervalue))}" type="{item.tol2type}" sumeu="{(page.callController('getLocaleNumber',item.tol2sumeu,'tol2sumeu', item.tol2sumeu))}" sumspan="{(page.callController('getLocaleNumber',item.tol2sumspan,'tol2sumspan', item.tol2sumspan))}" sumurv="{(page.callController('getLocaleNumber',item.tol2sumurv,'tol2sumurv', item.tol2sumurv))}" sumread="{(page.callController('getLocaleNumber',item.tol2sumread,'tol2sumread', item.tol2sumread))}" sumdirection="{item.tol2sumdirection}" gbfrom="{(page.callController('getLocaleNumber',item.gbfrom2,'gbfrom2', item.gbfrom2))}" gbto="{(page.callController('getLocaleNumber',item.gbto2,'gbto2', item.gbto2))}" gbsumdirection="{item.gbsumdirection2}" paddingStart="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="kbepn"/>
+            <assetfunction-tolerance description="Tolerance 3" status="{item.tol3status}" lowervalue="{(page.callController('getLocaleNumber',item.tol3lowervalue,'tol3lowervalue', item.tol3lowervalue))}" uppervalue="{(page.callController('getLocaleNumber',item.tol3uppervalue,'tol3uppervalue', item.tol3uppervalue))}" type="{item.tol3type}" sumeu="{(page.callController('getLocaleNumber',item.tol3sumeu,'tol3sumeu', item.tol3sumeu))}" sumspan="{(page.callController('getLocaleNumber',item.tol3sumspan,'tol3sumspan', item.tol3sumspan))}" sumurv="{(page.callController('getLocaleNumber',item.tol3sumurv,'tol3sumurv', item.tol3sumurv))}" sumread="{(page.callController('getLocaleNumber',item.tol3sumread,'tol3sumread', item.tol3sumread))}" sumdirection="{item.tol3sumdirection}" gbfrom="{(page.callController('getLocaleNumber',item.gbfrom3,'gbfrom3', item.gbfrom3))}" gbto="{(page.callController('getLocaleNumber',item.gbto3,'gbto3', item.gbto3))}" gbsumdirection="{item.gbsumdirection3}" paddingStart="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="pqwr3"/>
+            <assetfunction-tolerance description="Tolerance 4" status="{item.tol4status}" lowervalue="{(page.callController('getLocaleNumber',item.tol4lowervalue,'tol4lowervalue', item.tol4lowervalue))}" uppervalue="{(page.callController('getLocaleNumber',item.tol4uppervalue,'tol4uppervalue', item.tol4uppervalue))}" type="{item.tol4type}" sumeu="{(page.callController('getLocaleNumber',item.tol4sumeu,'tol4sumeu', item.tol4sumeu))}" sumspan="{(page.callController('getLocaleNumber',item.tol4sumspan,'tol4sumspan', item.tol4sumspan))}" sumurv="{(page.callController('getLocaleNumber',item.tol4sumurv,'tol4sumurv', item.tol4sumurv))}" sumread="{(page.callController('getLocaleNumber',item.tol4sumread,'tol4sumread', item.tol4sumread))}" sumdirection="{item.tol4sumdirection}" gbfrom="{(page.callController('getLocaleNumber',item.gbfrom4,'gbfrom4', item.gbfrom4))}" gbto="{(page.callController('getLocaleNumber',item.gbto4,'gbto4', item.gbto4))}" gbsumdirection="{item.gbsumdirection4}" paddingStart="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" id="bxn5v"/>
+
+          </middle>
+        </border-layout>
+      </list-details>
+      <list-item renderer-type="default" id="gn94a">
+        <border-layout top-border="true" bottom-border="true" fill-parent="true" id="r8v5a" padding="false">
+          <top id="z_926">
+            <border-layout fill-parent="true" id="nzvxa" bottom-border="false">
+              <start vertical-align="center" width="100" id="dn2pz">
+                <box id="apr68" padding-start="0.5" padding-top="1" padding-bottom="1">
+                  <label label="{item.description}" theme="20-regular" wrap="true" padding="none" id="bzvdb"/>
+                </box>
+              </start>
+            </border-layout>
+          </top>
+          <start horizontal-align="start" id="wvwzj">
+            <adaptive-row id="rw3z9">
+              <adaptive-column xlarge-width="50" large-width="50" medium-width="100" small-width="100" id="wyrda">
+                <border-layout fill-parent="true" id="y3rde" middle-border="true">
+                  <start horizontal-align="start" vertical-align="center" id="m7ka7">
+                    <box id="jv6ma" padding-start="0.5">
+                      <border-layout id="q2_3v">
+                        <top id="zy4x7">
+                          <label label="As found" padding="none" theme="16-regular" id="r6__m"/>
+                        </top>
+                        <bottom id="kzga9">
+                          <label label="{page.callController('getLocalizedLabelErrorCount', item.asfounderror)}" padding="none" id="mx3y8"/>
+                        </bottom>
+                      </border-layout>
+                    </box>
+                  </start>
+                  <end horizontal-align="end" id="drnm4">
+                    <box border-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? false : true}" id="jbzar">
+                      <box padding-end="0" id="zr8b6">
+                        <border-layout fill-parent="true" id="g3dwq">
+                          <start id="zzp6b">
+                            <box vertical-align="center" direction="column" horizontal-align="end" fill-parent="true" id="zeerd">
+                              <!-- This tag shows the current calibration status of the asset function.        -->
+                              <!-- It accepts 'MISSING', 'BROKEN', 'FAIL', 'PASS' and empty (null, undefined). -->
+                              <!-- @access assetfunction.asfoundcalstatus                                      -->
+                              <!-- When calibration status is defined: -->
+                              <action-tag hidden="{item.caldynamic}" label="{item.asfoundcalstatus ? item.asfoundcalstatus : '—'}" on-click="openChangeStatusDialog" on-click-arg="{{'item': item, 'condition': 'asfound'}}" type="{page.callController('getLabelColorForInternalStatusValue', item.asfoundcalstatus) }" id="pqvzm"/>
+                            </box>
+                          </start>
+                          <end horizontal-align="end" id="q8wpv">
+                            <box vertical-align="center" direction="column" horizontal-align="end" fill-parent="true" id="x9nka">
+                              <button icon="carbon:chevron--right" on-click="openCalibrationPoints" on-click-arg="{{'item': item, 'changeText':'asfound'}}" id="ryxr8"/>
+                            </box>
+                          </end>
+                        </border-layout>
+                      </box>
+                    </box>
+                  </end>
+                </border-layout>
+              </adaptive-column>
+              <adaptive-column xlarge-width="50" large-width="50" medium-width="100" small-width="100" id="wvkd6">
+                <border-layout fill-parent="true" middle-border="true" id="gz433">
+                  <start vertical-align="center" id="zdmq7">
+                    <box padding-start="0.5" id="zdpa5">
+                      <border-layout id="e6pnb">
+                        <top id="dk_x6">
+                          <label label="As left" padding="none" theme="16-regular" id="zkxe6"/>
+                        </top>
+                        <bottom id="ndvzy">
+                          <label label="{page.callController('getLocalizedLabelErrorCount', item.aslefterror)}" padding="none" id="qvjw5"/>
+                        </bottom>
+                      </border-layout>
+                    </box>
+                  </start>
+                  <end horizontal-align="end" id="kxxdd">
+                    <box id="zapye">
+                      <box padding-end="0" id="xk6ww">
+                        <border-layout id="evdmx">
+                          <start id="rdvdx">
+                            <box vertical-align="center" direction="column" horizontal-align="end" fill-parent="true" id="jj6za">
+                              <!-- This tag shows the current calibration status of the asset function.        -->
+                              <!-- It accepts 'MISSING', 'BROKEN', 'FAIL', 'PASS' and empty (null, undefined). -->
+                              <!-- This assignment is using the following properties:                          -->
+                              <!-- @access assetfunction.asleftcalstatus                                       -->
+                              <!-- When calibration status is defined: -->
+                              <action-tag hidden="{item.caldynamic}" label="{item.asleftcalstatus ? item.asleftcalstatus : '—'}" on-click="openChangeStatusDialog" on-click-arg="{{'item': item, 'condition': 'asleft'}}" type="{page.callController('getLabelColorForInternalStatusValue', item.asleftcalstatus)}" id="xdmkx"/>
+                            </box>
+                          </start>
+                          <end id="nm3n2">
+                            <box vertical-align="center" direction="column" horizontal-align="end" fill-parent="true" id="vb3m5">
+                              <button icon="carbon:chevron--right" on-click="openCalibrationPoints" on-click-arg="{{'item': item, 'changeText':'asleft'}}" id="phqyy7a2"/>
+                            </box>
+                          </end>
+                        </border-layout>
+                      </box>
+                    </box>
+                  </end>
+                </border-layout>
+              </adaptive-column>
+            </adaptive-row>
+          </start>
+          <bottom id="x2zve">
+            <border-layout fill-parent="true" id="gp4e9" top-border="true">
+              <end horizontal-align="end" id="vy695">
+                <box id="nd34v" padding-start="0.5" padding-top="1" padding-bottom="1" hidden="{item.calfunction || item.caldynamic || !item.noadjmadechoice1}">
+                  <toggle label="No adjustment made" readonly="{item.disableNoadjmade == true || item.asfoundcalstatus !== 'PASS'}" left-align-label="true" toggle-label-off="No" allow-space="true" toggle-label-on="Yes" toggled="{item.noadjmade}" type="TrueFalse" on-toggle="handleToggled" on-toggle-arg="{{'evt': event, 'item': item}}" id="vd3pb"/>
+                </box>
+              </end>
+            </border-layout>
+          </bottom>
+        </border-layout>
+      </list-item>
+    </data-list>
+  </box>
+  <box background-color="ui-01" padding-top="1" border="false" id="n2rwe" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}">
+    <border-layout fill-parent="true" id="a37ae" padding="false">
+      <start vertical-align="center" id="x23ya">
+        <box fill-parent="true" direction="column" vertical-align="center" padding-start="1" padding-end="0" id="kjnv6">
+          <label label="Environmental conditions" theme="20-regular" id="wvqrk"/>
+          <box border-top="true" id="d8v_7">
+            <label label="Additional remarks" theme="20-regular" id="zzgek"/>
+          </box>
+        </box>
+      </start>
+      <end horizontal-align="end" id="k_4ym">
+        <box fill-parent="true" direction="column" id="xxzm6">
+          <button icon="carbon:chevron--right" on-click="openEnvironmentalConditions" id="b2xw4"/>
+          <box border-top="true" padding-bottom="-0.125" id="byagb"/>
+          <button icon="carbon:chevron--right" on-click="openRemarks" id="nb5bq"/>
+        </box>
+      </end>
+    </border-layout>
+  </box>
+  <dialogs id="ev7ww">
+    <sliding-drawer id="EnvironmentalConditionsDialog" align="start" header-text="Environment conditions" content-padding="false">
+      <button slot="header-button" icon="carbon:checkmark" on-click="updateEnvironmentConditions" on-click-arg="{{'item':pluscWoDs.item,'datasource':pluscWoDs}}" kind="primary" id="p9y2q"/>
+      <panel id="a8xr6">
+        <box background-color="ui-01" id="b47d3">
+          <box fill-parent="true" direction="column" id="y_bg8" padding-top=".5" padding-bottom="1" padding-start="1" padding-end="1">
+            <box direction="column" fill-parent="true" id="mmb63">
+              <smart-input label="Temperature" theme="dark" value="{pluscWoDs.item.temperature}" on-change="validateType" on-change-arg="value" id="kdqpw"/>
+              <smart-input label="Unit" theme="dark" value="{pluscWoDs.item.temperatureeu}" enable-lookup-buttongroup="true" select-lookup-attribute="value" on-change="validateType" on-change-arg="value" id="p5qq3">
+                <button slot="button-group" kind="secondary" label="Search" icon="Carbon:search" on-click="openTypeLookup" on-click-arg="{{'item':pluscWoDs.item, 'changeText': 'temperatureeu'}}" id="wkz5n"/>
+              </smart-input>
+            </box>
+            <box direction="column" fill-parent="true" id="zzvyn" padding-top="1">
+              <smart-input label="Humidity" theme="dark" value="{pluscWoDs.item.humidity}" on-change="validateType" on-change-arg="value" id="y94bp"/>
+              <smart-input label="Unit" theme="dark" value="{pluscWoDs.item.humidityeu}" enable-lookup-buttongroup="true" select-lookup-attribute="value" on-change="validateType" on-change-arg="value" id="nqk_e">
+                <button slot="button-group" kind="secondary" label="Search" icon="Carbon:search" on-click="openTypeLookup" on-click-arg="{{'item':pluscWoDs.item, 'changeText': 'humidityeu'}}" id="pq7dz"/>
+              </smart-input>
+            </box>
+            <box direction="column" fill-parent="true" id="jn3k2" padding-top="1">
+              <smart-input label="Barometric pressure" value="{pluscWoDs.item.baropressure}" theme="dark" on-change="validateType" on-change-arg="value" id="g955v"/>
+              <smart-input label="Unit" theme="dark" value="{pluscWoDs.item.baropressureeu}" enable-lookup-buttongroup="true" select-lookup-attribute="value" on-change="validateType" on-change-arg="value" id="npxb8">
+                <button slot="button-group" kind="secondary" label="Search" icon="Carbon:search" on-click="openTypeLookup" on-click-arg="{{'item':pluscWoDs.item, 'changeText': 'baropressureeu'}}" id="myj6w"/>
+              </smart-input>
+            </box>
+          </box>
+        </box>
+      </panel>
+    </sliding-drawer>
+    <sliding-drawer id="remarks" align="start" header-text="Additional Remarks" content-padding="false">
+      <button slot="header-button" icon="carbon:checkmark" on-click="saveRemark" on-click-arg="{pluscWoDs}" kind="primary" id="gm6dj"/>
+      <panel id="e22jm">
+        <box background-color="ui-01" id="xq92d">
+          <box direction="column" fill-parent="true" id="yy8gm">
+            <label label="Description" theme="16-regular" id="wv5_e"/>
+            <text-area id="txtw234" theme="dark" value="{pluscWoDs.item.remark}" max-length="1000" hide-label="true"/>
+          </box>
+        </box>
+      </panel>
+    </sliding-drawer>
+  </dialogs>
+</page>

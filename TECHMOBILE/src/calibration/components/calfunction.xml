@@ -1,0 +1,24 @@
+<templates id="calfunction">
+  <template name="calfunction" id="x_x3w">
+
+    <!-- Params -->
+    <template-param name="label" type="bool" id="pjni0vpe"/>
+    <template-param name="visible" type="bool" id="x44dv"/>
+
+    <!-- Content -->
+    <template-content id="vzgwd">
+      <box hidden="{!template.visible}" fill-parent="true" id="blrpnqi7">
+        <border-layout id="o8ma66jk">
+          <start id="tz3k8t6e">
+            <label label="{template.label}" id="wh06tszu"/>
+          </start>
+          <end horizontal-align="end" id="jwoscxzr">
+            <box id="zqoucwpq">
+              <template-slot name="group" id="uzzlawl"/>
+            </box>
+          </end>
+        </border-layout>
+      </box>
+    </template-content>
+  </template>
+</templates>

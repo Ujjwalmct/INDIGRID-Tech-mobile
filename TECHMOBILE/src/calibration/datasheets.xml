@@ -1,0 +1,131 @@
+<page padding="true" id="datasheets" title="Mob Calibration" controller="./calibration/DataSheetListController">
+  <states id="za2da">
+    <state name="datasheetlistds" type="object" id="nqx3d"/>
+    <state name="dataSheetTitle" type="string" url-alias="title" url-enabled="true" id="gzd85"/>
+    <state name="loading" type="boolean" value="false" id="nxzq7"/>
+    <state name="autoupdate" type="boolean" value="false" id="u6qhqow8"/>
+  </states>
+  <json-datasource id="changeStatusList" src="{[]}" items="statusItems" selection-mode="single" id-attribute="value">
+    <schema id="q78g5">
+      <attribute name="value" id="mj9kg"/>
+      <attribute name="description" id="az48k"/>
+      <attribute name="maxvalue" id="a4_np"/>
+    </schema>
+  </json-datasource>
+  <dialogs id="den8y">
+    <sliding-drawer id="dataSheetStatusDialog" align="start" header-text="Change status" content-padding="false">
+      <box direction="column" id="j2zb7">
+        <panel id="krpbx">
+          <data-list datasource="changeStatusList" show-single-select-icon="true" on-item-click="selectStatus" selected-icon="maximo:select--end" unselected-icon="maximo:select--end" show-search="false" id="qax5b">
+            <list-item id="bxjp_">
+              <border-layout fill-parent="true" padding="false" id="r3p2m">
+                <middle horizontal-overflow="hidden" id="nddjw">
+                  <label label="{item.value}" theme="16-regular" padding="none" id="gzjge"/>
+                </middle>
+              </border-layout>
+            </list-item>
+          </data-list>
+        </panel>
+      </box>
+    </sliding-drawer>
+  </dialogs>
+
+  <loading active="{page.state.loading}" kind="spinner" small="false" id="nk9kfmuu"/>
+
+  <header-template title="Associated data sheets" hide-breadcrumb="true" show-current-page-in-bread-crumb="false" icon-name="carbon:chevron--left" icon-action="goBack" title-column-width="{app.state.screen.size === 'lg' ? 45 : 80}" id="mobcaldslistpagetitle"/>
+
+  <box vertical-align="center" direction="column" padding-top="1.5" padding-bottom="0.75" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '1' : '0'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0.5' : '0'}" id="xxajw">
+    <label label="{app.state.assetnum ? 'Asset' : 'Location'}" padding="none" color="gray60" theme="16-regular" id="mj6bm"/>
+    <label label="{app.state.dataSheetTitle}" padding="none" theme="16-regular" id="zr86x"/>
+  </box>
+
+  <box hidden="{page.state.loading}" id="g7wmp" padding-top="0.5" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}">
+    <data-list datasource="pluscWoDs" row-space="1" show-search="false" padding="false" no-select-behavior="true" id="pm6j_">
+      <list-item id="q3rvn">
+        <border-layout fill-parent="true" padding="false" middle-border="true" id="dgxdd">
+          <top id="dzwx8">
+            <border-layout fill-parent="true" id="p48mv">
+              <start width="100" id="pka34">
+                <box direction="column" vertical-align="center" fill-parent="true" id="ewkjj" padding-start="1" padding-end="0">
+                  <label label="{item.description}" padding="top" wrap="true" theme="16-bold" required="{item.required}" id="k7xy2"/>
+                  <label label="{item.dsplannum}" padding="bottom" id="qz5p5"/>
+                </box>
+              </start>
+              <end horizontal-align="end" id="njzjn">
+                <box vertical-align="center" direction="column" horizontal-align="end" fill-parent="true" id="wgqn3">
+                  <button icon="carbon:chevron--right" padding="false" on-click="openAssetFunctions" on-click-arg="{{item: item, app: app, page: page}}" loading="{page.state.loading}" id="gm4av"/>
+                </box>
+              </end>
+            </border-layout>
+          </top>
+          <bottom id="b5gzy">
+            <adaptive-row id="kz6be">
+              <adaptive-column xlarge-width="50" large-width="50" medium-width="100" small-width="100" id="amr2v">
+                <border-layout fill-parent="true" id="bvxkd">
+                  <start horizontal-align="start" vertical-align="center" id="dgeb5">
+                    <box id="y8ywe" padding-start="1" padding-end="0">
+                      <border-layout id="x4mx_">
+                        <top id="mbrd5">
+                          <label label="As found" padding="none" id="bqz3x"/>
+                        </top>
+                      </border-layout>
+                    </box>
+                  </start>
+                  <end horizontal-align="end" id="gkqdx">
+                    <box border-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? false : true}" id="qjvgn">
+                      <box padding-end="1" id="k_gxe">
+                        <border-layout id="pg72q">
+                          <start id="nggkk">
+                            <box vertical-align="center" direction="column" horizontal-align="end" fill-parent="true" id="bj7y7">
+                              <!-- 
+                                Not working well for some reason
+                                <condition for="jv23x_asfound" id="gg2xe">
+                                  <set property="type" value="dark-gray" when="{item.asfoundcalstatus == 'MISSING'}" id="ye7nx"/>
+                                  <set property="type" value="dark-gray" when="{item.asfoundcalstatus == 'BROKEN'}" id="xpxk7"/>
+                                  <set property="type" value="red" when="{item.asfoundcalstatus == 'FAIL'}" id="zq5d8"/>
+                                  <set property="type" value="green" when="{item.asfoundcalstatus == 'PASS'}" id="zr56d"/>
+                                </condition> 
+                              -->
+                              <action-tag type="{ page.callController('getLabelColorForInternalStatusValue', item.asfoundcalstatus) }" icon-hidden="{page.state.autoupdate ? item.asfoundcalstatus : false}" label="{item.asfoundcalstatus ? item.asfoundcalstatus : '—'}" on-click="openChangeStatus" on-click-arg="{{'item': item, 'changeText': 'asfoundcalstatus', app: app, page: page}}" id="jv23x_asfound"/>
+                            </box>
+                          </start>
+                        </border-layout>
+                      </box>
+                    </box>
+                  </end>
+                </border-layout>
+              </adaptive-column>
+              <adaptive-column xlarge-width="50" large-width="50" medium-width="100" small-width="100" id="vvzj8">
+                <border-layout fill-parent="true" id="qdnxn">
+                  <start vertical-align="center" id="ym_4p">
+                    <box padding-start="1" padding-end="1" id="azxgb">
+                      <border-layout id="e27qq">
+                        <top id="jrkga">
+                          <label label="As left" padding="none" id="wwxd6"/>
+                        </top>
+                      </border-layout>
+                    </box>
+                  </start>
+                  <end horizontal-align="end" id="b_2bv">
+                    <box padding-end="1" id="aqav4">
+                      <!-- 
+                        Not working well for some reason
+                        <condition for="qwad7" id="xdb7w">
+                          <set property="type" value="dark-gray" when="{item.asleftcalstatus == 'MISSING'}" id="edgny"/>
+                          <set property="type" value="dark-gray" when="{item.asleftcalstatus == 'BROKEN'}" id="zq5da"/>
+                          <set property="type" value="red" when="{item.asleftcalstatus == 'FAIL'}" id="nza9_"/>
+                          <set property="type" value="green" when="{item.asleftcalstatus == 'PASS'}" id="g7b2x"/>
+                      </condition> 
+                      -->
+                      <action-tag type="{ page.callController('getLabelColorForInternalStatusValue', item.asleftcalstatus) }" icon-hidden="{page.state.autoupdate ? item.asleftcalstatus : false}" label="{item.asleftcalstatus ? item.asleftcalstatus : '—'}" on-click="openChangeStatus" on-click-arg="{{'item': item, 'changeText': 'asleftcalstatus', app: app, page: page}}" id="qwad7"/>
+                    </box>
+                  </end>
+                </border-layout>
+              </adaptive-column>
+            </adaptive-row>
+          </bottom>
+        </border-layout>
+      </list-item>
+    </data-list>
+  </box>
+</page>

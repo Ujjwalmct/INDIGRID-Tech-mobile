@@ -1,0 +1,15 @@
+<lookup-with-filter id="maxlib_asset_lookup_filter" width="99" datasource="maxlib_asset_lookupDS" on-item-click="chooseAssetItem" show-search="true" show-count="true" has-filter="true" lookup-heading="Assets" enable-barcode-scanner="true">
+  <list-item id="maxlib_kbgkq">
+    <adaptive-row id="maxlib_nyb3q">
+      <adaptive-column small-width="20" medium-width="20" large-width="20" xlarge-width="20" id="maxlib_aey_5">
+        <label label="{item.assetnum}" id="maxlib_k3gdg"/>
+      </adaptive-column>
+      <adaptive-column small-width="45" medium-width="45" large-width="40" xlarge-width="40" id="maxlib_zqb6p">
+        <label label="{item.description}" id="maxlib_m7523"/>
+      </adaptive-column>
+      <adaptive-column small-width="35" medium-width="35" large-width="40" xlarge-width="40" id="maxlib_gydwv">
+        <label label="{item.locationdesc}" id="maxlib_wvz7a"/>
+      </adaptive-column>
+    </adaptive-row>
+  </list-item>
+</lookup-with-filter>

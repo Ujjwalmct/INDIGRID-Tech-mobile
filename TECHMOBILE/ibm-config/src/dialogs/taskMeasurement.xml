@@ -1,0 +1,59 @@
+<panel id="e3x6b">
+  <panel id="m3qmr">
+    <box background-color="field-01" fill-parent-horizontal="true" id="g3_n6">
+      <box direction="column" padding=".75" fill-parent-horizontal="true" id="z65de">
+<smart-input value="{woPlanTaskDetaildsSelected.item.measuredate}" show-verbose="false" on-blur="validateMeasureDate" on-change="validateMeasureDate" readonly="{woPlanTaskDetaildsSelected.item.measurementvalue != undefined || woPlanTaskDetaildsSelected.item.observation != undefined}" id="xd6gr"/>
+
+      </box>
+    </box>
+    <data-list datasource="woPlanTaskDetaildsSelected" show-search="false" title="{page.state.assetMeterHeader}" hidden="{!woPlanTaskDetaildsSelected.state.itemCount}" id="evvn2">
+      <border-layout slot="item" fill-parent="true" padding="false" id="z8jdb">
+        <start horizontal-overflow="hidden" id="p3y9j">
+          <box padding-end=".75" fill-parent="true" id="qkdj5">
+            <border-layout fill-parent="true" padding="true" id="zda96">
+              <start width="100" vertical-align="center" horizontal-overflow="hidden" id="n8g4k">
+                <box direction="row" vertical-align="center" hidden="{item.measurepoint.meter.metertype_maxvalue ==='CHARACTERISTIC'}" fill-parent="true" id="wwbm_">
+                  <border-layout fill-parent="true" width="100" padding="false" id="kvk4v">
+                    <top background-color="ui-01" horizontal-overflow="hidden" id="zve85">
+                      <box fill-parent="true" id="n8wzw">
+                        <field value="{item.measurepoint.description}" padding="top" field-class-name="16-bold" hide-label="true" id="w39wx"/>
+                      </box>
+                    </top>
+                    <start id="pkze7">
+                      <box direction="column" vertical-align="center" fill-parent="true" id="bj2jq">
+<smart-input value="{item.newreading}" input-kind="DECIMAL" placeholder="{woPlanTaskDetaildsSelected.item.measurementvalue}" readonly="{item.measurementvalue}" on-change="onNewMeasurementReading" on-change-arg="{item}" hide-step-buttons="true" theme="dark" hide-label="true" id="ja6zp"/>
+
+                      </box>
+                    </start>
+                  </border-layout>
+                </box>
+                <box direction="row" hidden="{item.measurepoint.meter.metertype_maxvalue !=='CHARACTERISTIC'}" vertical-align="center" fill-parent="true" id="rjnee">
+                  <border-layout fill-parent="true" padding="true" id="eew6q">
+                    <top background-color="ui-01" horizontal-overflow="hidden" id="xrvpz">
+                      <box fill-parent="true" id="a5jnk">
+                        <field value="{item.measurepoint.description}" padding="top" field-class-name="16-bold" hide-label="true" id="ej4bn"/>
+                      </box>
+                    </top>
+                    <start width="70" id="kdd2p">
+                      <box direction="column" horizontal-align="end" padding-bottom="{item.measurepoint.meter.metertype_maxvalue ==='CHARACTERISTIC'? '0.5' : '0'}" vertical-align="center" fill-parent="true" id="p5zrw">
+                        <field value="{item.newreading}" padding="none" hide-label="true" id="d4jjg"/>
+                      </box>
+                    </start>
+                    <middle horizontal-align="end" horizontal-overflow="hidden" id="vkq29">
+                      <button icon="Carbon:close--outline" kind="ghost" on-click="clearCharacterMeterReaing" on-click-arg="{{'item': item,'newreading':''}}" hidden="{!item.newreading || item.observation}" padding="false" id="rj3wx"/>
+                    </middle>
+                    <end hidden="{item.newreadingFlag}" id="dbdnk">
+                      <box vertical-align="center" hidden="{item.observation}" direction="row" horizontal-align="end" fill-parent="true" id="m2ze9">
+                        <button icon="carbon:chevron--right" kind="ghost" on-click="openMeterLookup" on-click-arg="{{item}}" disabled="{item.newreadingFlag}" padding="false" id="vxz9b"/>
+                      </box>
+                    </end>
+                  </border-layout>
+                </box>
+              </start>
+            </border-layout>
+          </box>
+        </start>
+      </border-layout>
+    </data-list>
+  </panel>
+</panel>

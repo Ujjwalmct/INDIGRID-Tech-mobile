@@ -1,0 +1,11 @@
+<maximo-datasource id="maxlib_asset_map_layer_datasource" offline-immediate-download="true" lookup-data="true" object-structure="MXAPIASSET" saved-query="MOBILEASSET" selection-mode="single" has-position="{true}" geometry-format="geojson">
+  <schema id="bjvd4">
+    <attribute name="assetuid" unique-id="true" id="maxlib_edp2j"/>
+    <attribute name="assetnum" searchable="true" id="maxlib_y6vjj"/>
+    <attribute name="description" searchable="true" id="maxlib_j4bay"/>
+    <attribute name="status" searchable="true" id="maxlib_pb3e4"/>
+    <attribute name="siteid" searchable="true" id="maxlib_aangz"/>
+    <attribute name="orgid" searchable="true" id="maxlib_bb244"/>
+    <attribute name="autolocate" id="maxlib_yjwxa"/>
+  </schema>
+</maximo-datasource>

@@ -1,0 +1,23 @@
+<templates id="asset_process_error">
+  <template name="asset-process-error" id="n57_3">
+    <template-param name="processerr" type="string" id="bm3y7"/>
+    <template-param name="asseterr" type="string" id="k8g3q"/>
+    <template-param name="smallscreen" type="bool" id="r_e29"/>
+    <template-content id="e8bb6">
+      <box border-top="true" fill-parent="true" id="qw2wg">
+        <adaptive-row id="wr_p_">
+          <adaptive-column hidden="{template.smallscreen}" xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="wrrpg"/>
+          <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="aqzq9">
+            <field label="Asset error" value="{template.asseterr || 'NA'}" id="xz98r"/>
+          </adaptive-column>
+          <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="j5emv">
+            <box padding-start="{template.smallscreen ? '1' : '0'}" id="pk66g">
+              <field label="Process error" value="{template.processerr || 'NA'}" id="v3ke8"/>
+            </box>
+          </adaptive-column>
+          <adaptive-column hidden="{template.smallscreen}" xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="e8wv5"/>
+        </adaptive-row>
+      </box>
+    </template-content>
+  </template>
+</templates>

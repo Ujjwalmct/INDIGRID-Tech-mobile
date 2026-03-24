@@ -1,0 +1,25 @@
+<templates id="caldynamic">
+  <template name="caldynamic" id="n4abv">
+
+    <!-- Parameters -->
+    <template-param name="visible" type="bool" id="qre3q"/>
+
+    <!-- Content -->
+    <template-content id="yy3r9">
+      <box hidden="{!template.visible}" fill-parent="true" direction="column" id="gmnyr">
+        <adaptive-row id="apqnb">
+          <adaptive-column small-width="100" medium-width="50" id="bp5ya">
+            <box direction="row" fill-parent="true" id="amdvk">
+              <template-slot name="input" id="g5rjz"/>
+            </box>
+          </adaptive-column>
+          <adaptive-column small-width="100" medium-width="50" id="nrq48">
+            <box direction="row" fill-parent="true" id="gv2p2">
+              <template-slot name="unit" id="g43nm"/>
+            </box>
+          </adaptive-column>
+        </adaptive-row>
+      </box>
+    </template-content>
+  </template>
+</templates>

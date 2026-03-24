@@ -1,0 +1,1 @@
+<lookup-with-filter id="maxlib_location_lookup_filter" width="99" datasource="maxlib_location_lookupDS" on-item-click="chooseLocation" show-search="true" lookup-attributes="{['location','description']}" show-count="true" has-filter="true" lookup-heading="Locations" readers="{[`ean_reader`,`code_128_reader`,`code_39_reader`]}" enable-barcode-scanner="true"/>

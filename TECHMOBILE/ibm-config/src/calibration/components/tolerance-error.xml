@@ -1,0 +1,32 @@
+<templates id="tolerance_error">
+  <template name="tolerance-error" id="rx9qk">
+    <template-param name="label" type="string" id="y98zr"/>
+    <template-param name="lowertol" type="string" id="mx84v"/>
+    <template-param name="tolerror" type="string" id="xrw2n"/>
+    <template-param name="uppertol" type="string" id="gm_5z"/>
+    <template-content id="q4qgg">
+      <box border-top="true" fill-parent="true" id="q_p6n">
+        <box padding-start="1" padding-end="1" padding-top="0.25" padding-bottom="0.25" fill-parent="true" vertical-align="center" id="q7ng6">
+          <adaptive-row id="kkwzg">
+            <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="qbq7r">
+              <box fill-parent="true" id="va9bn">
+                <label label="{template.label}" id="j7ndd"/>
+              </box>
+            </adaptive-column>
+            <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="a2yg_">
+              <field label="From" value="{template.lowertol}" id="rdpm5"/>
+            </adaptive-column>
+            <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="qg_qw">
+              <field label="To" value="{template.uppertol}" id="bm7_e"/>
+            </adaptive-column>
+            <adaptive-column xlarge-width="25" large-width="25" medium-width="50" small-width="50" id="bkrdx">
+              <box vertical-align="center" id="wx2r8">
+                <field label="Error" value="{template.tolerror}" id="bjj43"/>
+              </box>
+            </adaptive-column>
+          </adaptive-row>
+        </box>
+      </box>
+    </template-content>
+  </template>
+</templates>

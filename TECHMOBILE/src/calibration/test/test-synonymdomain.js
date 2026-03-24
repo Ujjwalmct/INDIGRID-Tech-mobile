@@ -1,0 +1,137 @@
+const synonymdomainData = {
+  member: [
+    {
+      _rowstamp: "356614",
+      valueid: "PLUSCCALSTATUS|BROKEN",
+      maxvalue: "BROKEN",
+      defaults: true,
+      description: "Cannot Calibrate",
+      href: "oslc/os/mxapisynonymdomain/_UExVU0NDQUxTVEFUVVMvQlJPS0VOL35OVUxMfi9_TlVMTH4vQlJPS0VO",
+      value: "BROKEN",
+      domainid: "PLUSCCALSTATUS",
+    },
+    {
+      _rowstamp: "356618",
+      valueid: "PLUSCCALSTATUS|MISSING",
+      maxvalue: "MISSING",
+      defaults: true,
+      description: "Missing",
+      href: "oslc/os/mxapisynonymdomain/_UExVU0NDQUxTVEFUVVMvTUlTU0lORy9_TlVMTH4vfk5VTEx_L01JU1NJTkc-",
+      value: "MISSING",
+      domainid: "PLUSCCALSTATUS",
+    },
+  ],
+  href: "oslc/os/mxapisynonymdomain",
+  responseInfo: {
+    schema: {
+      resource: "MXAPISYNONYMDOMAIN",
+      description: "Maximo API for Synonymdomain",
+      pk: ["domainid", "maxvalue", "value", "siteid", "orgid"],
+      title: "SYNONYMDOMAIN",
+      type: "object",
+      $ref: "oslc/jsonschemas/mxapisynonymdomain",
+      uniqueid: "synonymdomainid",
+      properties: {
+        valueid: {
+          searchType: "EXACT",
+          subType: "ALN",
+          title: "Value ID",
+          persistent: true,
+          type: "string",
+          remarks:
+            "System generated unique identifier of the value in a domain, internal and cannot be modified.",
+          maxLength: 256,
+        },
+        maxvalue: {
+          searchType: "WILDCARD",
+          subType: "ALN",
+          title: "Internal Value",
+          persistent: true,
+          type: "string",
+          remarks: "Internal maximo value",
+          maxLength: 50,
+        },
+        localref: {
+          type: "string",
+        },
+        description: {
+          searchType: "WILDCARD",
+          subType: "ALN",
+          title: "Description",
+          persistent: true,
+          type: "string",
+          remarks: "Description of the value",
+          maxLength: 256,
+        },
+        domainid: {
+          searchType: "WILDCARD",
+          subType: "UPPER",
+          title: "Domain",
+          persistent: true,
+          type: "string",
+          remarks: "Identifier of the domain",
+          maxLength: 18,
+        },
+        orgid: {
+          searchType: "WILDCARD",
+          subType: "UPPER",
+          title: "Organization",
+          persistent: true,
+          type: "string",
+          hasList: true,
+          remarks:
+            "Identifier of the org for which the domain value is specified",
+          maxLength: 8,
+        },
+        _rowstamp: {
+          type: "string",
+        },
+        defaults: {
+          default: false,
+          searchType: "EXACT",
+          subType: "YORN",
+          title: "Default",
+          persistent: true,
+          type: "boolean",
+          remarks: "Is This The Default Value? (Y or N)",
+        },
+        _imagelibref: {
+          type: "string",
+        },
+        siteid: {
+          searchType: "WILDCARD",
+          subType: "UPPER",
+          title: "Site",
+          persistent: true,
+          type: "string",
+          hasList: true,
+          remarks:
+            "Identifier of the site for which the domain value is specified",
+          maxLength: 8,
+        },
+        href: {
+          type: "string",
+        },
+        _id: {
+          type: "string",
+        },
+        value: {
+          searchType: "WILDCARD",
+          subType: "ALN",
+          title: "Value",
+          persistent: true,
+          type: "string",
+          remarks: "Synonym value",
+          maxLength: 50,
+        },
+      },
+      required: ["domainid", "maxvalue", "value", "valueid"],
+    },
+    totalPages: 1,
+    href: "oslc/os/mxapisynonymdomain?oslc.select=value%2Cmaxvalue%2Cdescription%2Cdomainid%2Cvalueid%2Csiteid%2Corgid%2Cdefaults&oslc.pageSize=100&oslc.where=domainid%3D%22PLUSCCALSTATUS%22%20and%20maxvalue%20in%20%5B%22BROKEN%22%2C%22MISSING%22%5D&savedQuery=MOBILEDOMAIN&oslc.orderBy=%2Bvalue&searchAttributes=value%2Cmaxvalue%2Cdescription%2Cdomainid%2Cvalueid%2Csiteid%2Corgid&collectioncount=1&ignorecollectionref=1&relativeuri=1&addschema=1&lean=1&internalvalues=1&checkesig=1",
+    totalCount: 2,
+    pagenum: 1,
+  },
+};
+
+export default synonymdomainData;

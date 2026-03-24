@@ -1,0 +1,11 @@
+<datasources id="maxlib_meter_reading_datasources">
+  <maximo-datasource id="maxlib_assetmeters_parent" file="maximo:common/datasources/asset-meter-datasource.xml"/>
+  <maximo-datasource id="maxlib_locationmeters_parent" file="maximo:common/datasources/location-meter-datasource.xml"/>
+  <maximo-datasource id="maxlib_aln_domain_lookupDS" file="maximo:common/datasources/aln-domain-datasource.xml"/>
+  <json-datasource id="maxlib_reading_dates" src="{[]}">
+    <schema id="maxlib_aw87r">
+      <attribute id="maxlib_kqrw5" name="readingdate" type="STRING" sub-type="DATE" title="Date" required="true"/>
+      <attribute id="maxlib_e7mj5" name="readingtime" type="STRING" sub-type="TIME" title="Time" required="true"/>
+    </schema>
+  </json-datasource>
+</datasources>
