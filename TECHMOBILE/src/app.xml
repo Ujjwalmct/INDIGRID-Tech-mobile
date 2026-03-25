@@ -1909,8 +1909,8 @@
             </border-layout>
           </list-details>
           <list-item id="r6bdn">
-            <box fill-parent-horizontal="true" id="pkm5g">
-              <box fill-parent-horizontal="true" id="w7pg_">
+            <adaptive-row id="pkm5g">
+              <adaptive-column small-width="60" medium-width="50" large-width="50" small-horizontal-align="start" medium-horizontal-align="start" large-horizontal-align="start" id="w7pg_">
                 <border-layout fill-parent="true" padding="false" id="gar9_">
                   <start width="5" id="vzp4j" vertical-align="center">
                     <box fill-parent-horizontal="true" id="kw5bn">
@@ -1923,8 +1923,22 @@
                     </box>
                   </end>
                 </border-layout>
-              </box>
-            </box>
+              </adaptive-column>
+              <adaptive-column small-width="40" medium-width="50" large-width="50" small-horizontal-align="end" medium-horizontal-align="end" large-horizontal-align="end" id="jpn5d">
+                <border-layout fill-parent="true" padding="false" hidden="{!item.allowTaskInteract}" id="v8w35">
+                  <start id="wqby3"/>
+                  <end horizontal-align="end" id="nyvpv">
+                    <box padding=".25" vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" id="yn9rr">
+                      <box padding="1" id="z96yb">
+                        <icon icon="Carbon:locked" hidden="{item.hideLockIcon || item.status_maxvalue === 'COMP'}" id="n_yb2"/>
+                        <icon id="cnjkdsu6" icon="Carbon:checkmark--outline" fill="green" hidden="{item.status_maxvalue !== 'COMP'}"/>
+                      </box>
+                      <button icon="carbon:checkmark" disabled="{page.state.taskDisabled}" loading="{item.disabled}" hidden="{(!item.hideLockIcon) || item.status_maxvalue === 'COMP' || item.status_maxvalue === 'CAN' || item.status_maxvalue === 'CLOSE' || (!item.allowTaskInteract)}" kind="{page.state.itemToOpen == item.workorderid ? 'primary':'secondary'}" on-click="completeWoTask" on-click-arg="{{'taskItem': item, 'status':'COMP', directlyCompleteWoTask : true}}" id="pb_mv"/>
+                    </box>
+                  </end>
+                </border-layout>
+              </adaptive-column>
+            </adaptive-row>
           </list-item>
         </data-list>
       </box>
