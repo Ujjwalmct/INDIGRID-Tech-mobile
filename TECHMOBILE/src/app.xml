@@ -283,6 +283,7 @@
         <attribute name="parentchgsstatus" id="jynmp"/>
         <attribute name="activeassetmetermobile._dbcount--assetmetercount" id="x5g7d"/>
         <attribute name="activelocationmetermobile._dbcount--locationmetercount" id="ayz27"/>
+        <attribute name="rel.IGTWOACTIVITYSPECALN{workorderspecid,assetattrid,alnvalue,assetattribute.description--assetattributedesc}" id="tsk_spec01"/>
       </schema>
     </maximo-datasource>
     <maximo-datasource id="wohazardmaterials" relationship="hazardousmaterials" selection-mode="none" notify-when-parent-loads="true" controller="ScheduleDataController">
@@ -1638,9 +1639,57 @@
         <dialog id="saveDiscardTaskMeasurement" title="Save or discard changes?" primary-action-text="Save" primary-icon="carbon:checkmark" primary-button-disabled="{page.state.measurementSaveDisabled || !woPlanTaskDetailds.state.canSave}" on-primary-action="saveMeasurement" primary-kind="primary" on-secondary-action="closeTaskMeasurementDialog" secondary-action-text="Discard" secondary-icon="carbon:Trash-can">
           <label wrap="true" label="You must first discard or save your changes." id="nk7yj"/>
         </dialog>
+        <!-- Task Specification Drawer -->
+        <sliding-drawer id="taskSpecificationDrawer" content-padding="false" align="start" header-text="Specifications">
+          <json-datasource id="taskSpecDS" selection-mode="none" items="member" src="{[]}">
+            <schema id="tskspecschema01">
+              <attribute name="workorderspecid" unique-id="true" id="tskspecattr01"/>
+              <attribute name="assetattrid" id="tskspecattr02"/>
+              <attribute name="alnvalue" id="tskspecattr03"/>
+              <attribute name="assetattributedesc" id="tskspecattr04"/>
+              <attribute name="computedSpecLabel" id="tskspecattr05"/>
+            </schema>
+          </json-datasource>
+          <panel id="tskspecpanel01">
+            <box padding-top="1" id="tskspecbox01"/>
+            <data-list datasource="taskSpecDS" show-search="false" id="tskspeclist01">
+              <border-layout padding="false" slot="item" fill-parent="true" id="tskspeclayout01">
+                <top id="tskspectop01">
+                  <border-layout padding="false" fill-parent="true" id="tskspecinnerlayout01">
+                    <start width="55" horizontal-overflow="hidden" id="tskspecstart01">
+                      <box direction="column" vertical-align="center" fill-parent="true" id="tskspeclabelbox01">
+                        <field value="{item.computedSpecLabel}" override-required="true" field-class-name="16-bold" padding="none" hide-label="true" id="tskspeclabelf01"/>
+                        <field value="{item.assetattrid}" override-required="true" hide-label="true" padding="none" id="tskspecattrf01"/>
+                      </box>
+                    </start>
+                    <end width="45" vertical-align="center" horizontal-align="end" id="tskspecend01">
+                      <border-layout fill-parent="false" padding="false" middle-border="true" id="tskspecvalueborder01">
+                        <start width="85" background-color="ui-01" horizontal-overflow="hidden" id="tskspecvalstart01">
+                          <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecvalbox01">
+                            <field label="{item.computedSpecLabel}" swap-position="false" id="tskspecvalf01">
+                              <sub-field value="{item.alnvalue}" id="tskspecvalsub01"/>
+                            </field>
+                          </box>
+                        </start>
+                        <end width="15" background-color="ui-01" id="tskspecvalend01">
+                          <button icon="carbon:chevron--right" loading="{page.state.taskSpecLookupLoader}" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspeclookupbtn01"/>
+                        </end>
+                      </border-layout>
+                    </end>
+                  </border-layout>
+                </top>
+              </border-layout>
+            </data-list>
+          </panel>
+          <button-group slot="header-button" id="tskspechdrbtns01">
+            <button icon="carbon:checkmark" kind="primary" loading="{page.state.taskSpecLoader}" on-click="saveTaskSpecification" id="tskspecsavebtn01"/>
+          </button-group>
+        </sliding-drawer>
+        <!-- Task Specification ALN Domain Lookup -->
+        <lookup id="taskSpecAlnDomainLookup" show-search="true" enable-barcode-scanner="true" lookup-heading="Domain" datasource="alnDomainDS" on-item-click="chooseTaskSpecDomain" border="true" lookup-attributes="{['value', 'description']}" height="400"/>
       </dialogs>
       <box direction="column" id="jkknb" fill-parent-horizontal="true" padding-bottom="0" padding-top="0">
-        <data-list id="q439v" datasource="woPlanTaskDetailds" item-to-open="{page.state.itemToOpen}" items-to-open="{page.state.itemToOpens}" tight="true" show-search="false" margin="{app.state.screen.size === 'sm' ? false : true}">
+        <data-list id="q439v" datasource="woPlanTaskDetailds" on-item-click="onTaskItemClick" item-to-open="{page.state.itemToOpen}" items-to-open="{page.state.itemToOpens}" tight="true" show-search="false" margin="{app.state.screen.size === 'sm' ? false : true}">
           <!-- renderer for list item details -->
           <list-details id="baqaa">
             <border-layout fill-parent="true" middle-border="{item.computedBorderDisplay}" top-border="{item.description_longdescription || app.state.isAssistAccessible || (page.state.inspectionAccess &amp;&amp; item.inspectionbatchresult)}" padding="false" id="b5zn8">
@@ -1824,6 +1873,36 @@
                         </box>
                       </start>
                     </border-layout>
+                    <!-- Inline checklist panel for Task Specifications -->
+                    <panel id="task_spec_panel_inline" hidden="{!item.IGTWOACTIVITYSPECALN || !item.IGTWOACTIVITYSPECALN.length}">
+                      <data-list id="task_spec_inline_list" datasource="woPlanTaskDetailds[IGTWOACTIVITYSPECALN]" show-search="false">
+                        <border-layout slot="item" fill-parent="true" padding="false" id="task_spec_inline_ly_item">
+                          <start width="60" vertical-align="center" id="tsk_spec_il_start">
+                            <box padding-start="1" padding-top="0.5" padding-bottom="0.5" id="tsk_spec_il_box1">
+                              <label label="{item.assetattributedesc}" theme="16-regular" id="tsk_spec_il_lbl1"/>
+                            </box>
+                          </start>
+                          <end width="40" vertical-align="center" horizontal-align="end" id="tsk_spec_il_end">
+                            <box padding-end="1" vertical-align="center" horizontal-align="end" id="tsk_spec_il_box2">
+                              <label label="{item.alnvalue}" theme="16-bold" id="tsk_spec_il_lbl2"/>
+                            </box>
+                          </end>
+                        </border-layout>
+                      </data-list>
+                    </panel>
+                    <!-- Task Specification Row -->
+                    <border-layout fill-parent="true" width="100" top-border="true" hidden="{!item.IGTWOACTIVITYSPECALN || !item.IGTWOACTIVITYSPECALN.length}" id="tskspecrow01">
+                      <start width="90" vertical-align="center" id="tskspecrowstart01">
+                        <box padding-start="1" padding-top="0.5" padding-bottom="0.5" id="tskspecrowlabelbox01">
+                          <label label="Specifications" theme="16-bold" id="tskspecrowlabel01"/>
+                        </box>
+                      </start>
+                      <end width="10" vertical-align="center" horizontal-align="end" id="tskspecrowend01">
+                        <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" id="tskspecrowbtnbox01">
+                          <button icon="carbon:chevron--right" kind="ghost" disabled="{!item.hideLockIcon}" on-click="openTaskSpecification" on-click-arg="{{'item': item, 'datasource': woPlanTaskDetailds}}" id="tskspecrowbtn01"/>
+                        </box>
+                      </end>
+                    </border-layout>
                   </bottom>
                 </border-layout>
               </bottom>
@@ -1977,7 +2056,7 @@
         <state name="canLoadWoDetailResource" value="true" type="boolean" id="xdv7y"/>
         <state name="canLoadWoDetailResourceChilds" value="true" type="boolean" id="bpw3g"/>
       </states>
-      <maximo-datasource id="woDetailResource" default="true" can-load="{page.state.canLoadWoDetailResource}" object-structure="mxapiwodetail" where="wonum=&quot;{page.params.wonum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="WorkOrderDataController" item-url="{page.params.href}" cache-expiry-ms="1" geometry-format="geojson">
+      <maximo-datasource id="woDetailResource" default="true" can-load="{page.state.canLoadWoDetailResource}" object-structure="IGTAPIWODETAIL" where="wonum=&quot;{page.params.wonum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="WorkOrderDataController" item-url="{page.params.href}" cache-expiry-ms="1" geometry-format="geojson">
         <schema id="qmvzy">
           <attribute name="autolocate" id="yn258"/>
           <attribute name="workorderid" unique-id="true" id="p6d4b"/>
