@@ -717,66 +717,161 @@ class TaskController {
   }
   /**
    * Handles task item click on the task list.
-   * Expand/collapse and inline checklists handled by framework's repeat component.
+   * The rel.IGTWOACTIVITYSPECALN / rel.workorderspec attributes aggregate
+   * ALL specs across ALL tasks into flat arrays. We filter by matching
+   * refobjectid (the owning workorderid) to the clicked task's workorderid.
    */
-  onTaskItemClick() {
-    // No-op: expand/collapse handled by data-list component
+  async onTaskItemClick(event) {
+    const item = event?.item || event;
+    if (!item) return;
+
+    try {
+      this.page.state.currentSpecTask = item;
+      const taskSpecDisplayDS = this.app.findDatasource('taskSpecDisplayDS');
+      if (!taskSpecDisplayDS) return;
+
+      const taskWorkorderId = item.workorderid;
+      let specs = [];
+
+      // Try to get child datasource specs (aggregated) and filter by refobjectid
+      const taskDS = this.app.findDatasource('woPlanTaskDetailds');
+      if (taskDS) {
+        // Try workorderspec first, then igtwoactivityspecaln
+        const allWorkorderSpecs = taskDS.getChildDatasource
+          ? null
+          : (item.workorderspec || []);
+        const allIgtSpecs = item.igtwoactivityspecaln || [];
+
+        // Combine all available specs
+        const allSpecs = [...(allWorkorderSpecs || []), ...allIgtSpecs];
+
+        if (allSpecs.length > 0 && taskWorkorderId) {
+          // Filter: only specs that belong to THIS task (by refobjectid)
+          specs = allSpecs.filter(s => 
+            String(s.refobjectid) === String(taskWorkorderId)
+          );
+          
+          // If refobjectid filter returned nothing, specs may not have
+          // refobjectid yet (first load before schema update).
+          // Fall back to showing all if filter returned 0 but source had data.
+          if (specs.length === 0 && allSpecs.length > 0) {
+            log.t(TAG, `refobjectid filter returned 0 specs for workorderid ${taskWorkorderId}, using unfiltered`);
+            specs = allSpecs;
+          }
+        }
+      }
+
+      // Deduplicate by workorderspecid (in case both rel arrays have same records)
+      const seen = new Set();
+      specs = specs.filter(s => {
+        if (seen.has(s.workorderspecid)) return false;
+        seen.add(s.workorderspecid);
+        return true;
+      });
+
+      log.t(TAG, `Task ${item.taskid} (woid: ${taskWorkorderId}): ${specs.length} specs loaded`);
+
+      await taskSpecDisplayDS.load({ src: specs, noCache: true });
+      this.updateSpecFilledCount(taskSpecDisplayDS.items || []);
+    } catch (error) {
+      log.e(TAG, 'Error loading task specs for display', error);
+    }
   }
 
   /**
-   * Opens the task specification sliding drawer.
-   * Loads all igtwoactivityspecaln entries from the clicked task into the taskSpecDS
-   * JSON datasource so they can be edited via smart-input fields.
-   *
-   * @param {object} event - Click event with {item, datasource}
+   * Updates the filled/total counter for task specs (e.g. "2/4")
+   */
+  updateSpecFilledCount(specs) {
+    const total = specs.length;
+    const filled = specs.filter(s => s.alnvalue && s.alnvalue.trim() !== '').length;
+    this.page.state.specFilledCount = `${filled}/${total}`;
+  }
+
+  /**
+   * Opens the task specification sliding drawer (legacy - kept for compatibility).
    */
   async openTaskSpecification(event) {
     const item = event?.item;
     if (!item) return;
 
     try {
-      // Store reference to the parent task for saving later
       this.page.state.currentSpecTask = item;
-
-      // Open the drawer first so the DS inside it gets rendered
       this.page.showDialog('taskSpecificationDrawer');
 
-      // Find the datasource (inside the drawer, use app-level lookup)
       const taskSpecDS = this.app.findDatasource('taskSpecDS');
       if (!taskSpecDS) {
         log.e(TAG, 'taskSpecDS not found');
         return;
       }
-
-      // Load all specifications into the drawer datasource
       const specs = item.igtwoactivityspecaln || [];
       await taskSpecDS.load({ src: specs, noCache: true });
     } catch (error) {
       log.e(TAG, 'Error opening task specifications', error);
     }
   }
+
   /**
    * Saves task specification changes to the server.
-   * Since the repeat renders embedded rel.IGTWOACTIVITYSPECALN data and
-   * chooseTaskSpecDomain modifies the spec object in-place, we just need
-   * to persist via the task datasource.
+   * Uses woDetailds.update() to PATCH the parent WO with updated
+   * workorderspec alnvalue data nested inside the woactivity.
    */
   async saveTaskSpecification() {
     this.page.state.taskSpecLoader = true;
     try {
-      const taskDS = this.app.findDatasource('woPlanTaskDetailds');
+      const taskSpecDisplayDS = this.app.findDatasource('taskSpecDisplayDS');
+      const parentTask = this.page.state.currentSpecTask;
+      const woDetailds = this.app.findDatasource('woDetailds');
 
-      if (!taskDS) {
-        log.e(TAG, 'Cannot save: woPlanTaskDetailds not found');
+      if (!parentTask || !woDetailds) {
+        this.app.toast('No task selected to save', 'error');
         return;
       }
 
-      await taskDS.save();
+      // Get the edited specs from display DS
+      const specs = taskSpecDisplayDS ? (taskSpecDisplayDS.items || []) : [];
+      if (specs.length === 0) {
+        this.app.toast('No specifications to save', 'warning');
+        return;
+      }
+
+      // Build workorderspec payload with only changed alnvalue fields
+      const specPayload = specs.map(s => ({
+        workorderspecid: s.workorderspecid,
+        alnvalue: s.alnvalue || ''
+      }));
+
+      // Build the PATCH payload: update workorderspec via the woactivity localref
+      const dataToUpdate = {
+        href: woDetailds.item.href,
+        woactivity: [{
+          localref: parentTask.localref,
+          workorderspec: specPayload
+        }]
+      };
+
+      log.t(TAG, `Saving ${specPayload.length} specs for task ${parentTask.taskid}`);
+
+      // Use the standard ds.update() pattern (same as WorkOrderEditController)
+      await woDetailds.update(dataToUpdate, {});
+
+      // Sync alnvalue back to the in-memory parent task specs
+      const originalSpecs = parentTask.igtwoactivityspecaln || [];
+      for (const editedSpec of specs) {
+        const original = originalSpecs.find(
+          s => s.workorderspecid === editedSpec.workorderspecid
+        );
+        if (original) {
+          original.alnvalue = editedSpec.alnvalue || '';
+        }
+      }
+
+      this.updateSpecFilledCount(specs);
       this.app.toast('Specifications saved', 'success');
       log.t(TAG, 'Task specifications saved successfully');
     } catch (error) {
+      const errMsg = error?.message || error?.toString() || 'Unknown error';
       log.e(TAG, 'Error saving task specifications', error);
-      this.app.toast('Failed to save specifications', 'error');
+      this.app.toast(`Save failed: ${errMsg.substring(0, 100)}`, 'error');
     } finally {
       this.page.state.taskSpecLoader = false;
     }
@@ -832,13 +927,45 @@ class TaskController {
 
   /**
    * Handles selection from the task specification ALN domain lookup.
-   * Sets the selected domain value onto the current spec item's alnvalue.
+   * Sets the selected domain value onto the current spec item's alnvalue
+   * and syncs back to the parent task's embedded spec array.
    *
    * @param {Object} itemSelected - The selected domain item with {value, description}
    */
-  chooseTaskSpecDomain(itemSelected) {
+  async chooseTaskSpecDomain(itemSelected) {
     if (this.currentTaskSpecField && itemSelected) {
+      // Update the JSON datasource item (for display)
       this.currentTaskSpecField.alnvalue = itemSelected.value;
+
+      // Sync to the aggregated spec arrays (for persistence on save)
+      const parentTask = this.page.state.currentSpecTask;
+      if (parentTask) {
+        const allSpecArrays = [parentTask.workorderspec, parentTask.igtwoactivityspecaln].filter(Boolean);
+        for (const specArr of allSpecArrays) {
+          const original = specArr.find(
+            s => s.workorderspecid === this.currentTaskSpecField.workorderspecid
+          );
+          if (original) {
+            original.alnvalue = itemSelected.value;
+          }
+        }
+      }
+
+      // Reload the display DS from its own items (already filtered per-task)
+      const taskSpecDisplayDS = this.app.findDatasource('taskSpecDisplayDS');
+      if (taskSpecDisplayDS) {
+        const currentSpecs = taskSpecDisplayDS.items || [];
+        // Update the matching spec in the items array
+        const specToUpdate = currentSpecs.find(
+          s => s.workorderspecid === this.currentTaskSpecField.workorderspecid
+        );
+        if (specToUpdate) {
+          specToUpdate.alnvalue = itemSelected.value;
+        }
+        await taskSpecDisplayDS.load({ src: currentSpecs, noCache: true });
+        this.updateSpecFilledCount(taskSpecDisplayDS.items || []);
+      }
+
       log.t(TAG, `Task spec domain selected: ${itemSelected.value} for ${this.currentTaskSpecField.assetattrid}`);
     }
   }

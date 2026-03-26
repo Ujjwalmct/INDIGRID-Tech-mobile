@@ -283,8 +283,8 @@
         <attribute name="parentchgsstatus" id="jynmp"/>
         <attribute name="activeassetmetermobile._dbcount--assetmetercount" id="x5g7d"/>
         <attribute name="activelocationmetermobile._dbcount--locationmetercount" id="ayz27"/>
-        <attribute name="rel.IGTWOACTIVITYSPECALN{workorderspecid,assetattrid,alnvalue,assetattribute.description--assetattributedesc}" id="tsk_spec01"/>
-        <attribute name="rel.workorderspec{workorderspecid,assetattrid,alnvalue,assetattribute.description--assetattributedesc}" id="tsk_spec02"/>
+        <attribute name="rel.IGTWOACTIVITYSPECALN{workorderspecid,refobjectid,assetattrid,alnvalue,assetattribute.description--assetattributedesc}" id="tsk_spec01"/>
+        <attribute name="rel.workorderspec{workorderspecid,refobjectid,assetattrid,alnvalue,assetattribute.description--assetattributedesc}" id="tsk_spec02"/>
       </schema>
     </maximo-datasource>
     <maximo-datasource id="wohazardmaterials" relationship="hazardousmaterials" selection-mode="none" notify-when-parent-loads="true" controller="ScheduleDataController">
@@ -1877,38 +1877,34 @@
                       </start>
                     </border-layout>
                     <!-- Inline Checklists -->
-                    <box direction="column" fill-parent-horizontal="true" hidden="{!item.igtwoactivityspecaln || !item.igtwoactivityspecaln.length}" id="tskspecinlinecontainer01" border-top="true">
+                    <box direction="column" fill-parent-horizontal="true" hidden="{!item.classstructureid}" id="tskspecinlinecontainer01" border-top="true">
                       <border-layout fill-parent="true" padding="false" id="tskspecinlineheaderlayout01">
                         <start id="tskspecinlineheaderstart01">
                           <box padding-start="1" padding-top="0.5" padding-bottom="0.25" direction="row" fill-parent-horizontal="true" id="tskspecinlineheaderbox01">
                             <label label="Checklists" theme="16-bold" id="tskspecrowlabel01"/>
-                            <label label=" ({item.igtwoactivityspecaln.length})" theme="14-regular" id="tskspecrowsublabel01"/>
+                            <label label=" ({page.state.specFilledCount})" theme="14-regular" id="tskspecrowsublabel01"/>
                           </box>
                         </start>
                         <end horizontal-align="end" vertical-align="center" id="tskspecinlineheaderend01">
                           <button icon="carbon:checkmark" kind="primary" loading="{page.state.taskSpecLoader}" on-click="saveTaskSpecification" padding="false" id="tskspecinlinesavebtn01"/>
                         </end>
                       </border-layout>
-                      <repeat datasource="woPlanTaskDetailds[igtwoactivityspecaln]" id="tskspecinlinerepeat01">
-                        <box slot="item" direction="column" fill-parent-horizontal="true" padding-start="0.5" padding-end="0.5" padding-bottom="0.5" id="tskspecinlinecardwrapper01">
-                          <box direction="column" padding="0.5" id="tskspecinlinecardbox01" background-color="ui-01" border="true" fill-parent-horizontal="true">
-                            <label label="{item.assetattributedesc}" theme="16-bold" padding="none" wrap="true" id="tskspecinlinelbl01"/>
-                            <label label="{item.assetattrid}" theme="14-regular" padding="none" id="tskspecinlinelbl02"/>
-                            <border-layout fill-parent="true" padding="false" id="tskspecinlinevalborder01">
-                              <start width="75" id="tskspecinlinevalstart01">
-                                <box direction="column" padding-top="0.25" fill-parent-horizontal="true" id="tskspecinlinevalbox01">
-                                  <field label="Value" swap-position="false" id="tskspecinlinevalf01">
-                                    <sub-field value="{item.alnvalue}" id="tskspecinlinevalsub01"/>
-                                  </field>
-                                </box>
-                              </start>
-                              <end width="25" vertical-align="center" horizontal-align="end" id="tskspecinlinevalend01">
-                                <button icon="carbon:chevron--right" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspecinlinelookupbtn01"/>
-                              </end>
-                            </border-layout>
-                          </box>
-                        </box>
-                      </repeat>
+                      <data-list datasource="taskSpecDisplayDS" show-search="false" id="tskspecinlinelist01">
+                        <border-layout slot="item" padding="false" fill-parent="true" bottom-border="true" id="tskspecinlinelayout01">
+                          <start horizontal-overflow="hidden" id="tskspecinlinestart01">
+                            <box direction="column" fill-parent-horizontal="true" padding="0.5" id="tskspecinlinecardbox01">
+                              <label label="{item.assetattributedesc}" theme="16-bold" padding="none" wrap="true" id="tskspecinlinelbl01"/>
+                              <label label="{item.assetattrid}" theme="14-regular" padding="none" id="tskspecinlinelbl02"/>
+                              <field label="Value" swap-position="false" id="tskspecinlinevalf01">
+                                <sub-field value="{item.alnvalue}" id="tskspecinlinevalsub01"/>
+                              </field>
+                            </box>
+                          </start>
+                          <end width="15" vertical-align="center" horizontal-align="end" id="tskspecinlinevalend01">
+                            <button icon="carbon:chevron--right" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspecinlinelookupbtn01"/>
+                          </end>
+                        </border-layout>
+                      </data-list>
                     </box>
                   </bottom>
                 </border-layout>
