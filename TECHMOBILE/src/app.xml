@@ -1876,20 +1876,40 @@
                         </box>
                       </start>
                     </border-layout>
-                    <!-- Task Specification Row -->
-                    <border-layout fill-parent="true" width="100" top-border="true" hidden="{!item.igtwoactivityspecaln || !item.igtwoactivityspecaln.length}" id="tskspecrow01">
-                      <start width="90" vertical-align="center" id="tskspecrowstart01">
-                        <box padding-start="1" padding-top="0.5" padding-bottom="0.5" direction="column" id="tskspecrowlabelbox01">
-                          <label label="Checklists" theme="16-bold" id="tskspecrowlabel01"/>
-                          <label label="{item.igtwoactivityspecaln.length} attribute(s)" theme="14-regular" id="tskspecrowsublabel01"/>
+                    <!-- Inline Checklists -->
+                    <box direction="column" fill-parent-horizontal="true" hidden="{!item.igtwoactivityspecaln || !item.igtwoactivityspecaln.length}" id="tskspecinlinecontainer01" border-top="true">
+                      <border-layout fill-parent="true" padding="false" id="tskspecinlineheaderlayout01">
+                        <start id="tskspecinlineheaderstart01">
+                          <box padding-start="1" padding-top="0.5" padding-bottom="0.25" direction="row" fill-parent-horizontal="true" id="tskspecinlineheaderbox01">
+                            <label label="Checklists" theme="16-bold" id="tskspecrowlabel01"/>
+                            <label label=" ({item.igtwoactivityspecaln.length})" theme="14-regular" id="tskspecrowsublabel01"/>
+                          </box>
+                        </start>
+                        <end horizontal-align="end" vertical-align="center" id="tskspecinlineheaderend01">
+                          <button icon="carbon:checkmark" kind="primary" loading="{page.state.taskSpecLoader}" on-click="saveTaskSpecification" padding="false" id="tskspecinlinesavebtn01"/>
+                        </end>
+                      </border-layout>
+                      <repeat datasource="woPlanTaskDetailds[igtwoactivityspecaln]" id="tskspecinlinerepeat01">
+                        <box slot="item" direction="column" fill-parent-horizontal="true" padding-start="0.5" padding-end="0.5" padding-bottom="0.5" id="tskspecinlinecardwrapper01">
+                          <box direction="column" padding="0.5" id="tskspecinlinecardbox01" background-color="ui-01" border="true" fill-parent-horizontal="true">
+                            <label label="{item.assetattributedesc}" theme="16-bold" padding="none" wrap="true" id="tskspecinlinelbl01"/>
+                            <label label="{item.assetattrid}" theme="14-regular" padding="none" id="tskspecinlinelbl02"/>
+                            <border-layout fill-parent="true" padding="false" id="tskspecinlinevalborder01">
+                              <start width="75" id="tskspecinlinevalstart01">
+                                <box direction="column" padding-top="0.25" fill-parent-horizontal="true" id="tskspecinlinevalbox01">
+                                  <field label="Value" swap-position="false" id="tskspecinlinevalf01">
+                                    <sub-field value="{item.alnvalue}" id="tskspecinlinevalsub01"/>
+                                  </field>
+                                </box>
+                              </start>
+                              <end width="25" vertical-align="center" horizontal-align="end" id="tskspecinlinevalend01">
+                                <button icon="carbon:chevron--right" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspecinlinelookupbtn01"/>
+                              </end>
+                            </border-layout>
+                          </box>
                         </box>
-                      </start>
-                      <end width="10" vertical-align="center" horizontal-align="end" id="tskspecrowend01">
-                        <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" padding-end="1" id="tskspecrowbtnbox01">
-                          <button icon="carbon:chevron--right" kind="primary" on-click="openTaskSpecification" on-click-arg="{{'item': item, 'datasource': woPlanTaskDetailds}}" id="tskspecrowbtn01"/>
-                        </box>
-                      </end>
-                    </border-layout>
+                      </repeat>
+                    </box>
                   </bottom>
                 </border-layout>
               </bottom>

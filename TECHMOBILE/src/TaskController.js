@@ -715,11 +715,9 @@ class TaskController {
       this.page.state.measurementSaveDisabled = false;
     }
   }
-
   /**
    * Handles task item click on the task list.
-   * The data-list uses this for expand/collapse of list-details.
-   * Specification editing is handled via the openTaskSpecification drawer.
+   * Expand/collapse and inline checklists handled by framework's repeat component.
    */
   onTaskItemClick() {
     // No-op: expand/collapse handled by data-list component
@@ -757,36 +755,22 @@ class TaskController {
       log.e(TAG, 'Error opening task specifications', error);
     }
   }
-
   /**
-   * Saves all modified specification values from the taskSpecDS back to the
-   * parent task's igtwoactivityspecaln array and persists via the task datasource.
+   * Saves task specification changes to the server.
+   * Since the repeat renders embedded rel.IGTWOACTIVITYSPECALN data and
+   * chooseTaskSpecDomain modifies the spec object in-place, we just need
+   * to persist via the task datasource.
    */
   async saveTaskSpecification() {
+    this.page.state.taskSpecLoader = true;
     try {
-      const taskSpecDS = this.app.findDatasource('taskSpecDS');
       const taskDS = this.app.findDatasource('woPlanTaskDetailds');
-      const parentTask = this.page.state.currentSpecTask;
 
-      if (!taskSpecDS || !taskDS || !parentTask) {
-        log.e(TAG, 'Cannot save: missing datasource or parent task reference');
+      if (!taskDS) {
+        log.e(TAG, 'Cannot save: woPlanTaskDetailds not found');
         return;
       }
 
-      // Sync each edited spec value back to the parent task's igtwoactivityspecaln
-      const editedSpecs = taskSpecDS.items || [];
-      const originalSpecs = parentTask.igtwoactivityspecaln || [];
-
-      for (const editedSpec of editedSpecs) {
-        const original = originalSpecs.find(
-          s => s.workorderspecid === editedSpec.workorderspecid
-        );
-        if (original && original.alnvalue !== editedSpec.alnvalue) {
-          original.alnvalue = editedSpec.alnvalue;
-        }
-      }
-
-      // Persist to server
       await taskDS.save();
       this.app.toast('Specifications saved', 'success');
       log.t(TAG, 'Task specifications saved successfully');
@@ -794,7 +778,7 @@ class TaskController {
       log.e(TAG, 'Error saving task specifications', error);
       this.app.toast('Failed to save specifications', 'error');
     } finally {
-      this.page.findDialog('taskSpecificationDrawer')?.closeDialog();
+      this.page.state.taskSpecLoader = false;
     }
   }
 
