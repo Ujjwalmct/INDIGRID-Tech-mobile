@@ -809,7 +809,6 @@ class TaskController {
     const specItem = event?.item;
     if (!specItem) return;
 
-    this.page.state.taskSpecLookupLoader = true;
     // Store current spec item so chooseTaskSpecDomain can update it
     this.currentTaskSpecField = specItem;
 
@@ -829,7 +828,6 @@ class TaskController {
 
       if (!domainId) {
         this.app.toast('No domain found for this attribute', 'warning');
-        this.page.state.taskSpecLookupLoader = false;
         return;
       }
 
@@ -842,11 +840,9 @@ class TaskController {
         await alnDS.searchQBE();
       }
 
-      this.page.state.taskSpecLookupLoader = false;
       this.page.showDialog('taskSpecAlnDomainLookup');
     } catch (error) {
       log.e(TAG, 'Error opening task spec lookup', error);
-      this.page.state.taskSpecLookupLoader = false;
     }
   }
 
