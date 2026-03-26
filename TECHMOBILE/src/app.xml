@@ -1877,7 +1877,7 @@
                       </start>
                     </border-layout>
                     <!-- Inline Checklists -->
-                    <box direction="column" fill-parent-horizontal="true" hidden="{!item.classstructureid}" id="tskspecinlinecontainer01" border-top="true">
+                    <box direction="column" fill-parent-horizontal="true" id="tskspecinlinecontainer01" border-top="true">
                       <border-layout fill-parent="true" padding="false" id="tskspecinlineheaderlayout01">
                         <start id="tskspecinlineheaderstart01">
                           <box padding-start="1" padding-top="0.5" padding-bottom="0.25" direction="row" fill-parent-horizontal="true" id="tskspecinlineheaderbox01">
