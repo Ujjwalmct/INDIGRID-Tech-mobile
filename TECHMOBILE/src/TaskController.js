@@ -9,7 +9,7 @@
  * disclosure restricted by GSA ADP Schedule Contract with
  * IBM Corp.
  */
-import {log,Device} from '@maximo/maximo-js-api';
+import { log, Device } from '@maximo/maximo-js-api';
 import SynonymUtil from './utils/SynonymUtil';
 import commonUtil from "./utils/CommonUtil";
 const TAG = "TaskController";
@@ -45,15 +45,15 @@ class TaskController {
     return date;
   }
 
-/**
- * Function to check if all tasks are complete
- * 
- * @param {object} taskItem - The current task item
- * @param {object} workTypeDs - The work type datasource
- * @param {object} taskds - The task datasource
- * @param {string} woWorktype - The current work type
- * @returns {boolean} - True if all tasks are complete and Next status of work order to be COMP, false otherwise
- */
+  /**
+   * Function to check if all tasks are complete
+   *
+   * @param {object} taskItem - The current task item
+   * @param {object} workTypeDs - The work type datasource
+   * @param {object} taskds - The task datasource
+   * @param {string} woWorktype - The current work type
+   * @returns {boolean} - True if all tasks are complete and Next status of work order to be COMP, false otherwise
+   */
   async woCompleteHook(taskItem, taskds) {
     const tasksLeft = [];
     // istanbul ignore else
@@ -61,7 +61,7 @@ class TaskController {
       taskds.items.forEach((item) => {
         let status = item.status_maxvalue;
         // istanbul ignore else
-        if (item.taskid && item.taskid !== taskItem.taskid && !['COMP','CLOSE', 'CAN'].includes(status)) {
+        if (item.taskid && item.taskid !== taskItem.taskid && !['COMP', 'CLOSE', 'CAN'].includes(status)) {
           tasksLeft.push(item._rowstamp);
         }
       });
@@ -101,13 +101,13 @@ class TaskController {
         let taskds = this.app.findDatasource('woPlanTaskDetailds');
         let workTypeDs = this.app.findDatasource("dsworktype");
         let woDetailds = this.app.findDatasource("woDetailds");
-       
+
         let task = {
           parameters: {
             status: statusData.value,
             date: this.app.dataFormatter.currentUserDateTime()
           },
-          record: {href: item.localref},
+          record: { href: item.localref },
           responseProperties: 'status,status_maxvalue,workorderid',
           localPayload: {
             woactivity: [{
@@ -128,7 +128,7 @@ class TaskController {
         if (isFlowControlled && isMobile) {
           let woTasklist = await this.getWoTask(taskds.items, item, statusData);
 
-          if (woTasklist?.length){
+          if (woTasklist?.length) {
             task.localPayload["woactivity"] = woTasklist;
             let lastTask = woTasklist.filter(item => item.taskid && item.status_maxvalue !== 'CLOSE' && item.status_maxvalue !== 'CAN' && item.status_maxvalue !== 'COMP');
             let workType = workTypeDs.items.filter(
@@ -142,7 +142,7 @@ class TaskController {
               task.localPayload.status_description = workType.length && workType[0].completestatus ? workType[0].completestatus_description : defaultComp.description;
             }
           }
-         
+
         }
 
         if (isFlowControlled) {
@@ -157,7 +157,7 @@ class TaskController {
               disableScanCheck = true;
             } else {
               // Validate Tools Added
-              const workOrder = {...workOrderData, actualtoolcount: this.app?.findDatasource('reportWorkActualToolsDs')?.items.length};
+              const workOrder = { ...workOrderData, actualtoolcount: this.app?.findDatasource('reportWorkActualToolsDs')?.items.length };
               const validateActualTool = await commonUtil.validateActualTools(this.app, this.page, workOrder, {}, false);
               // istanbul ignore next
               if (!validateActualTool) {
@@ -175,7 +175,7 @@ class TaskController {
               this.page.state.completeLoading = false;
               this.page.state.taskDisabled = false;
               const scanResParam = { scanValue: null, assetnum: woDetailds.item.assetnum, locationnum: woDetailds.item.locationnum, status: "COMP" };
-              this.app.state.scanParameter = { app: this.app, page: this.page, record: record, method:"completeWoTask", scanResParam: scanResParam };
+              this.app.state.scanParameter = { app: this.app, page: this.page, record: record, method: "completeWoTask", scanResParam: scanResParam };
               this.app.showDialog("appAssetScanDialog");
               return;
             }
@@ -187,7 +187,7 @@ class TaskController {
             this.app.state.skipScan = false;
             const workOrderDetails = this.app.findPage("workOrderDetails");
             // istanbul ignore else
-            if(workOrderDetails) {
+            if (workOrderDetails) {
               const message = this.app.getLocalizedLabel('worklog_woCompleted_without_scan', 'The work order was completed without scanning an asset.');
               await workOrderDetails.callController('saveWorkLog', {
                 longDescription: "",
@@ -204,7 +204,7 @@ class TaskController {
           // as completing one task may trigger status changes in dependent tasks
           if (isFlowControlled) {
             await taskds.forceReload();
-          } 
+          }
 
           if (isMobile) {
             //Since mobile's response doesn't come from the server, just use localPayload
@@ -225,17 +225,17 @@ class TaskController {
               });
               this.app.state.taskCount = incompTaskCount.length;
             }
-            this.page.state.itemToOpens=[];
-            this.page.state.itemToOpen='';
+            this.page.state.itemToOpens = [];
+            this.page.state.itemToOpen = '';
             // istanbul ignore else
             if (incompTaskCount.length >= 1) {
               const itemToOpen_workorderid = taskds.items.find(item => item.taskid && item._rowstamp === incompTaskCount[0]);
               if (itemToOpen_workorderid) {
                 this.page.state.itemToOpen = itemToOpen_workorderid.workorderid;
-               } 
+              }
             }
             // istanbul ignore else
-            if(!incompTaskCount.length) {
+            if (!incompTaskCount.length) {
               this.page.state.itemToOpen = '';
               this.page.state.doneButtonDisabled = false;
             }
@@ -250,7 +250,7 @@ class TaskController {
             }
 
           }
-        }catch (err) {
+        } catch (err) {
           item.disabled = false;
           this.page.state.taskDisabled = false;
           //handle error
@@ -263,7 +263,7 @@ class TaskController {
             ['WOSTATUS']
           ),
           'error'
-        );  
+        );
       }
       this.page.state.disableButton = false;
       this.page.state.taskLoadingstatus = false;
@@ -307,31 +307,31 @@ class TaskController {
   async redirectToWODetailsOrReport() {
     const woDetail = await this.app.findDatasource('woDetailResource');
     const redirctToReportAllowed = this.app.state.systemProp && parseInt(this.app.state.systemProp['maximo.mobile.gotoreportwork']);
-    if(redirctToReportAllowed) {
+    if (redirctToReportAllowed) {
       this.redirectToReportPage(woDetail.item);
     } else {
-      this.app.setCurrentPage({name: 'workOrderDetails'});
+      this.app.setCurrentPage({ name: 'workOrderDetails' });
     }
   }
 
   /**
-   * 
-   * @param {item} item of selected work order in detail page 
+   *
+   * @param {item} item of selected work order in detail page
    */
   async redirectToReportPage(item) {
-    this.app.setCurrentPage({ 
-      name: 'report_work', 
-      params: { 
-        wonum: item.wonum, 
-        itemhref: item.href, 
-        worktype: item.worktype, 
+    this.app.setCurrentPage({
+      name: 'report_work',
+      params: {
+        wonum: item.wonum,
+        itemhref: item.href,
+        worktype: item.worktype,
         istask: item.istask,
         wogroup: item.wogroup,
         taskid: item.taskid
-      } 
+      }
     });
     // istanbul ignore else
-    if(this.app?.currentPage) {
+    if (this.app?.currentPage) {
       this.page.state.navigateToReportWork = true;
     }
   }
@@ -350,64 +350,64 @@ class TaskController {
     let woTaskList = [];
     let initialStatus = 'INPRG';
     /* istanbul ignore else */
-    if(woWorkType) {
+    if (woWorkType) {
       workType = workTypeDs.items.filter(
         (item) => item.worktype === woDetailds.item.worktype
       );
     }
     let workTypeStartMaxVal = workType?.length && workType[0].startstatus ? workType[0].startstatus_maxvalue : /* istanbul ignore next */'';
     /* istanbul ignore next */
-    if(workTypeStartMaxVal === 'APPR' || workTypeStartMaxVal === 'WSCH' || workTypeStartMaxVal === 'WMATL' || workTypeStartMaxVal === 'INPRG') {
+    if (workTypeStartMaxVal === 'APPR' || workTypeStartMaxVal === 'WSCH' || workTypeStartMaxVal === 'WMATL' || workTypeStartMaxVal === 'INPRG') {
       initialStatus = workType[0].startstatus;
     }
 
     let INPRGStatus = await SynonymUtil.getSynonym(this.app.findDatasource('synonymdomainData'), 'WOSTATUS', `WOSTATUS|${initialStatus}`);
     /* istanbul ignore else */
-    if(taskList.length){
+    if (taskList.length) {
       const tempTaskList = taskList.map((item) => {
         /* istanbul ignore else */
-        if(item.taskid) {
+        if (item.taskid) {
           /* istanbul ignore else */
-          if(item.taskid === selectedItem.taskid) {
+          if (item.taskid === selectedItem.taskid) {
             return {
-              ...item, 
-              status: selectedStatus.value, 
-              status_maxvalue : selectedStatus.maxvalue,
-              status_description : selectedStatus.description
+              ...item,
+              status: selectedStatus.value,
+              status_maxvalue: selectedStatus.maxvalue,
+              status_description: selectedStatus.description
             };
           } else {
             return {
-              ...item, 
-              status: item.status, 
-              status_maxvalue : item.status_maxvalue,
-              status_description : item.status_description
+              ...item,
+              status: item.status,
+              status_maxvalue: item.status_maxvalue,
+              status_description: item.status_description
             };
-          }          
+          }
         }
         return item
       });
 
       woTaskList = tempTaskList.map((item) => {
         /* istanbul ignore else */
-        if(item.taskid) {
+        if (item.taskid) {
           /* istanbul ignore next */
-          if(isFlowControlled && item.predessorwos && item.taskid && item.taskid !== selectedItem.taskid) {
-            let isComplitedPredessor =  this.app.callController('validatePredessor',tempTaskList,item);
+          if (isFlowControlled && item.predessorwos && item.taskid && item.taskid !== selectedItem.taskid) {
+            let isComplitedPredessor = this.app.callController('validatePredessor', tempTaskList, item);
             let setStatus = isComplitedPredessor && (workTypeStartMaxVal !== 'CAN' && workTypeStartMaxVal !== 'WAPPR');
             return {
-              ...item, 
-              status: setStatus ? INPRGStatus.value : item.status, 
-              status_maxvalue : setStatus ? INPRGStatus.maxvalue : item.status_maxvalue,
-              status_description : setStatus ? INPRGStatus.description : item.status_description
+              ...item,
+              status: setStatus ? INPRGStatus.value : item.status,
+              status_maxvalue: setStatus ? INPRGStatus.maxvalue : item.status_maxvalue,
+              status_description: setStatus ? INPRGStatus.description : item.status_description
             };
           } else {
             return {
-              ...item, 
-              status: item.status, 
-              status_maxvalue : item.status_maxvalue,
-              status_description : item.status_description
+              ...item,
+              status: item.status,
+              status_maxvalue: item.status_maxvalue,
+              status_description: item.status_description
             };
-          }        
+          }
         }
         return item
       });
@@ -417,17 +417,17 @@ class TaskController {
 
   /**
    * Method invoked whenever page is visited. Check if maximoMobile will filter datasource with QBE approach.
-   * @param {Object} page 
-   * @param {Object} app 
+   * @param {Object} page
+   * @param {Object} app
    */
   async pageResumed(page, app) {
     page.state.taskDisabled = true;
     page.state.measurementDialog = false;
-    let pageTitle = app.callController('updatePageTitle', {page: page, label: 'tasks_title', labelValue: 'Tasks'});
+    let pageTitle = app.callController('updatePageTitle', { page: page, label: 'tasks_title', labelValue: 'Tasks' });
     //istanbul ignore next
     if (!pageTitle) { // If title return null or empty then retrying to fetch title again because app load takes time in appController
       window.setTimeout(() => {
-        pageTitle = app.callController('updatePageTitle', {page: page, label: 'tasks_title', labelValue: 'Tasks'});
+        pageTitle = app.callController('updatePageTitle', { page: page, label: 'tasks_title', labelValue: 'Tasks' });
         page.state.pageTitle = pageTitle;
       }, 1);
     } else { // If title return value then set to state
@@ -435,29 +435,29 @@ class TaskController {
     }
     page.state.inspectionAccess = app.checkSigOption(`${app.state.appnames.inspection}.READ`);
     page.state.enforceAssetScan = app.checkSigOption(`${app.state.woOSName}.ENFORCEASSETSCAN`);
-    page.state.assetSwicthAccess = app.checkSigOption(`${app.state.appnames.assetswitch}.READ`) ? true :false ;
+    page.state.assetSwicthAccess = app.checkSigOption(`${app.state.appnames.assetswitch}.READ`) ? true : false;
     let device = Device.get();
     page.state.itemToOpen = '';
     let woDetailds = app.findDatasource('woDetailds');
 
     //istanbul ignore next
-    if(woDetailds.items.length === 0){
-     //istanbul ignore else
-     if (!page?.params?.href) {
-      this.app.state.canLoadWoDetailDS = false;
-    }
-      await woDetailds.load({noCache: true, itemUrl: page.params.href});
+    if (woDetailds.items.length === 0) {
+      //istanbul ignore else
+      if (!page?.params?.href) {
+        this.app.state.canLoadWoDetailDS = false;
+      }
+      await woDetailds.load({ noCache: true, itemUrl: page.params.href });
       this.app.state.canLoadWoDetailDS = true;
     }
 
     this.page.state.doneButtonDisabled = true;
     /* istanbul ignore else */
-    if(!app.state.taskCount) {
+    if (!app.state.taskCount) {
       this.page.state.doneButtonDisabled = false;
     }
     page.state.workorder = woDetailds.item;
 
-    let taskDataSource = app.findDatasource('woPlanTaskDetailds'); 
+    let taskDataSource = app.findDatasource('woPlanTaskDetailds');
 
     if (device.isMaximoMobile) {
       let externalStatusList = await SynonymUtil.getExternalStatusList(app, ['INPRG', 'WAPPR', 'WMATL', 'APPR', 'WSCH', 'WPCOND', 'COMP']);
@@ -465,12 +465,12 @@ class TaskController {
       taskDataSource.setQBE('status', 'in', externalStatusList);
       await taskDataSource.searchQBE(undefined, true);
     }
-    else{
+    else {
       await taskDataSource.forceReload();
     }
 
     //istanbul ignore next
-    if(app.state.incomingContext && taskDataSource.items.length === 0) {
+    if (app.state.incomingContext && taskDataSource.items.length === 0) {
       woDetailds = app.findDatasource('woDetailds');
       // istanbul ignore else
       if (this.app.state.refreshOnSubsequentLogin !== false) {
@@ -478,19 +478,20 @@ class TaskController {
       }
       await taskDataSource.forceReload();
       // istanbul ignore else
-      if(taskDataSource.items.length === 0) {
+      if (taskDataSource.items.length === 0) {
         let errorMessage = 'This record is not on your device. Try again or wait until you are online.';
         page.error(
           this.app.getLocalizedLabel("record_not_on_device", errorMessage)
         );
       }
-    }  
-    
-    // istanbul ignore else
-    if(this.app.checkSigOption(`${this.app.state.appnames.assetmobile}.READ`) && woDetailds?.item?.assetnum !== taskDataSource?.item?.assetnum){
-      await this.getTaskAssetsHref(page.state.itemToOpen,taskDataSource,woDetailds);
     }
-     this.page.state.taskDisabled = false;
+
+    // istanbul ignore else
+    if (this.app.checkSigOption(`${this.app.state.appnames.assetmobile}.READ`) && woDetailds?.item?.assetnum !== taskDataSource?.item?.assetnum) {
+      await this.getTaskAssetsHref(page.state.itemToOpen, taskDataSource, woDetailds);
+    }
+
+    this.page.state.taskDisabled = false;
   }
 
   /*
@@ -505,7 +506,7 @@ class TaskController {
     let workType = [];
     const isFlowControlled = this.app.findDatasource('woDetailds')?.item?.flowcontrolled;
     /* istanbul ignore else */
-    if(woWorkType) {
+    if (woWorkType) {
       workType = workTypeDs.items.filter(
         (item) => item.worktype === woWorkType
       );
@@ -518,50 +519,50 @@ class TaskController {
     statusLstDS.clearSelections();
 
     // istanbul ignore else
-    if(isFlowControlled) {
-      let filterValues= []
+    if (isFlowControlled) {
+      let filterValues = []
       let maxVal = event.item.status_maxvalue;
       /* istanbul ignore next */
       let workTypeStartMaxVal = workType?.length && workType[0].startstatus ? workType[0].startstatus_maxvalue : '';
       let isAllPredessorComp = true;
       // istanbul ignore else
-      if(event.item.predessorwos && maxVal !== 'COMP') {
+      if (event.item.predessorwos && maxVal !== 'COMP') {
         isAllPredessorComp = this.app.callController('validatePredessor', taskds.items, event.item);
       }
       /* istanbul ignore else */
-      if(!woWorkType) {
+      if (!woWorkType) {
         // istanbul ignore else
         if (maxVal !== 'COMP') {
           filterValues = ['WAPPR']
         }
-        
+
         // istanbul ignore else
-        if(maxVal === 'INPRG') {
-          filterValues = ['WMATL', 'WAPPR']; 
+        if (maxVal === 'INPRG') {
+          filterValues = ['WMATL', 'WAPPR'];
         }
-      } else if(woWorkType && workType?.length) {
+      } else if (woWorkType && workType?.length) {
         // istanbul ignore else
-        if(workTypeStartMaxVal) {
+        if (workTypeStartMaxVal) {
           // istanbul ignore else
-          if(workTypeStartMaxVal === 'APPR' || workTypeStartMaxVal === 'WMATL' || workTypeStartMaxVal === 'WSCH') {
+          if (workTypeStartMaxVal === 'APPR' || workTypeStartMaxVal === 'WMATL' || workTypeStartMaxVal === 'WSCH') {
             filterValues = ['WAPPR'];
-            
+
             // istanbul ignore else
-            if(!isAllPredessorComp) {
-              filterValues = ['WAPPR','INPRG', 'WMATL', 'COMP', 'APPR', 'CLOSE', 'WSCH'];
+            if (!isAllPredessorComp) {
+              filterValues = ['WAPPR', 'INPRG', 'WMATL', 'COMP', 'APPR', 'CLOSE', 'WSCH'];
             }
           }
 
           // istanbul ignore else
-          if(workTypeStartMaxVal === 'INPRG' && (!isAllPredessorComp || (maxVal !== 'INPRG' && maxVal !== 'COMP'))) {
+          if (workTypeStartMaxVal === 'INPRG' && (!isAllPredessorComp || (maxVal !== 'INPRG' && maxVal !== 'COMP'))) {
             filterValues = ['CLOSE', 'COMP', 'INPRG'];
-          } else if(workTypeStartMaxVal === 'INPRG' && maxVal === 'INPRG') {
+          } else if (workTypeStartMaxVal === 'INPRG' && maxVal === 'INPRG') {
             filterValues = ['WMATL', 'WAPPR'];
           }
         }
       }
       /* istanbul ignore else */
-      if(filterValues?.length) {
+      if (filterValues?.length) {
         statusArr = statusArr.filter(item => filterValues.indexOf(item.maxvalue) === -1);
       }
     }
@@ -580,32 +581,32 @@ class TaskController {
       date: this.app.dataFormatter.currentUserDateTime(),
       internalValue: this.page.state.selectedTaskStatus?.maxvalue,
       value: this.page.state.selectedTaskStatus?.value,
-      directlyCompleteWoTask : false
+      directlyCompleteWoTask: false
     }
     try {
       await this.completeWoTask(record);
     } catch (error) {
-      
+
     } finally {
       this.page.findDialog("taskStatusChangeDialog")?.closeDialog();
     }
   }
 
 
-   /**
-   * function to find and set asset href for selected workorder task.
-   * @param {itemOpen} is selected work order.
-   * @param {taskDs} is selected workorder task DS.
-   * @param {woDetailsDs} is selected workorder DS.
-   */
-   async getTaskAssetsHref(itemOpen,taskDs,woDetailsDs){
+  /**
+  * function to find and set asset href for selected workorder task.
+  * @param {itemOpen} is selected work order.
+  * @param {taskDs} is selected workorder task DS.
+  * @param {woDetailsDs} is selected workorder DS.
+  */
+  async getTaskAssetsHref(itemOpen, taskDs, woDetailsDs) {
     for (const task of taskDs.items) {
       // istanbul ignore else
       if (task.assetnum !== woDetailsDs?.item?.assetnum) {
         this.page.state.currentAssetNum = task.assetnum;
         this.page.state.currentAssetSite = task?.siteid;
         const assetListDS = this.app.findDatasource("assetLookupDS");
- 
+
         await assetListDS?.initializeQbe();
         assetListDS?.setQBE("assetnum", this.page.state.currentAssetNum);
         assetListDS?.setQBE("siteid", this.page.state.currentAssetSite);
@@ -712,6 +713,153 @@ class TaskController {
       const woPlanTaskDetaildsSelectedJsonDS = this.page.findDialog("taskMeasurementDialog").findDatasource("woPlanTaskDetaildsSelected");
       woPlanTaskDetaildsSelectedJsonDS.item.newreading = event.value;
       this.page.state.measurementSaveDisabled = false;
+    }
+  }
+
+  /**
+   * Handles task item click on the task list.
+   * The data-list uses this for expand/collapse of list-details.
+   * Specification editing is handled via the openTaskSpecification drawer.
+   */
+  onTaskItemClick() {
+    // No-op: expand/collapse handled by data-list component
+  }
+
+  /**
+   * Opens the task specification sliding drawer.
+   * Loads all igtwoactivityspecaln entries from the clicked task into the taskSpecDS
+   * JSON datasource so they can be edited via smart-input fields.
+   *
+   * @param {object} event - Click event with {item, datasource}
+   */
+  async openTaskSpecification(event) {
+    const item = event?.item;
+    if (!item) return;
+
+    try {
+      // Store reference to the parent task for saving later
+      this.page.state.currentSpecTask = item;
+
+      // Open the drawer first so the DS inside it gets rendered
+      this.page.showDialog('taskSpecificationDrawer');
+
+      // Find the datasource (inside the drawer, use app-level lookup)
+      const taskSpecDS = this.app.findDatasource('taskSpecDS');
+      if (!taskSpecDS) {
+        log.e(TAG, 'taskSpecDS not found');
+        return;
+      }
+
+      // Load all specifications into the drawer datasource
+      const specs = item.igtwoactivityspecaln || [];
+      await taskSpecDS.load({ src: specs, noCache: true });
+    } catch (error) {
+      log.e(TAG, 'Error opening task specifications', error);
+    }
+  }
+
+  /**
+   * Saves all modified specification values from the taskSpecDS back to the
+   * parent task's igtwoactivityspecaln array and persists via the task datasource.
+   */
+  async saveTaskSpecification() {
+    try {
+      const taskSpecDS = this.app.findDatasource('taskSpecDS');
+      const taskDS = this.app.findDatasource('woPlanTaskDetailds');
+      const parentTask = this.page.state.currentSpecTask;
+
+      if (!taskSpecDS || !taskDS || !parentTask) {
+        log.e(TAG, 'Cannot save: missing datasource or parent task reference');
+        return;
+      }
+
+      // Sync each edited spec value back to the parent task's igtwoactivityspecaln
+      const editedSpecs = taskSpecDS.items || [];
+      const originalSpecs = parentTask.igtwoactivityspecaln || [];
+
+      for (const editedSpec of editedSpecs) {
+        const original = originalSpecs.find(
+          s => s.workorderspecid === editedSpec.workorderspecid
+        );
+        if (original && original.alnvalue !== editedSpec.alnvalue) {
+          original.alnvalue = editedSpec.alnvalue;
+        }
+      }
+
+      // Persist to server
+      await taskDS.save();
+      this.app.toast('Specifications saved', 'success');
+      log.t(TAG, 'Task specifications saved successfully');
+    } catch (error) {
+      log.e(TAG, 'Error saving task specifications', error);
+      this.app.toast('Failed to save specifications', 'error');
+    } finally {
+      this.page.findDialog('taskSpecificationDrawer')?.closeDialog();
+    }
+  }
+
+  /**
+   * Opens the ALN domain lookup for a task specification field.
+   * Looks up the domainid from assetAttributeDS using the spec's assetattrid,
+   * then filters alnDomainDS and opens the lookup dialog.
+   *
+   * @param {Object} event - {page, item} where item is the spec row
+   */
+  async openTaskSpecLookup(event) {
+    const specItem = event?.item;
+    if (!specItem) return;
+
+    this.page.state.taskSpecLookupLoader = true;
+    // Store current spec item so chooseTaskSpecDomain can update it
+    this.currentTaskSpecField = specItem;
+
+    try {
+      // Get domainid from assetAttributeDS using assetattrid
+      const assetAttrDS = this.app.findDatasource('assetAttributeDS');
+      let domainId = null;
+
+      if (assetAttrDS) {
+        await assetAttrDS.initializeQbe();
+        assetAttrDS.setQBE('assetattrid', '=', specItem.assetattrid);
+        const results = await assetAttrDS.searchQBE();
+        if (results && results.length > 0) {
+          domainId = results[0].domainid;
+        }
+      }
+
+      if (!domainId) {
+        this.app.toast('No domain found for this attribute', 'warning');
+        this.page.state.taskSpecLookupLoader = false;
+        return;
+      }
+
+      // Filter alnDomainDS by the domainid
+      const alnDS = this.app.findDatasource('alnDomainDS');
+      if (alnDS) {
+        await alnDS.clearState();
+        await alnDS.initializeQbe();
+        alnDS.setQBE('domainid', '=', domainId);
+        await alnDS.searchQBE();
+      }
+
+      this.page.state.taskSpecLookupLoader = false;
+      this.page.showDialog('taskSpecAlnDomainLookup');
+    } catch (error) {
+      log.e(TAG, 'Error opening task spec lookup', error);
+      this.page.state.taskSpecLookupLoader = false;
+    }
+  }
+
+  /**
+   * Handles selection from the task specification ALN domain lookup.
+   * Sets the selected domain value onto the current spec item's alnvalue.
+   *
+   * @param {Object} itemSelected - The selected domain item with {value, description}
+   */
+  chooseTaskSpecDomain(itemSelected) {
+    if (this.currentTaskSpecField && itemSelected) {
+      this.currentTaskSpecField.alnvalue = itemSelected.value;
+      log.t(TAG, `Task spec domain selected: ${itemSelected.value} for ${this.currentTaskSpecField.assetattrid}`);
     }
   }
 }

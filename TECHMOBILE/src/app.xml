@@ -284,6 +284,7 @@
         <attribute name="activeassetmetermobile._dbcount--assetmetercount" id="x5g7d"/>
         <attribute name="activelocationmetermobile._dbcount--locationmetercount" id="ayz27"/>
         <attribute name="rel.IGTWOACTIVITYSPECALN{workorderspecid,assetattrid,alnvalue,assetattribute.description--assetattributedesc}" id="tsk_spec01"/>
+        <attribute name="rel.workorderspec{workorderspecid,assetattrid,alnvalue,assetattribute.description--assetattributedesc}" id="tsk_spec02"/>
       </schema>
     </maximo-datasource>
     <maximo-datasource id="wohazardmaterials" relationship="hazardousmaterials" selection-mode="none" notify-when-parent-loads="true" controller="ScheduleDataController">
@@ -1592,7 +1593,7 @@
     <page id="quickreport" title="New work order (via Quick Reporting)" path="/quickreport" controller="QuickReportController"/>
     <page id="createworkorder" title="create work order" path="/createworkorder" controller="CreateWorkOrderController"/>
     <page id="tasks" controller="TaskController">
-      <header-template show-current-page-in-bread-crumb="false" title="{page.state.pageTitle}" title-column-width="{app.state.screen.size === 'md' ? 50 : app.state.screen.size === 'lg' ? 30 : app.state.screen.size === 'xlg' ? 21 : 65}" id="nr2dj">
+      <header-template show-current-page-in-bread-crumb="false" title="{page.state.pageTitle}" title-column-width="{app.state.screen.size === 'md' ? 75 : app.state.screen.size === 'lg' ? 50 : app.state.screen.size === 'xlg' ? 40 : 85}" sub-title="{page.state.workorder.description}" id="nr2dj">
         <button slot="buttons" icon="maximo:customer--service" label="Collaborate" kind="secondary" on-click="gotoAssistAppFromTask" on-click-arg="{{'item': page.state.workorder}}" hidden="{!app.state.isAssistAccessible}" id="yak9g"/>
       </header-template>
       <json-datasource id="taskstatusDomainList" src="{[]}" items="statusItems" selection-mode="single" id-attribute="value">
@@ -1600,6 +1601,14 @@
           <attribute name="value" id="xvwp_"/>
           <attribute name="description" id="bparw"/>
           <attribute name="maxvalue" id="q5n8w"/>
+        </schema>
+      </json-datasource>
+      <json-datasource id="taskSpecDisplayDS" selection-mode="none" src="{[]}" id="task_spec_json_ds">
+        <schema id="task_spec_schema">
+          <attribute name="workorderspecid" unique-id="true" id="task_spec_id"/>
+          <attribute name="assetattributedesc" id="task_spec_attr"/>
+          <attribute name="alnvalue" id="task_spec_val"/>
+          <attribute name="assetattrid" id="task_spec_attrid"/>
         </schema>
       </json-datasource>
       <dialogs id="g946m">
@@ -1640,7 +1649,7 @@
           <label wrap="true" label="You must first discard or save your changes." id="nk7yj"/>
         </dialog>
         <!-- Task Specification Drawer -->
-        <sliding-drawer id="taskSpecificationDrawer" content-padding="false" align="start" header-text="Specifications">
+        <sliding-drawer id="taskSpecificationDrawer" content-padding="false" align="start" header-text="Checklists">
           <json-datasource id="taskSpecDS" selection-mode="none" items="member" src="{[]}">
             <schema id="tskspecschema01">
               <attribute name="workorderspecid" unique-id="true" id="tskspecattr01"/>
@@ -1653,30 +1662,24 @@
           <panel id="tskspecpanel01">
             <box padding-top="1" id="tskspecbox01"/>
             <data-list datasource="taskSpecDS" show-search="false" id="tskspeclist01">
-              <border-layout padding="false" slot="item" fill-parent="true" id="tskspeclayout01">
+              <border-layout padding="false" slot="item" fill-parent="true" bottom-border="true" id="tskspeclayout01">
                 <top id="tskspectop01">
-                  <border-layout padding="false" fill-parent="true" id="tskspecinnerlayout01">
-                    <start width="55" horizontal-overflow="hidden" id="tskspecstart01">
-                      <box direction="column" vertical-align="center" fill-parent="true" id="tskspeclabelbox01">
-                        <field value="{item.computedSpecLabel}" override-required="true" field-class-name="16-bold" padding="none" hide-label="true" id="tskspeclabelf01"/>
-                        <field value="{item.assetattrid}" override-required="true" hide-label="true" padding="none" id="tskspecattrf01"/>
-                      </box>
-                    </start>
-                    <end width="45" vertical-align="center" horizontal-align="end" id="tskspecend01">
-                      <border-layout fill-parent="false" padding="false" middle-border="true" id="tskspecvalueborder01">
-                        <start width="85" background-color="ui-01" horizontal-overflow="hidden" id="tskspecvalstart01">
-                          <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecvalbox01">
-                            <field label="{item.computedSpecLabel}" swap-position="false" id="tskspecvalf01">
-                              <sub-field value="{item.alnvalue}" id="tskspecvalsub01"/>
-                            </field>
-                          </box>
-                        </start>
-                        <end width="15" background-color="ui-01" id="tskspecvalend01">
-                          <button icon="carbon:chevron--right" loading="{page.state.taskSpecLookupLoader}" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspeclookupbtn01"/>
-                        </end>
-                      </border-layout>
-                    </end>
-                  </border-layout>
+                  <box direction="column" fill-parent-horizontal="true" padding-start="1" padding-end="1" padding-top="0.5" padding-bottom="0.5" id="tskspecinlinebox01">
+                    <field value="{item.assetattributedesc}" override-required="true" field-class-name="16-bold" padding="none" hide-label="true" id="tskspeclabelf01"/>
+                    <field value="{item.assetattrid}" override-required="true" hide-label="true" padding="none" id="tskspecattrf01"/>
+                    <border-layout fill-parent="true" padding="false" middle-border="true" id="tskspecvalueborder01">
+                      <start width="85" background-color="ui-01" horizontal-overflow="hidden" id="tskspecvalstart01">
+                        <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecvalbox01">
+                          <field label="Value" swap-position="false" id="tskspecvalf01">
+                            <sub-field value="{item.alnvalue}" id="tskspecvalsub01"/>
+                          </field>
+                        </box>
+                      </start>
+                      <end width="15" background-color="ui-01" id="tskspecvalend01">
+                        <button icon="carbon:chevron--right" loading="{page.state.taskSpecLookupLoader}" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspeclookupbtn01"/>
+                      </end>
+                    </border-layout>
+                  </box>
                 </top>
               </border-layout>
             </data-list>
@@ -1873,33 +1876,17 @@
                         </box>
                       </start>
                     </border-layout>
-                    <!-- Inline checklist panel for Task Specifications -->
-                    <panel id="task_spec_panel_inline" hidden="{!item.IGTWOACTIVITYSPECALN || !item.IGTWOACTIVITYSPECALN.length}">
-                      <data-list id="task_spec_inline_list" datasource="woPlanTaskDetailds[IGTWOACTIVITYSPECALN]" show-search="false">
-                        <border-layout slot="item" fill-parent="true" padding="false" id="task_spec_inline_ly_item">
-                          <start width="60" vertical-align="center" id="tsk_spec_il_start">
-                            <box padding-start="1" padding-top="0.5" padding-bottom="0.5" id="tsk_spec_il_box1">
-                              <label label="{item.assetattributedesc}" theme="16-regular" id="tsk_spec_il_lbl1"/>
-                            </box>
-                          </start>
-                          <end width="40" vertical-align="center" horizontal-align="end" id="tsk_spec_il_end">
-                            <box padding-end="1" vertical-align="center" horizontal-align="end" id="tsk_spec_il_box2">
-                              <label label="{item.alnvalue}" theme="16-bold" id="tsk_spec_il_lbl2"/>
-                            </box>
-                          </end>
-                        </border-layout>
-                      </data-list>
-                    </panel>
                     <!-- Task Specification Row -->
-                    <border-layout fill-parent="true" width="100" top-border="true" hidden="{!item.IGTWOACTIVITYSPECALN || !item.IGTWOACTIVITYSPECALN.length}" id="tskspecrow01">
+                    <border-layout fill-parent="true" width="100" top-border="true" hidden="{!item.igtwoactivityspecaln || !item.igtwoactivityspecaln.length}" id="tskspecrow01">
                       <start width="90" vertical-align="center" id="tskspecrowstart01">
-                        <box padding-start="1" padding-top="0.5" padding-bottom="0.5" id="tskspecrowlabelbox01">
-                          <label label="Specifications" theme="16-bold" id="tskspecrowlabel01"/>
+                        <box padding-start="1" padding-top="0.5" padding-bottom="0.5" direction="column" id="tskspecrowlabelbox01">
+                          <label label="Checklists" theme="16-bold" id="tskspecrowlabel01"/>
+                          <label label="{item.igtwoactivityspecaln.length} attribute(s)" theme="14-regular" id="tskspecrowsublabel01"/>
                         </box>
                       </start>
                       <end width="10" vertical-align="center" horizontal-align="end" id="tskspecrowend01">
-                        <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" id="tskspecrowbtnbox01">
-                          <button icon="carbon:chevron--right" kind="ghost" disabled="{!item.hideLockIcon}" on-click="openTaskSpecification" on-click-arg="{{'item': item, 'datasource': woPlanTaskDetailds}}" id="tskspecrowbtn01"/>
+                        <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" padding-end="1" id="tskspecrowbtnbox01">
+                          <button icon="carbon:chevron--right" kind="primary" on-click="openTaskSpecification" on-click-arg="{{'item': item, 'datasource': woPlanTaskDetailds}}" id="tskspecrowbtn01"/>
                         </box>
                       </end>
                     </border-layout>
@@ -1933,7 +1920,6 @@
                         <icon icon="Carbon:locked" hidden="{item.hideLockIcon || item.status_maxvalue === 'COMP'}" id="n_yb2"/>
                         <icon id="cnjkdsu6" icon="Carbon:checkmark--outline" fill="green" hidden="{item.status_maxvalue !== 'COMP'}"/>
                       </box>
-                      <button icon="carbon:checkmark" disabled="{page.state.taskDisabled}" loading="{item.disabled}" hidden="{(!item.hideLockIcon) || item.status_maxvalue === 'COMP' || item.status_maxvalue === 'CAN' || item.status_maxvalue === 'CLOSE' || (!item.allowTaskInteract)}" kind="{page.state.itemToOpen == item.workorderid ? 'primary':'secondary'}" on-click="completeWoTask" on-click-arg="{{'taskItem': item, 'status':'COMP', directlyCompleteWoTask : true}}" id="pb_mv"/>
                     </box>
                   </end>
                 </border-layout>
@@ -2196,7 +2182,7 @@
           <attribute name="wogroup" id="ek3yq"/>
           <attribute name="taskid" id="rj394"/>
           <attribute name="flowcontrolled" id="m57va"/>
-          <attribute name="woactivity{taskid,status}" id="a226d"/>
+          <attribute name="woactivity{taskid,status,IGTWOACTIVITYSPECALN{assetattributedesc,alnvalue}}" id="a226d"/>
           <attribute name="anywhererefid" id="ya4g8"/>
           <attribute name="rel.asset.mxapiasset{assetnum,description,plusacatid,islinear,lrm,direction,startmeasure,endmeasure}" id="kpn4_"/>
           <attribute name="location.location--locationnum" id="jmpan"/>
@@ -2779,7 +2765,7 @@
           <label wrap="true" label="You must first discard or save your changes." id="va4wd"/>
         </dialog>
         <!-- Specification Drawer -->
-        <sliding-drawer id="woSpecificationDrawer" on-close-action="onCloseSpecification" content-padding="false" align="start" header-text="Specifications">
+        <sliding-drawer id="woSpecificationDrawer" on-close-action="onCloseSpecification" content-padding="false" align="start" header-text="Checklists">
           <panel id="w9p5a">
             <box padding-top="1" id="rmdq3"/>
             <data-list datasource="woSpecification" show-search="false" id="wynw9">
@@ -2932,76 +2918,11 @@
             <border-layout fill-parent="true" top-border="false" middle-border="true" id="md8yv">
               <top id="bkxw4">
                 <box id="e53wm" fill-parent-horizontal="true" border-bottom="{app.device.isMaximoMobile ? page.state.linearAsset: woAssetLocationds.item.islinear}" padding-start="1" padding-end="1" padding-top="1" padding-bottom="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row'}">
-                  <box id="b69b_" manage-children="false" fill-parent="true" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '1.5'}">
-                    <box direction="column" padding="0" id="brq_e">
-                      <label label="Long description" padding="top" theme="14-regular" id="wq3bv"/>
-                      <rich-text-viewer content="{woDetailResource.item.description_longdescription}" content-limit="256" stripped="true" padding-start="0.5" padding-end="0.5" id="wzkgw"/>
-                    </box>
-                    <button hidden="{!woDetailResource.item.description_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" dialog="woDetailsDialog" id="bynje"/>
-                  </box>
-                  <border-layout id="w6bya">
-                    <middle id="wv6wp">
-                      <!-- Scheduled Start Date Block -->
-                      <!-- For future reference: We are using == instead of === here (page.params.fromQuickReport == 1) because on mobile, we are receiving inside a single quote ('1'), while RBA is sending it as a 1. -->
-                      <box padding-top=".5" direction="row" horizontal-align="start" vertical-align="start" id="vgxk8" hidden="{!app.state.systemProp['maximo.mobile.WOSchedulingDates'].includes('SCHEDULE') || (woDetailResource.item.isquickreported == 1 || page.params.fromQuickReport == 1)}">
-                        <field padding="none" id="x94_6">
-                          <sub-field value="{woDetailResource.item.schedstart}" type="date_full_month" id="zjzmk"/>
-                        </field>
-                        <label spacing="none" padding="none" label="at" hidden="{!woDetailResource.item.schedstart}" id="am98x"/>
-                        <field padding="none" hidden="{!woDetailResource.item.schedstart}" id="p36yb">
-                          <sub-field value="{woDetailResource.item.schedstart}" type="datetime_time_only" id="daye2"/>
-                        </field>
-                      </box>
-                      <!-- Scheduled Finish Date Block -->
-                      <box direction="row" id="g463q" hidden="{!app.state.systemProp['maximo.mobile.WOSchedulingDates'].includes('SCHEDULE') ||  (woDetailResource.item.isquickreported == 1 || page.params.fromQuickReport == 1)}">
-                        <field label="Schedule Dates" padding="none" id="xb4wa">
-                          <sub-field value="{woDetailResource.item.schedfinish}" type="date_full_month" id="xjryy"/>
-                        </field>
-                        <label spacing="none" padding="none" label="at" hidden="{!woDetailResource.item.schedfinish}" id="pz6xe"/>
-                        <field padding="none" hidden="{!woDetailResource.item.schedfinish}" id="z47wq">
-                          <sub-field value="{woDetailResource.item.schedfinish}" type="datetime_time_only" id="gynb3"/>
-                        </field>
-                      </box>
-                      <box direction="row" id="gkx2x" hidden="{!app.state.showAssignment || !(woDetailResource.item.isquickreported == 1 || page.params.fromQuickReport == 1)}">
-                        <field label="Actual Start" padding="none" id="ge4y8">
-                          <sub-field value="{woDetailResource.item.actstart}" type="date_full_month" id="xzkn3"/>
-                        </field>
-                        <label spacing="none" padding="none" label="at" hidden="{!woDetailResource.item.actstart}" id="nw4_7"/>
-                        <field padding="none" hidden="{!woDetailResource.item.actstart}" id="bex47">
-                          <sub-field value="{woDetailResource.item.actstart}" type="datetime_time_only" id="pk76_"/>
-                        </field>
-                      </box>
-                      <!-- Target Start Date Block -->
-                      <box padding-top=".5" direction="row" horizontal-align="start" vertical-align="start" id="ykqz_" hidden="{!app.state.systemProp['maximo.mobile.WOSchedulingDates'].includes('TARGET') ||  (woDetailResource.item.isquickreported == 1 || page.params.fromQuickReport == 1)}">
-                        <field padding="none" id="a6wre">
-                          <sub-field value="{woDetailResource.item.targstartdate}" type="date_full_month" id="k4r44"/>
-                        </field>
-                        <label spacing="none" padding="none" label="at" hidden="{!woDetailResource.item.targstartdate}" id="rg4ny"/>
-                        <field padding="none" hidden="{!woDetailResource.item.targstartdate}" id="r56yw">
-                          <sub-field value="{woDetailResource.item.targstartdate}" type="datetime_time_only" id="ap8pk"/>
-                        </field>
-                      </box>
-                      <!-- Target Finish Date Block -->
-                      <box direction="row" id="dq98g" hidden="{!app.state.systemProp['maximo.mobile.WOSchedulingDates'].includes('TARGET') ||  (woDetailResource.item.isquickreported == 1 || page.params.fromQuickReport == 1)}">
-                        <field label="Target Dates" padding="none" id="qj2g7">
-                          <sub-field value="{woDetailResource.item.targcompdate}" type="date_full_month" id="m_rer"/>
-                        </field>
-                        <label spacing="none" padding="none" label="at" hidden="{!woDetailResource.item.targcompdate}" id="r5eqw"/>
-                        <field padding="none" hidden="{!woDetailResource.item.targcompdate}" id="dg83r">
-                          <sub-field value="{woDetailResource.item.targcompdate}" type="datetime_time_only" id="y7r8p"/>
-                        </field>
-                      </box>
-                      <box direction="column" horizontal-align="start" vertical-align="start" id="r5eaq">
-                        <field label="Estimated duration" padding="none" id="z7rk8">
-                          <sub-field value="{woDetailResource.item.estdur}" type="duration_long" id="wj7dj"/>
-                        </field>
+                  <box id="b69b_" manage-children="false" fill-parent="true" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '1.5'}"/>
                         <box direction="row" padding-top="1" manage-children="false" id="qg2_2" vertical-align="center">
                           <button hidden="{!woDetailResource.item.autolocate || !app.state.isMapValid}" on-click="handleMapPage" on-click-arg="{{'item': woDetailResource.item, 'prevPage': 'wodetail'}}" icon="carbon:map" kind="secondary" id="jk9r5"/>
                           <field value="{woDetailResource.item.formattedaddress ? woDetailResource.item.formattedaddress : woDetailResource.item.serviceaddressdesc}" wrap="true" hide-label="true" id="bg7a9"/>
                         </box>
-                      </box>
-                    </middle>
-                  </border-layout>
                 </box>
               </top>
               <middle id="ypxvd">
@@ -3152,17 +3073,6 @@
               </adaptive-row>
             </box>
           </middle>
-          <bottom id="nz6dn">
-            <box direction="row" padding-start="1" padding-top=".5" padding-bottom=".5" id="n4bwk">
-              <barcode-button icon="maximo:scan" kind="secondary" on-scan="handleAssetScan" hidden="{!woDetailResource.item.assetnum}" padding="false" id="edeyd"/>
-              <button-group padding="false" id="byzkj">
-                <button icon="carbon:operation--gauge" on-click="openMeterReadingDrawer" on-click-arg="{{'item':woDetailResource.item}}" hidden="{(!item.assetmetercount &amp;&amp; !item.locationmetercount)}" kind="secondary" disabled="{!app.checkSigOption(`${app.state.woOSName}.ENTERREADINGS`)}" id="xpvzw"/>
-                <button icon="carbon:calendar--heat-map" on-click="openAssetWorkOrder" on-click-arg="{{'item':woDetailResource.item}}" hidden="{page.state.assetLocation}" disabled="{page.state.loading || page.state.workloading ||page.state.historyDisable}" kind="secondary" id="vde7k"/>
-                <button icon="maximo:up--or--down" on-click="openAssetDownTimeDrawer" on-click-arg="{{'item':woDetailResource.item,'datasource':woDetailResource}}" hidden="{!woDetailResource.item.assetnum}" disabled="{(!page.state.editWo) || !app.checkSigOption(`${app.state.woOSName}.REPDOWN`)}" kind="secondary" id="vq39q"/>
-                <button icon="maximo:asset--settings" kind="secondary" hidden="{!woDetailResource.item.asset || woDetailResource.item.asset.length === 0  ||  !woDetailResource.item.asset[0].plusacatid  || app.state.selectedWoListDs != 'todaywoassignedDS'}" on-click="navigateToAcm" on-click-arg="{{'item': woDetailResource.item,'datasource': woDetailResource}}" disabled="{!page.state.assetSwicthAccess}" id="b5kj6"/>
-              </button-group>
-            </box>
-          </bottom>
         </border-layout>
       </box>
       <box direction="column" background-color="ui-01" hidden="{!(woDetailResource.item.iscalibration || woDetailResource.item.pluscloop)}" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-top="1" padding-bottom="0" id="nk74a">
@@ -3242,7 +3152,7 @@
           <navigator-tile tile-label="Safety plan" pictogram="carbon:location-hazard" onclick-action="openHazardDrawer" onclick-action-arg="{{'item':woDetailResource.item}}" hidden="{page.state.loading || page.state.isSafetyPlanReviewed}" badge-type="dark-gray" id="e945r"/>
           <navigator-tile tile-label="Attachments" pictogram="maximo:document--attachments" onclick-action="showAttachmentPage" onclick-action-arg="{{'item':woDetailResource.item}}" id="dzzpa" badge-value="{app.state.doclinksCount}" badge-type="dark-gray"/>
           <navigator-tile tile-label="Follow-up work" pictogram="maximo:add-record" onclick-action="showRelatedWOPage" onclick-action-arg="{{'item':woDetailResource.item}}" badge-value="{page.state.followupCount}" id="vrry3" badge-type="dark-gray" hidden="{woDetailResource.item.istask}"/>
-          <navigator-tile tile-label="Specifications" pictogram="maximo:services" onclick-action="showSpecifications" hidden="{woSpecification.items.length === 0}" id="yx2ky"/>
+          <navigator-tile tile-label="Checklists" pictogram="maximo:services" onclick-action="showSpecifications" hidden="{woSpecification.items.length === 0}" id="yx2ky"/>
           <navigator-tile tile-label="Collaborate" pictogram="maximo:customer--service" onclick-action="gotoAssistApp" onclick-action-arg="{{'item':woDetailResource.item}}" badge-type="dark-gray" hidden="{!app.state.isAssistAccessible}" id="nj7pm"/>
         </navigator>
       </box>

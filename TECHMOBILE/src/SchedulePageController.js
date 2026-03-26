@@ -119,6 +119,16 @@ class SchedulePageController {
     }
   }
 
+  navigateToTask(item) {
+    if (item?.wonum) {
+      this.app.setCurrentPage({
+        name: 'tasks',
+        params: { wonum: item.wonum, href: item.href },
+      });
+      this.page.state.navigateToTaskPage = true;
+    }
+  }
+
 
   /**
    * Function to open a sliding-drawer dialog to show Materials and Tools for the Work Order

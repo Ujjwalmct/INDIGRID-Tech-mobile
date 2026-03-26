@@ -5,10 +5,10 @@
     <wrapped-text size="large" slot="slot1" max-length="100" label="{item.computedWorkTitle}" sub-label="{item.worktype}" id="n942w"/>
     <tag-group slot="slot2" wrap="true" max-tag-width="{app.state.screen.size !== 'sm' &amp;&amp; app.state.screen.size !== 'md' ? 300 : 200}" align="end" tags="{item.computedWOStatusPriority}" id="vadn6"/>
     <box slot="slot3" manage-children="false" id="mbj24">
-      <icon fill="red" icon="carbon:warning--alt--filled" hidden="{item.actfinish || (!item.computedIsOverDue || !item.schedfinish)}" id="b38em"/>
-      <date-relative value="{item.schedfinish}" type="date_full_month" text-prefix="Overdue since" theme="error" hidden="{item.actfinish || (!item.computedIsOverDue || !item.schedfinish)}" id="qj_467"/>
-      <date-relative value="{item.schedfinish}" type="date_full_month" text-prefix="Due" hidden="{item.actfinish || (item.computedIsOverDue || !item.schedfinish)}" id="qj_43"/>
-      <date-relative value="{item.actfinish}" type="date_full_month" text-prefix="Work completed" theme="default" hidden="{!(item.status === 'COMP' ||  item.status === 'CAN') &amp;&amp; (!item.actfinish)}" id="qj_577"/>
+      <icon fill="red" icon="carbon:warning--alt--filled" hidden="{true}" id="b38em"/>
+      <date-relative value="{item.schedfinish}" type="date_full_month" text-prefix="Overdue since" theme="error" hidden="{true}" id="qj_467"/>
+      <date-relative value="{item.schedfinish}" type="date_full_month" text-prefix="Due" hidden="{true}" id="qj_43"/>
+      <date-relative value="{item.actfinish}" type="date_full_month" text-prefix="Work completed" theme="default" hidden="{true}" id="qj_577"/>
     </box>
     <box slot="slot4" direction="column" fill-parent="true" hidden="{item.computedIsAssetLoc}" children-sizes="50,50" id="jn55d">
       <box direction="row" padding-top=".5" padding-bottom=".5" hidden="{!item.assetnumber || item.pluscloop}" children-sizes="5,95" id="jn05d">
@@ -32,7 +32,7 @@
         </box>
       </box>
     </box>
-    <box slot="slot5" fill-parent="true" padding-top=".5" direction="row" hidden="{!(item.formattedaddress || item.serviceaddressdesc)}" children-sizes="5,95" id="jv55d">
+    <box slot="slot5" fill-parent="true" padding-top=".5" direction="row" hidden="{true}" children-sizes="5,95" id="jv55d">
       <box id="aav8m">
         <icon icon="carbon:map" id="w5v20"/>
       </box>
@@ -43,6 +43,7 @@
       <button kind="secondary" icon="maximo:materialsandtools" on-click="openDrawer" on-click-arg="{{'item': item, 'datasource': wodetails}}" hidden="{item.computedDisableButton}" id="br_wn"/>
       <button kind="secondary" icon="carbon:map" hidden="{!item.autolocate || !app.state.isMapValid}" on-click="openMapPage" on-click-arg="{{'item': item, 'prevPage': 'schedulecardlist'}}" id="jya7d"/>
       <button kind="secondary" icon="carbon:document" loading="{item.wonum === page.state.currentItem &amp;&amp; page.state.chatLogLoading}" on-click="openWorkLogDrawer" on-click-arg="{{'item': item}}" id="eyw9b"/>
+      <button icon="carbon:list--numbered" on-click="navigateToTask" loading="{page.state.loading}" hidden="{woPlanTaskDetailds.state.hasData &amp;&amp; woPlanTaskDetailds.state.itemCount === 0}" tag-type="dark-gray" tag-value="{app.state.taskCount}" on-click-arg="{item}" kind="secondary" id="qdn4v"/>
       <button kind="secondary" icon="carbon:operation--gauge" on-click="openMeterReadingDrawer" hidden="{(!item.assetmetercount &amp;&amp; !item.locationmetercount)}" on-click-arg="{{'item': item}}" disabled="{!app.checkSigOption(`${app.state.woOSName}.ENTERREADINGS`)}" id="vqxv2"/>
       <button kind="secondary" icon="carbon:study--previous" loading="{item.wonum === page.state.currentItem &amp;&amp; app.state.assignmentLoading}" on-click="openReassignmentDialog" on-click-arg="{{'item': item, 'datasource': wodetails}}" tag-type="dark-gray" hidden="{['COMP', 'CAN', 'CLOSE'].includes(item.status_maxvalue) || !app.checkSigOption(`${app.state.woOSName}.ALLOWREASSIGNMENT`)}" id="reassignment_list"/>
     </button-group>
