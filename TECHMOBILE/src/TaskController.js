@@ -776,6 +776,7 @@ class TaskController {
       // Sync each edited spec value back to the parent task's igtwoactivityspecaln
       const editedSpecs = taskSpecDS.items || [];
       const originalSpecs = parentTask.igtwoactivityspecaln || [];
+      let isUpdated = false;
 
       for (const editedSpec of editedSpecs) {
         const original = originalSpecs.find(
@@ -783,11 +784,26 @@ class TaskController {
         );
         if (original && original.alnvalue !== editedSpec.alnvalue) {
           original.alnvalue = editedSpec.alnvalue;
+          isUpdated = true;
         }
       }
 
-      // Persist to server
-      await taskDS.save();
+      if (isUpdated) {
+        // Construct the payload explicitly for the updated array
+        const specPayload = {
+          href: parentTask.href,
+          igtwoactivityspecaln: originalSpecs
+        };
+        const option = {
+          responseProperties: "status",
+        };
+        await taskDS.put(specPayload, option);
+        await taskDS.forceReload();
+      } else {
+        // Fallback for no changes, or just normal save behavior
+        await taskDS.save();
+      }
+
       this.app.toast('Specifications saved', 'success');
       log.t(TAG, 'Task specifications saved successfully');
     } catch (error) {
