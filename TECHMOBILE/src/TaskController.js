@@ -747,10 +747,10 @@ class TaskController {
 
         if (allSpecs.length > 0 && taskWorkorderId) {
           // Filter: only specs that belong to THIS task (by refobjectid)
-          specs = allSpecs.filter(s => 
+          specs = allSpecs.filter(s =>
             String(s.refobjectid) === String(taskWorkorderId)
           );
-          
+
           // If refobjectid filter returned nothing, specs may not have
           // refobjectid yet (first load before schema update).
           // Fall back to showing all if filter returned 0 but source had data.
