@@ -224,12 +224,12 @@ class TaskController {
             if (taskds?.items) {
               taskds.items.forEach((item) => {
                 let status = item.status_maxvalue;
-                if (item.taskid && status !== 'CLOSE' && status !== 'CAN' && status !== 'COMP') {
+                if (item.taskid && status !== 'CLOSE' && status !== 'CAN' && status !== 'COMP' && status !== 'DRAFT' && status !== 'WAPPR') {
                   incompTaskCount.push(item._rowstamp);
                 }
               });
               // Show total items
-              this.app.state.taskCount = taskds.state.totalCount || taskds.items.length;
+              this.app.state.taskCount = incompTaskCount.length;
             }
             this.page.state.itemToOpens = [];
             this.page.state.itemToOpen = '';

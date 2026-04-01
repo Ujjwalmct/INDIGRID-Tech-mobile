@@ -233,7 +233,7 @@
         <attribute name="finishdate" id="wj66d"/>
       </schema>
     </maximo-datasource>
-    <maximo-datasource id="woPlanTaskDetailds" relationship="woactivity" page-size="25" order-by="taskid" domain-internal-where="status=INPRG,WAPPR,WMATL,APPR,WSCH,WPCOND,COMP" selection-mode="single" controller="WorkOrderDataController">
+    <maximo-datasource id="woPlanTaskDetailds" relationship="woactivity" page-size="200" order-by="taskid" domain-internal-where="status=INPRG,WAPPR,WMATL,APPR,WSCH,WPCOND,COMP" selection-mode="single" controller="WorkOrderDataController">
       <schema id="nrqzd">
         <attribute name="workorderid" unique-id="true" id="vv3x7"/>
         <attribute name="taskid" searchable="true" id="nywdm" sub-type="ALN"/>
