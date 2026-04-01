@@ -1051,7 +1051,27 @@ class TaskController {
     // Obtain current GPS position
     try {
       if (this.app.geolocation) {
-        await this.app.geolocation.updateGeolocation({ enableHighAccuracy: true });
+        // Trigger the GPS native request ONCE. 
+        // Awaiting it often returns immediately before the hardware actually gets a lock.
+        this.app.geolocation.updateGeolocation({ enableHighAccuracy: true });
+        
+        // The first time GPS is accessed, it may take several seconds to acquire a lock and populate state.
+        // We poll up to 8 times (approx 4 seconds) to allow the native module to update the coords.
+        let retries = 8;
+        let gpsAcquired = false;
+
+        while (retries > 0 && !gpsAcquired) {
+          const tempLat = this.app.geolocation?.state?.latitude;
+          const tempLon = this.app.geolocation?.state?.longitude;
+          
+          if (tempLat != null && tempLon != null && (tempLat !== 0 || tempLon !== 0)) {
+            gpsAcquired = true;
+          } else {
+            // Wait 500ms before checking the state again
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+          retries--;
+        }
       }
     } catch (e) {
       log.t(TAG, 'Geofence: GPS update failed — ' + e);
