@@ -246,7 +246,8 @@ class WorkOrderDataController {
         //  item.computedTaskStatus = this.computedTaskStatus(item);
 
       });
-      this.app.state.taskCount = incompleteItems.length;
+      // Count all items in woactivity regardless of taskid
+      this.app.state.taskCount = dataSource.state.totalCount || items.length;
     }
 
     //Filter the assets on basis of not null

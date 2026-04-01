@@ -228,7 +228,8 @@ class TaskController {
                   incompTaskCount.push(item._rowstamp);
                 }
               });
-              this.app.state.taskCount = incompTaskCount.length;
+              // Show total items
+              this.app.state.taskCount = taskds.state.totalCount || taskds.items.length;
             }
             this.page.state.itemToOpens = [];
             this.page.state.itemToOpen = '';
