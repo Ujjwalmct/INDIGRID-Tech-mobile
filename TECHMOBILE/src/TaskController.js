@@ -822,8 +822,7 @@ class TaskController {
         // Update the workorderspec on the parent task item directly,
         // mirroring the pattern used in WorkOrderDetailsController.saveSpecification()
         parentTask.workorderspec = specs.map(spec => ({
-          ...spec,
-          remarks: ''
+          ...spec
         }));
 
         let interactive = { interactive: !Device.get().isMaximoMobile };

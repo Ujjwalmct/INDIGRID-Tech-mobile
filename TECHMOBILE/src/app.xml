@@ -233,7 +233,7 @@
         <attribute name="finishdate" id="wj66d"/>
       </schema>
     </maximo-datasource>
-    <maximo-datasource id="woPlanTaskDetailds" relationship="woactivity" page-size="25" order-by="taskid" domain-internal-where="status=INPRG" selection-mode="single" controller="WorkOrderDataController">
+    <maximo-datasource id="woPlanTaskDetailds" relationship="woactivity" page-size="25" order-by="taskid" domain-internal-where="status=INPRG,WAPPR,WMATL,APPR,WSCH,WPCOND,COMP" selection-mode="single" controller="WorkOrderDataController">
       <schema id="nrqzd">
         <attribute name="workorderid" unique-id="true" id="vv3x7"/>
         <attribute name="taskid" searchable="true" id="nywdm" sub-type="ALN"/>
@@ -283,8 +283,8 @@
         <attribute name="parentchgsstatus" id="jynmp"/>
         <attribute name="activeassetmetermobile._dbcount--assetmetercount" id="x5g7d"/>
         <attribute name="activelocationmetermobile._dbcount--locationmetercount" id="ayz27"/>
-        <attribute name="IGTWOACTIVITYSPECALN{workorderspecid,assetattrid,assetattrid_description,alnvalue,assetattribute.description--assetattributedesc}" id="tsk_spec01"/>
-        <attribute name="workorderspec{workorderspecid,assetattrid,assetattrid_description,alnvalue,assetattribute.description--assetattributedesc}" id="tsk_spec02"/>
+        <attribute name="IGTWOACTIVITYSPECALN{workorderspecid,assetattrid,assetattrid_description,alnvalue,remarks,assetattribute.description--assetattributedesc}" id="tsk_spec01"/>
+        <attribute name="workorderspec{workorderspecid,assetattrid,assetattrid_description,alnvalue,remarks,assetattribute.description--assetattributedesc}" id="tsk_spec02"/>
       </schema>
     </maximo-datasource>
     <maximo-datasource id="wohazardmaterials" relationship="hazardousmaterials" selection-mode="none" notify-when-parent-loads="true" controller="ScheduleDataController">
@@ -1657,6 +1657,7 @@
               <attribute name="alnvalue" id="tskspecattr03"/>
               <attribute name="assetattributedesc" id="tskspecattr04"/>
               <attribute name="computedSpecLabel" id="tskspecattr05"/>
+              <attribute name="remarks" id="tskspecremarks01"/>
             </schema>
           </json-datasource>
           <panel id="tskspecpanel01">
@@ -1919,6 +1920,7 @@
                             <field label="Value" swap-position="false" id="tskspecinlinevalf01">
                               <sub-field value="{item.alnvalue}" id="tskspecinlinevalsub01"/>
                             </field>
+                            <smart-input label="Remarks" value="{item.remarks}" id="tskspecinlinevalrem01"/>
                           </box>
                         </start>
                         <end width="15" id="tskspecinlinevalend01">
@@ -2190,7 +2192,7 @@
           <attribute name="wogroup" id="ek3yq"/>
           <attribute name="taskid" id="rj394"/>
           <attribute name="flowcontrolled" id="m57va"/>
-          <attribute name="woactivity{taskid,status,workorderspec{assetattribute.description--assetattributedesc,assetattrid_description,alnvalue,assetattrid}}" id="a226d"/>
+          <attribute name="woactivity{taskid,status,workorderspec{assetattribute.description--assetattributedesc,assetattrid_description,alnvalue,remarks,assetattrid}}" id="a226d"/>
           <attribute name="anywhererefid" id="ya4g8"/>
           <attribute name="rel.asset.mxapiasset{assetnum,description,plusacatid,islinear,lrm,direction,startmeasure,endmeasure}" id="kpn4_"/>
           <attribute name="location.location--locationnum" id="jmpan"/>
