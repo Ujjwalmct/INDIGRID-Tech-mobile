@@ -18,7 +18,7 @@ class WorkOrderDataController {
     this.owner = owner;
     this.app = app;
   }
-  
+
   /**
    * Function to set the computedDisableButton state - used to show/hide the Materials button
    *  - The Work Order selected.
@@ -47,11 +47,11 @@ class WorkOrderDataController {
   }
 
   /**
-   * show/hide the Gauge Meter button for Work Order selected. */  
-   computedMultiDisableMeter(item) {
+   * show/hide the Gauge Meter button for Work Order selected. */
+  computedMultiDisableMeter(item) {
     return (!item.multiassetmetercount && !item.multilocationmetercount);
   }
-  
+
   computedWorkType(item) {
     let computedWorkType = null;
 
@@ -72,40 +72,40 @@ class WorkOrderDataController {
    * @return {hideStartButton} bool value to hideStartButton 
    */
   computedWOTimerStatus(item) {
-		return WOTimerUtil.computedTimerStatus(item, this.app.client?.userInfo?.labor?.laborcode);
+    return WOTimerUtil.computedTimerStatus(item, this.app.client?.userInfo?.labor?.laborcode);
   }
-  
+
   /**
    * Function to display WO status and priority on work order details page.
    */
-   computedWODtlStatusPriority(item) {
+  computedWODtlStatusPriority(item) {
     let schedulePage;
     let woDtlPage;
     //istanbul ignore next
 
     // DT214200 Addign the initialze to Maximo Mobile to resolve :: Unable to change status for work orders created without ever visiting the work order list.
 
-    if(this?.app?.pages) {
+    if (this?.app?.pages) {
       const schPage = (this.app.findPage("schedule")) ? 'schedule' : 'approvals';
       schedulePage = this.app.pages.find((element) => {
         return (element.name === schPage) ? element : '';
       });
-      if( !schedulePage.initialized){
+      if (!schedulePage.initialized) {
         schedulePage.initialize();
       }
       woDtlPage = this.app.findPage('workOrderDetails');
     }
 
     // DT214200 close.
-    let valueDisable = this.app.checkSigOption(`${this.app.state.woOSName}.STATUS`) ? false :true ;
+    let valueDisable = this.app.checkSigOption(`${this.app.state.woOSName}.STATUS`) ? false : true;
     //istanbul ignore next
     let woStatus = {
-      label: item.status_description || item.status, 
-      type: 'white', 
+      label: item.status_description || item.status,
+      type: 'white',
       action: true,
-      disabled: valueDisable, 
-      onClick: ()=>{
-        if(schedulePage && woDtlPage && woDtlPage?.findDatasource('woDetailResource')) {
+      disabled: valueDisable,
+      onClick: () => {
+        if (schedulePage && woDtlPage && woDtlPage?.findDatasource('woDetailResource')) {
           schedulePage.callController('openChangeStatusDialog', {
             item: item,
             datasource: woDtlPage.findDatasource('woDetailResource').name,
@@ -119,15 +119,15 @@ class WorkOrderDataController {
     const currentItem = woDetailDs.item
     const canInteract = CommonUtil.canInteractWorkOrder(currentItem, this.app);
 
-    if(item.wopriority !== null && item.wopriority !== "" && item.wopriority >=0){
-      if(canInteract) {
+    if (item.wopriority !== null && item.wopriority !== "" && item.wopriority >= 0) {
+      if (canInteract) {
         return [woStatus,
-        {
-          label: this.app.getLocalizedLabel('priority_label', `Priority ${item.wopriority}`, [item.wopriority]),
-          type: 'dark-gray',
-          disabled: valueDisable,
-        }
-      ];
+          {
+            label: this.app.getLocalizedLabel('priority_label', `Priority ${item.wopriority}`, [item.wopriority]),
+            type: 'dark-gray',
+            disabled: valueDisable,
+          }
+        ];
       } else return [
         {
           label: this.app.getLocalizedLabel('priority_label', `Priority ${item.wopriority}`, [item.wopriority]),
@@ -140,30 +140,30 @@ class WorkOrderDataController {
     }
   }
 
-/**
-   *  value to decide whetehr to show or hide start work or start travel.
-   */  
+  /**
+     *  value to decide whetehr to show or hide start work or start travel.
+     */
   computedWorkTypeButton(item) {
-    let isTravel = false;    
+    let isTravel = false;
     if (this.app && this.app.pages) {
-      
+
       // istanbul ignore next
       let schedulePage = this.app.pages.find((element) => {
-        if (element.name === 'schedule' || element.name === 'approvals') {            
-            return element;
-          }else{
-            return '';
-          }
+        if (element.name === 'schedule' || element.name === 'approvals') {
+          return element;
+        } else {
+          return '';
+        }
       });
-       // istanbul ignore next
-      if (schedulePage) {              
+      // istanbul ignore next
+      if (schedulePage) {
         let scheduleDataController = schedulePage.findDatasource('todaywoassignedDS');
         if (scheduleDataController) {
           isTravel = scheduleDataController.callController("computedWorkTypeStatus", item);
         }
         return isTravel;
       }
-      
+
     }
   }
 
@@ -185,10 +185,10 @@ class WorkOrderDataController {
     return result;
   }
 
-/**
- * @param {Object} item - The work order object
- * @returns {boolean} - True if the assignment button should be shown, false otherwise
- */
+  /**
+   * @param {Object} item - The work order object
+   * @returns {boolean} - True if the assignment button should be shown, false otherwise
+   */
   computedShowAssignment(item) {
     return !CommonUtil.canInteractWorkOrder(item, this.app);
   }
@@ -226,6 +226,10 @@ class WorkOrderDataController {
     let page = this.app.findPage("tasks");
     page.state.itemToOpen = page.state.itemToOpen ? page.state.itemToOpen : '';
     if (dataSource.name === 'woPlanTaskDetailds' && items.length) {
+      // Enrich task spec descriptions from assetAttributeDS
+      // (same pattern as WOCreateEditUtils.updateSpecificationAttributes)
+      await this._enrichTaskSpecDescriptions(items);
+
       items.forEach((item) => {
         let status = item.status_maxvalue;
         if (item.taskid && status !== 'COMP' && status !== 'CLOSE' && status !== 'CAN') {
@@ -235,10 +239,13 @@ class WorkOrderDataController {
           page.state.itemToOpen = item.workorderid;
         }
         item.allowTaskInteract = this.allowTaskInteract();
+        item.computedSpecProgress = this.computedSpecProgress(item);
+        item.computedSpecCount = this.computedSpecCount(item);
+        item.computedAllSpecsFilled = this.computedAllSpecsFilled(item);
         //DT365530 :: incomplete task completion issue
         //  item.computedTaskStatus = this.computedTaskStatus(item);
-        
-      });  
+
+      });
       this.app.state.taskCount = incompleteItems.length;
     }
 
@@ -247,12 +254,12 @@ class WorkOrderDataController {
       this.computedMultiAssetProgressCount(items);
       await dataSource.initializeQbe();
       await dataSource.searchQBE();
-      
+
       //Set assetToOpen attribute value
       let detailsPage = this.app.findPage("workOrderDetails");
       detailsPage.state.assetToOpen = detailsPage.state.assetToOpen ? detailsPage.state.assetToOpen : '';
 
-      if(detailsPage.state.assetToOpen === '') {
+      if (detailsPage.state.assetToOpen === '') {
         items.forEach((item) => {
           let progress = item.progress;
           if (!progress && this.app.currentPage.name === 'workOrderDetails' && detailsPage.state.assetToOpen === '') {
@@ -260,7 +267,7 @@ class WorkOrderDataController {
           }
         });
       }
-    } 
+    }
 
     // condition to update the multiAsset count when WO doesn't have any multiassetlocci
     if (dataSource.name === 'woMultiAssetLocationds' && !items.length) {
@@ -301,14 +308,14 @@ class WorkOrderDataController {
     const { assetnum, assetdescription, location, locationdesc } = item || {};
 
     return assetnum ? `${assetnum} ${assetdescription || ''}`.trim() :
-        location ? `${location} ${locationdesc || ''}`.trim() : ''; // Explicitly return an empty string
+      location ? `${location} ${locationdesc || ''}`.trim() : ''; // Explicitly return an empty string
   }
 
 
   computedMeterCurDate() {
     return this.app.dataFormatter.currentUserDateTime();
   }
-  
+
   computedMeterCurTime() {
     return this.app.dataFormatter.currentUserDateTime();
   }
@@ -322,18 +329,18 @@ class WorkOrderDataController {
     let tasksPage;
     let taskDS;
     //istanbul ignore next
-    if(this.app) {
+    if (this.app) {
       tasksPage = this.app.findPage('tasks');
       taskDS = this.app.findDatasource('woPlanTaskDetailds');
     }
 
     //istanbul ignore next
     let woStatus = {
-      label: item.status_description || item.status, 
-      type: 'warm-gray', 
-      action: true, 
-      onClick: ()=>{
-        if(tasksPage && taskDS) {
+      label: item.status_description || item.status,
+      type: 'warm-gray',
+      action: true,
+      onClick: () => {
+        if (tasksPage && taskDS) {
           tasksPage.callController('openChangeStatusDialog', {
             item: item,
             datasource: taskDS.name,
@@ -358,25 +365,25 @@ class WorkOrderDataController {
     let workType = [];
     const isFlowControlled = this.app.findDatasource('woDetailds')?.item?.flowcontrolled;
     //istanbul ignore else
-    if(woWorkType) {
+    if (woWorkType) {
       workType = workTypeDs.items.filter(
         (item) => item.worktype === woWorkType
       );
     }
     //istanbul ignore else
-    if(isFlowControlled) { 
+    if (isFlowControlled) {
       let isCompletedPredecessor = this.app.callController('validatePredessor', taskDS.items, item);
       //istanbul ignore if
-      if(!isCompletedPredecessor && item.predessorwos && item.status_maxvalue !== 'COMP') {
+      if (!isCompletedPredecessor && item.predessorwos && item.status_maxvalue !== 'COMP') {
         return false;
       }
       //istanbul ignore else
-      if(workType && workType?.length) {
+      if (workType && workType?.length) {
         //istanbul ignore if
-        if(workType[0].startstatus && workType[0].startstatus_maxvalue === 'COMP') {
+        if (workType[0].startstatus && workType[0].startstatus_maxvalue === 'COMP') {
           return false
         }
-        if(workType[0].startstatus && workType[0].startstatus_maxvalue !== 'INPRG') {
+        if (workType[0].startstatus && workType[0].startstatus_maxvalue !== 'INPRG') {
           return true;
         }
       }
@@ -394,24 +401,24 @@ class WorkOrderDataController {
   computedParentAssetLocation(item) {
     let woDetailds = this.app.findDatasource("woDetailResource");
     let workorder = woDetailds.item;
-    
+
     //istanbul ignore else
-    if(item && item.assetnum && item.location && workorder.assetnumber && workorder.locationnum){
+    if (item && item.assetnum && item.location && workorder.assetnumber && workorder.locationnum) {
       let parent_asset = (item.assetnum && (item.assetnum !== workorder.assetnumber));
       let parent_location = (item.location && (item.location !== workorder.locationnum));
       //istanbul ignore else
       return !(parent_asset || parent_location);
     }
-    else if(item && !item.assetnum && !item.location && !workorder.assetnumber && !workorder.locationnum) {
+    else if (item && !item.assetnum && !item.location && !workorder.assetnumber && !workorder.locationnum) {
       return true;
     }
-    else if(item && !item.assetnum && item.location && !workorder.assetnumber && workorder.locationnum ){
+    else if (item && !item.assetnum && item.location && !workorder.assetnumber && workorder.locationnum) {
       return item.location === workorder.locationnum;
     }
-    else if(item && item.assetnum && !item.location && workorder.assetnumber && !workorder.locationnum ){
+    else if (item && item.assetnum && !item.location && workorder.assetnumber && !workorder.locationnum) {
       return item.assetnum === workorder.assetnumber;
     }
-    else{
+    else {
       return false;
     }
   }
@@ -422,16 +429,16 @@ class WorkOrderDataController {
    */
   computedPredecessorString(item) {
     let str = '';
-    if(item.status_maxvalue !== 'COMP' && item.predessorwos) { 
+    if (item.status_maxvalue !== 'COMP' && item.predessorwos) {
       let taskids;
       //istanbul ignore if
-      if(item.predessorwos.includes('(')) {
-        taskids = this.app.callController('getPredssorWoTask',item);
+      if (item.predessorwos.includes('(')) {
+        taskids = this.app.callController('getPredssorWoTask', item);
       } else {
         taskids = item.predessorwos.split(',');
       }
       //istanbul ignore else
-      if(taskids && taskids.length) {
+      if (taskids && taskids.length) {
         return taskids.toString();
       }
     } else {
@@ -439,13 +446,115 @@ class WorkOrderDataController {
     }
   }
 
-   /**
-   * Return boolean value to show or hide border
-   * @param {item} task item
-   */
-  computedBorderDisplay(item){
+  /**
+  * Return boolean value to show or hide border
+  * @param {item} task item
+  */
+  computedBorderDisplay(item) {
     //istanbul ignore else
-   return  !((!item.computedParentAssetLocation && !item.description_longdescription) || (item.computedParentAssetLocation && item.description_longdescription) || (item.computedParentAssetLocation && !item.description_longdescription));
+    return !((!item.computedParentAssetLocation && !item.description_longdescription) || (item.computedParentAssetLocation && item.description_longdescription) || (item.computedParentAssetLocation && !item.description_longdescription));
+  }
+
+  /**
+   * Returns a checklist progress string like "3/4" showing
+   * how many workorderspec items have alnvalue filled vs total.
+   * @param {Object} item - task item
+   * @returns {string} progress string e.g. "3/4" or empty if no specs
+   */
+  computedSpecProgress(item) {
+    const specs = this._getUniqueSpecs(item);
+    if (!specs.length) return '';
+    const filled = specs.filter(s => s.alnvalue).length;
+    return `${filled}/${specs.length}`;
+  }
+
+  /**
+   * Returns the number of unique workorderspec items for display.
+   * @param {Object} item - task item
+   * @returns {number} unique spec count
+   */
+  computedSpecCount(item) {
+    return this._getUniqueSpecs(item).length;
+  }
+
+  /**
+   * Deduplicates workorderspec by workorderspecid to avoid double
+   * counting from rel.workorderspec and rel.IGTWOACTIVITYSPECALN.
+   */
+  _getUniqueSpecs(item) {
+    const specs = item.workorderspec || [];
+    if (!specs.length) return [];
+    const seen = new Set();
+    return specs.filter(s => {
+      if (s.workorderspecid && seen.has(s.workorderspecid)) return false;
+      if (s.workorderspecid) seen.add(s.workorderspecid);
+      return true;
+    });
+  }
+
+  /**
+   * Returns true if all workorderspec items have a filled alnvalue.
+   * Used to show a green indicator on the task row.
+   * @param {Object} item - task item
+   * @returns {boolean}
+   */
+  computedAllSpecsFilled(item) {
+    const specs = this._getUniqueSpecs(item);
+    if (!specs.length) return false;
+    return specs.every(s => s.alnvalue && s.alnvalue.trim() !== '');
+  }
+
+  /**
+   * Enriches task specification items with descriptions from assetAttributeDS.
+   * The schema alias assetattribute.description--assetattributedesc does not resolve
+   * for nested child relationships (woactivity > workorderspec), so we look up
+   * descriptions at runtime from the pre-loaded assetAttributeDS lookup table.
+   * This follows the same pattern as WOCreateEditUtils.updateSpecificationAttributes.
+   * @param {Array} taskItems - array of task items from woPlanTaskDetailds
+   */
+  async _enrichTaskSpecDescriptions(taskItems) {
+    try {
+      const assetAttributeDS = this.app.findDatasource('assetAttributeDS');
+      if (!assetAttributeDS) return;
+
+      // Collect all unique assetattrid values across all task specs
+      const allAttrIds = new Set();
+      taskItems.forEach(task => {
+        const specs = task.workorderspec || [];
+        specs.forEach(spec => {
+          if (spec.assetattrid && !spec.assetattributedesc) {
+            allAttrIds.add(spec.assetattrid);
+          }
+        });
+      });
+
+      if (allAttrIds.size === 0) return;
+
+      // Query assetAttributeDS for all needed attribute IDs at once
+      await assetAttributeDS.initializeQbe();
+      assetAttributeDS.setQBE('assetattrid', 'in', Array.from(allAttrIds));
+      await assetAttributeDS.searchQBE();
+
+      // Build a lookup map: assetattrid -> description
+      const descMap = {};
+      assetAttributeDS.items.forEach(attr => {
+        if (attr.description) {
+          descMap[attr.assetattrid] = attr.description;
+        }
+      });
+
+      // Inject descriptions into each spec item
+      taskItems.forEach(task => {
+        const specs = task.workorderspec || [];
+        specs.forEach(spec => {
+          if (spec.assetattrid && !spec.assetattributedesc && descMap[spec.assetattrid]) {
+            spec.assetattributedesc = descMap[spec.assetattrid];
+          }
+        });
+      });
+    } catch (e) {
+      // Non-critical: if enrichment fails, the UI falls back to assetattrid
+    }
   }
 }
 

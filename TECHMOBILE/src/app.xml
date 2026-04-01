@@ -76,8 +76,8 @@
     <menu-item label="My Schedule" icon="maximo:schedule" page="schedulewolist" id="w6_yq"/>
     <menu-item label="Materials &amp; Tools" icon="maximo:materialsandtools" page="materials" id="r9zjz"/>
     <menu-item label="Map" icon="maximo:map" page="map" id="xb5jv"/>
-    <menu-item action-type="add" label="Create work order" icon="maximo:add--record" page="createworkorder" sigoption="MXAPIWODETAIL.createnewwo" id="xv8pg"/>
-    <menu-item action-type="add" label="New work order (via Quick Reporting)" icon="maximo:add--record" page="quickreport" sigoption="MXAPIWODETAIL.quickrep" id="xv8pg1"/>
+    <menu-item action-type="add" label="Create work order" icon="maximo:add--record" page="createworkorder" sigoption="IGTAPIWODETAIL.createnewwo" id="xv8pg"/>
+    <menu-item action-type="add" label="New work order (via Quick Reporting)" icon="maximo:add--record" page="quickreport" sigoption="IGTAPIWODETAIL.quickrep" id="xv8pg1"/>
   </menu>
   <!-- Maximo datasources -->
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -86,7 +86,7 @@
   <!-- asset function and calibration point details and      -->
   <!-- will be used by Calibration App                       -->
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <maximo-datasource id="woDetailCalibration" id-attribute="workorderid" default="true" object-structure="mxapiwodetail" can-load="{app.state.canLoadCalibrationData}">
+  <maximo-datasource id="woDetailCalibration" id-attribute="workorderid" default="true" object-structure="igtapiwodetail" can-load="{app.state.canLoadCalibrationData}">
     <schema id="q4j8_">
       <attribute name="workorderid" unique-id="true" id="m_8a5"/>
       <attribute name="pluscloop" id="g8arw"/>
@@ -163,7 +163,7 @@
     <maximo-datasource-override id="domaincalstatusds" mobile-qbe-filter="{{'domainid': '=PLUSCCALSTATUS'}}" where="domainid=&quot;PLUSCCALSTATUS&quot;" pre-load="true" saved-query=""/>
     <maximo-datasource-override id="assignmentdomainData" where="domainid=&quot;ASSTAT&quot;" pre-load="true" saved-query=""/>
   </maximo-datasource>
-  <maximo-datasource id="woDetailds" object-structure="mxapiwodetail" can-load="{app.state.canLoadWoDetailDS}">
+  <maximo-datasource id="woDetailds" object-structure="igtapiwodetail" can-load="{app.state.canLoadWoDetailDS}">
     <schema id="yb7bq">
       <attribute id="km2bm" name="wonum" unique-id="true"/>
       <attribute name="workorderid" id="e697r"/>
@@ -233,7 +233,7 @@
         <attribute name="finishdate" id="wj66d"/>
       </schema>
     </maximo-datasource>
-    <maximo-datasource id="woPlanTaskDetailds" relationship="woactivity" page-size="25" order-by="taskid" domain-internal-where="status=INPRG,WAPPR,WMATL,APPR,WSCH,WPCOND,COMP" selection-mode="single" controller="WorkOrderDataController">
+    <maximo-datasource id="woPlanTaskDetailds" relationship="woactivity" page-size="25" order-by="taskid" domain-internal-where="status=INPRG" selection-mode="single" controller="WorkOrderDataController">
       <schema id="nrqzd">
         <attribute name="workorderid" unique-id="true" id="vv3x7"/>
         <attribute name="taskid" searchable="true" id="nywdm" sub-type="ALN"/>
@@ -283,8 +283,8 @@
         <attribute name="parentchgsstatus" id="jynmp"/>
         <attribute name="activeassetmetermobile._dbcount--assetmetercount" id="x5g7d"/>
         <attribute name="activelocationmetermobile._dbcount--locationmetercount" id="ayz27"/>
-        <attribute name="rel.IGTWOACTIVITYSPECALN{workorderspecid,refobjectid,assetattrid,alnvalue,assetattribute.description--assetattributedesc}" id="tsk_spec01"/>
-        <attribute name="rel.workorderspec{workorderspecid,refobjectid,assetattrid,alnvalue,assetattribute.description--assetattributedesc}" id="tsk_spec02"/>
+        <attribute name="IGTWOACTIVITYSPECALN{workorderspecid,assetattrid,assetattrid_description,alnvalue,assetattribute.description--assetattributedesc}" id="tsk_spec01"/>
+        <attribute name="workorderspec{workorderspecid,assetattrid,assetattrid_description,alnvalue,assetattribute.description--assetattributedesc}" id="tsk_spec02"/>
       </schema>
     </maximo-datasource>
     <maximo-datasource id="wohazardmaterials" relationship="hazardousmaterials" selection-mode="none" notify-when-parent-loads="true" controller="ScheduleDataController">
@@ -979,7 +979,7 @@
         <state name="canLoadWoLaborDetaildsOnSchedule" value="false" type="boolean" id="qv428"/>
         <state name="editWo" value="false" type="boolean" id="dkw5x"/>
       </states>
-      <maximo-datasource id="todaywoassignedDS" object-structure="mxapiwodetail" saved-query="ASSIGNEDWOLIST" mobile-qbe-filter="{{'status_maxvalue': '!=COMP,CAN,CLOSE,WAPPR', 'hidewo': '!=HIDE'}}" offline-immediate-download="true" order-by="wopriority" pre-load="false" controller="ScheduleDataController" selection-mode="none" geometry-format="geojson" default="true" page-size="25">
+      <maximo-datasource id="todaywoassignedDS" object-structure="igtapiwodetail" saved-query="ASSIGNEDWOLIST" mobile-qbe-filter="{{'status_maxvalue': '!=COMP,CAN,CLOSE,WAPPR', 'hidewo': '!=HIDE'}}" offline-immediate-download="true" order-by="wopriority" pre-load="false" controller="ScheduleDataController" selection-mode="none" geometry-format="geojson" default="true" page-size="25">
         <mobile-referenced-load id="x74dg">
           <mobile-datasource-reference app-id="inspection" datasource-id="assignedworktolist" id="g339r"/>
           <mobile-datasource-reference app-id="plusassetswitch" datasource-id="AcmDS" min-interval="300" id="bk2dp"/>
@@ -1128,7 +1128,7 @@
         <maximo-datasource-override id="completedCloseDS" saved-query="MOBWORKHIST" offline-immediate-download="false" mobile-qbe-filter="{{}}"/>
         <maximo-datasource-override id="serverSearch" saved-query="SERVERSEARCH" mobile-server-search="true" offline-immediate-download="false" page-size="20" mobile-qbe-filter="{{}}"/>
       </maximo-datasource>
-      <maximo-datasource id="wodetails" object-structure="mxapiwodetail" can-load="{page.state.canLoadWoDetails}">
+      <maximo-datasource id="wodetails" object-structure="igtapiwodetail" can-load="{page.state.canLoadWoDetails}">
         <schema id="nd6v9">
           <attribute name="workorderid" unique-id="true" id="wmkv_"/>
           <attribute name="wonum" id="mwjz6"/>
@@ -1220,7 +1220,7 @@
           <attribute name="maxvalue" id="rawnz"/>
         </schema>
       </json-datasource>
-      <maximo-datasource id="mapSketchDS" object-structure="mxapiwodetail" can-load="{app.state.canloadmapsketch}">
+      <maximo-datasource id="mapSketchDS" object-structure="igtapiwodetail" can-load="{app.state.canloadmapsketch}">
         <schema id="prd2r">
           <attribute name="mapsketch{sketchList,sketchname,mapsketchid,recordnum}" id="qgbka"/>
         </schema>
@@ -1603,7 +1603,7 @@
           <attribute name="maxvalue" id="q5n8w"/>
         </schema>
       </json-datasource>
-      <json-datasource id="taskSpecDisplayDS" selection-mode="none" src="{[]}" id="task_spec_json_ds">
+      <json-datasource id="taskSpecDisplayDS" selection-mode="none" src="{[]}">
         <schema id="task_spec_schema">
           <attribute name="workorderspecid" unique-id="true" id="task_spec_id"/>
           <attribute name="assetattributedesc" id="task_spec_attr"/>
@@ -1666,7 +1666,6 @@
                 <top id="tskspectop01">
                   <box direction="column" fill-parent-horizontal="true" padding-start="1" padding-end="1" padding-top="0.5" padding-bottom="0.5" id="tskspecinlinebox01">
                     <field value="{item.assetattributedesc}" override-required="true" field-class-name="16-bold" padding="none" hide-label="true" id="tskspeclabelf01"/>
-                    <field value="{item.assetattrid}" override-required="true" hide-label="true" padding="none" id="tskspecattrf01"/>
                     <border-layout fill-parent="true" padding="false" middle-border="true" id="tskspecvalueborder01">
                       <start width="85" background-color="ui-01" horizontal-overflow="hidden" id="tskspecvalstart01">
                         <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecvalbox01">
@@ -1676,7 +1675,7 @@
                         </box>
                       </start>
                       <end width="15" background-color="ui-01" id="tskspecvalend01">
-                        <button icon="carbon:chevron--right" loading="{page.state.taskSpecLookupLoader}" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspeclookupbtn01"/>
+                        <button icon="carbon:chevron--right" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspeclookupbtn01"/>
                       </end>
                     </border-layout>
                   </box>
@@ -1692,255 +1691,247 @@
         <lookup id="taskSpecAlnDomainLookup" show-search="true" enable-barcode-scanner="true" lookup-heading="Domain" datasource="alnDomainDS" on-item-click="chooseTaskSpecDomain" border="true" lookup-attributes="{['value', 'description']}" height="400"/>
       </dialogs>
       <box direction="column" id="jkknb" fill-parent-horizontal="true" padding-bottom="0" padding-top="0">
-        <data-list id="q439v" datasource="woPlanTaskDetailds" on-item-click="onTaskItemClick" item-to-open="{page.state.itemToOpen}" items-to-open="{page.state.itemToOpens}" tight="true" show-search="false" margin="{app.state.screen.size === 'sm' ? false : true}">
+        <data-list id="q439v" datasource="woPlanTaskDetailds" on-item-click="onTaskItemClick" show-search="false" data-list-height-hint="75">
           <!-- renderer for list item details -->
-          <list-details id="baqaa">
-            <border-layout fill-parent="true" middle-border="{item.computedBorderDisplay}" top-border="{item.description_longdescription || app.state.isAssistAccessible || (page.state.inspectionAccess &amp;&amp; item.inspectionbatchresult)}" padding="false" id="b5zn8">
-              <top id="x29yd">
-                <box direction="column" fill-parent-horizontal="true" id="mpk_z">
-                  <border-layout fill-parent="true" hidden="{!item.hideLockIcon}" padding="false" top-border="true" id="exnz_">
-                    <bottom id="x7pb_">
-                      <box id="jk_89" fill-parent-horizontal="true" border-top="true">
-                        <tag-group align="none" tags="{item.computedTaskStatus}" hidden="{!item.hideLockIcon}" id="gxm55"/>
-                      </box>
-                    </bottom>
-                  </border-layout>
-                  <border-layout fill-parent="true" hidden="{item.woflowcontrolled &amp;&amp; !item.computedPredecessorString}" middle-border="{!item.hideLockIcon || !item.computedParentAssetLocation || item.pointnum}" bottom-border="{!item.hideLockIcon &amp;&amp; !item.computedParentAssetLocation &amp;&amp; !item.description_longdescription}" padding="false" id="kmkr8">
-                    <bottom vertical-align="center" id="g8wn7">
-                      <box fill-parent-horizontal="true" padding-bottom="1" padding-top="1" hidden="{item.hideLockIcon}" id="ra58z">
-                        <label label="Complete task {item.computedPredecessorString} first." wrap="true" hidden="{item.hideLockIcon}" id="jrqqj"/>
-                      </box>
-                    </bottom>
-                  </border-layout>
-                </box>
-              </top>
-              <middle id="g9vn6" horizontal-overflow="hidden">
-                <border-layout top-border="true" bottom-border="true" fill-parent="true" hidden="{item.computedParentAssetLocation}" width="100" padding="false" id="byn5n">
-                  <start id="m3je8" horizontal-overflow="hidden">
-                    <border-layout fill-parent="true" width="100" padding="false" id="rn5qm">
-                      <top id="hju87"/>
-                      <middle vertical-align="center" id="hjul9" horizontal-overflow="hidden">
-                        <adaptive-row id="hj868">
-                          <adaptive-column large-width="80" small-width="80" medium-width="70" id="gh_89">
-                            <adaptive-row id="sl_7h">
-                              <adaptive-column large-width="45" small-width="100" medium-width="100" id="nkj98" small-horizontal-align="start" large-horizontal-align="start" medium-horizontal-align="start">
-                                <border-layout fill-parent="true" id="dsk78">
-                                  <start id="n3747" vertical-align="center">
-                                    <button icon="carbon:asset" id="wrrn7"/>
-                                  </start>
-                                  <middle id="y5x7m" vertical-align="center">
-                                    <box padding-top="0.5" padding-bottom="0.5" padding-start="-0.5" padding-end="0.5" direction="column" vertical-align="center" fill-parent-horizontal="true" id="j3ke3">
-                                      <field hide-label="true" padding="none" empty-field-placeholder="-" value="{item.assetnum}" id="jy394"/>
-                                      <field wrap="true" hide-label="true" padding="none" empty-field-placeholder="-" value="{item.assetdescription}" id="bgpk2"/>
-                                    </box>
-                                  </middle>
-                                </border-layout>
-                              </adaptive-column>
-                              <adaptive-column large-width="45" small-width="80" medium-width="100" id="gh68g" small-horizontal-align="start" large-horizontal-align="start" medium-horizontal-align="start">
-                                <border-layout id="gfk78">
-                                  <start id="vj87f" vertical-align="center">
-                                    <button icon="carbon:location" id="cs779"/>
-                                  </start>
-                                  <middle id="hsd99" vertical-align="center">
-                                    <box padding-top="0.5" padding-bottom="0.5" padding-start="-0.5" padding-end="0.5" direction="column" children-hide-overflow="true" vertical-align="center" id="gjf90">
-                                      <field hide-label="true" padding="none" empty-field-placeholder="-" value="{item.location}" id="ds_u8"/>
-                                      <field wrap="true" hide-label="true" padding="none" empty-field-placeholder="-" value="{item.locationdesc}" id="pds6r"/>
-                                    </box>
-                                  </middle>
-                                </border-layout>
-                              </adaptive-column>
-                            </adaptive-row>
-                          </adaptive-column>
-                          <adaptive-column large-width="20" small-width="10" medium-width="30" id="hkj67" small-horizontal-align="end" large-horizontal-align="end" medium-horizontal-align="end">
-                            <box id="jh7jm" padding-top="{app.state.screen.size === 'sm' ? '1':'0' }" vertical-align="center" fill-parent-vertical="true">
-                              <button id="dgfg7" hidden="{!item.hasHref &amp;&amp; item.taskid != page.state.currentTaskId}" icon="Carbon:chevron--right" disabled="{!item.hideLockIcon}" kind="ghost" on-click="redirectToAssetDetails" on-click-arg="{{'item': item}}"/>
-                            </box>
-                          </adaptive-column>
-                        </adaptive-row>
-                      </middle>
-                    </border-layout>
+          <list-item id="r6bdn_outer">
+            <box direction="column" fill-parent-horizontal="true" id="tskitemwrap01">
+              <!-- Single header row — green background + white text when all specs filled -->
+              <box fill-parent-horizontal="true" background-color="{item.computedAllSpecsFilled ? 'support-02' : ''}" padding="0.5" id="tskrowbox01">
+                <border-layout fill-parent="true" padding="false" id="gar9_">
+                  <start width="10" id="vzp4j" vertical-align="center">
+                    <box fill-parent-horizontal="true" id="kw5bn">
+                      <label label="{item.taskid}." theme="20-regular" id="e9rgg" color="{item.computedAllSpecsFilled ? 'white0' : ''}"/>
+                    </box>
                   </start>
+                  <middle id="kaz_j" vertical-align="center">
+                    <box fill-parent-horizontal="true" id="k3gmr">
+                      <label label="{item.description}" theme="16-bold" wrap="true" id="q_k3x" color="{item.computedAllSpecsFilled ? 'white0' : ''}"/>
+                    </box>
+                  </middle>
+                  <end width="15" id="tskprogend" vertical-align="center" horizontal-align="end">
+                    <box fill-parent-horizontal="true" id="tskprogbox01">
+                      <label label="{item.computedSpecProgress}" theme="16-bold" hidden="{!item.workorderspec || !item.workorderspec.length}" id="tskspecprogresslbl01" color="{item.computedAllSpecsFilled ? 'white0' : ''}"/>
+                    </box>
+                  </end>
                 </border-layout>
-              </middle>
-              <bottom id="vpjq7">
-                <border-layout fill-parent="true" width="100" padding="true" id="naa4p">
-                  <top id="jwyx_">
-                    <border-layout hidden="{!item.description_longdescription}" bottom-border="true" padding="true" fill-parent="true" id="g2ze5">
-                      <start id="mj4nj" width="80">
-                        <box direction="row" padding="0.5" id="kjv96">
-                          <rich-text-viewer id="q98gx" content="{item.description_longdescription}" stripped="true" content-limit="350"/>
-                        </box>
-                      </start>
-                      <middle id="p955q" width="5" vertical-align="end" horizontal-align="end">
-                        <button id="bknra" icon="carbon:maximize" kind="ghost" on-click="openTaskLongDesc" on-click-arg="{item}"/>
-                      </middle>
-                    </border-layout>
+              </box>
+              <!-- Expanded detail section - shown when this item is open -->
+              <box direction="column" fill-parent-horizontal="true" hidden="{page.state.openTaskId !== item.taskid}" id="tskdetailbox01">
+                <border-layout fill-parent="true" middle-border="{item.computedBorderDisplay}" top-border="{item.description_longdescription || app.state.isAssistAccessible || (page.state.inspectionAccess &amp;&amp; item.inspectionbatchresult)}" padding="false" id="b5zn8">
+                  <top id="x29yd">
+                    <box direction="column" fill-parent-horizontal="true" id="mpk_z">
+                      <border-layout fill-parent="true" hidden="true" padding="false" top-border="true" id="exnz_">
+                        <bottom id="x7pb_">
+                          <box id="jk_89" fill-parent-horizontal="true" border-top="true">
+                            <tag-group align="none" tags="{item.computedTaskStatus}" hidden="true" id="gxm55"/>
+                          </box>
+                        </bottom>
+                      </border-layout>
+                      <border-layout fill-parent="true" hidden="{item.woflowcontrolled &amp;&amp; !item.computedPredecessorString}" middle-border="{!item.hideLockIcon || !item.computedParentAssetLocation || item.pointnum}" bottom-border="{!item.hideLockIcon &amp;&amp; !item.computedParentAssetLocation &amp;&amp; !item.description_longdescription}" padding="false" id="kmkr8">
+                        <bottom vertical-align="center" id="g8wn7">
+                          <box fill-parent-horizontal="true" padding-bottom="1" padding-top="1" hidden="{item.hideLockIcon}" id="ra58z">
+                            <label label="Complete task {item.computedPredecessorString} first." wrap="true" hidden="{item.hideLockIcon}" id="jrqqj"/>
+                          </box>
+                        </bottom>
+                      </border-layout>
+                    </box>
                   </top>
-                  <middle id="bpqrg">
-                    <border-layout fill-parent="true" width="100" top-border="true" hidden="{!item.asset || !item.asset[0].plusacatid || item.computedParentAssetLocation || app.state.selectedWoListDs != 'todaywoassignedDS'}" id="v6vn4">
-                      <start width="90" vertical-align="center" id="yaedd">
-                        <border-layout fill-parent="true" top-border="{(item.asset &amp;&amp; item.asset[0].plusacatid) || !item.computedParentAssetLocation}" id="eabmn">
-                          <top id="kbv8k"/>
-                          <middle vertical-align="center" id="yq5mn">
-                            <box id="by53g">
-                              <label label="Asset configuration manager" theme="16-bold" id="mpb9q"/>
-                            </box>
-                          </middle>
-                        </border-layout>
-                      </start>
-                      <end width="10" vertical-align="center" horizontal-align="end" id="gxrpz">
-                        <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{(item.asset &amp;&amp;item.asset[0].plusacatid) || !item.computedParentAssetLocation}" id="ze2dr">
-                          <button icon="maximo:asset--settings" on-click="navigateToAcm" on-click-arg="{{'item': {...item,wonum: page.params.wonum},'datasource': woPlanTaskDetailds}}" disabled="{!page.state.assetSwicthAccess}" id="qb92j"/>
-                        </box>
-                      </end>
-                    </border-layout>
-                    <border-layout fill-parent="true" width="100" top-border="true" hidden="{!item.pointnum}" id="ew3mj">
-                      <start width="90" vertical-align="center" id="m9m6x">
-                        <border-layout fill-parent="true" id="k4gkp" top-border="{item.assetnum &amp;&amp; item.assetdescription &amp;&amp; item.description_longdescription &amp;&amp; item.locationdesc}">
-                          <top id="dsdz4"/>
-                          <middle vertical-align="center" id="fd5hk">
-                            <adaptive-row id="daz23">
-                              <adaptive-column small-width="100" id="qggmy">
-                                <box padding-top="0.5" padding-bottom="0.5" id="dsd_7">
-                                  <label label="Conduct a measurement" padding="top" theme="16-bold" id="mnq_b"/>
-                                </box>
+                  <middle id="g9vn6" horizontal-overflow="hidden">
+                    <border-layout top-border="true" bottom-border="true" fill-parent="true" hidden="{item.computedParentAssetLocation}" width="100" padding="false" id="byn5n">
+                      <start id="m3je8" horizontal-overflow="hidden">
+                        <border-layout fill-parent="true" width="100" padding="false" id="rn5qm">
+                          <top id="hju87"/>
+                          <middle vertical-align="center" id="hjul9" horizontal-overflow="hidden">
+                            <adaptive-row id="hj868">
+                              <adaptive-column large-width="80" small-width="80" medium-width="70" id="gh_89">
+                                <adaptive-row id="sl_7h">
+                                  <adaptive-column large-width="45" small-width="100" medium-width="100" id="nkj98" small-horizontal-align="start" large-horizontal-align="start" medium-horizontal-align="start">
+                                    <border-layout fill-parent="true" id="dsk78">
+                                      <start id="n3747" vertical-align="center">
+                                        <button icon="carbon:asset" id="wrrn7"/>
+                                      </start>
+                                      <middle id="y5x7m" vertical-align="center">
+                                        <box padding-top="0.5" padding-bottom="0.5" padding-start="-0.5" padding-end="0.5" direction="column" vertical-align="center" fill-parent-horizontal="true" id="j3ke3">
+                                          <field hide-label="true" padding="none" empty-field-placeholder="-" value="{item.assetnum}" id="jy394"/>
+                                          <field wrap="true" hide-label="true" padding="none" empty-field-placeholder="-" value="{item.assetdescription}" id="bgpk2"/>
+                                        </box>
+                                      </middle>
+                                    </border-layout>
+                                  </adaptive-column>
+                                  <adaptive-column large-width="45" small-width="80" medium-width="100" id="gh68g" small-horizontal-align="start" large-horizontal-align="start" medium-horizontal-align="start">
+                                    <border-layout id="gfk78">
+                                      <start id="vj87f" vertical-align="center">
+                                        <button icon="carbon:location" id="cs779"/>
+                                      </start>
+                                      <middle id="hsd99" vertical-align="center">
+                                        <box padding-top="0.5" padding-bottom="0.5" padding-start="-0.5" padding-end="0.5" direction="column" children-hide-overflow="true" vertical-align="center" id="gjf90">
+                                          <field hide-label="true" padding="none" empty-field-placeholder="-" value="{item.location}" id="ds_u8"/>
+                                          <field wrap="true" hide-label="true" padding="none" empty-field-placeholder="-" value="{item.locationdesc}" id="pds6r"/>
+                                        </box>
+                                      </middle>
+                                    </border-layout>
+                                  </adaptive-column>
+                                </adaptive-row>
                               </adaptive-column>
-                              <adaptive-column small-width="100" id="ar_5x">
-                                <box padding-bottom="0.5" id="sfd_7">
-                                  <field value="{item.measurepoint.description}" padding="bottom" hide-label="true" id="dya97"/>
+                              <adaptive-column large-width="20" small-width="10" medium-width="30" id="hkj67" small-horizontal-align="end" large-horizontal-align="end" medium-horizontal-align="end">
+                                <box id="jh7jm" padding-top="{app.state.screen.size === 'sm' ? '1':'0' }" vertical-align="center" fill-parent-vertical="true">
+                                  <button id="dgfg7" hidden="{!item.hasHref &amp;&amp; item.taskid != page.state.currentTaskId}" icon="Carbon:chevron--right" disabled="{!item.hideLockIcon}" kind="ghost" on-click="redirectToAssetDetails" on-click-arg="{{'item': item}}"/>
                                 </box>
                               </adaptive-column>
                             </adaptive-row>
                           </middle>
                         </border-layout>
                       </start>
-                      <end width="10" vertical-align="center" horizontal-align="end" id="gxbym">
-                        <box id="r2dj4" vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{item.assetdescription &amp;&amp; item.description_longdescription}">
-                          <button disabled="{!item.hideLockIcon}" icon="Carbon:operation--gauge" id="r98jq" on-click="openMeasurementDrawer" on-click-arg="{{'item':item,'datasource':woPlanTaskDetailds}}"/>
-                        </box>
-                      </end>
                     </border-layout>
-                    <border-layout fill-parent="true" width="100" top-border="true" id="pr2v8" hidden="{(item.computedParentAssetLocation || item.pointnum) || (!item.assetmetercount &amp;&amp; !item.locationmetercount)}">
-                      <start width="90" vertical-align="center" id="prpwp">
-                        <border-layout fill-parent="true" top-border="{item.pointnum || !item.computedParentAssetLocation}" id="xam3m">
-                          <top id="pw2pj"/>
-                          <middle vertical-align="center" id="zdnz3">
-                            <box id="x3kr9">
-                              <label label="Enter meter reading" theme="16-bold" id="bzbb_"/>
+                  </middle>
+                  <bottom id="vpjq7">
+                    <border-layout fill-parent="true" width="100" padding="true" id="naa4p">
+                      <top id="jwyx_">
+                        <border-layout hidden="{!item.description_longdescription}" bottom-border="true" padding="true" fill-parent="true" id="g2ze5">
+                          <start id="mj4nj" width="80">
+                            <box direction="row" padding="0.5" id="kjv96">
+                              <rich-text-viewer id="q98gx" content="{item.description_longdescription}" stripped="true" content-limit="350"/>
                             </box>
+                          </start>
+                          <middle id="p955q" width="5" vertical-align="end" horizontal-align="end">
+                            <button id="bknra" icon="carbon:maximize" kind="ghost" on-click="openTaskLongDesc" on-click-arg="{item}"/>
                           </middle>
                         </border-layout>
-                      </start>
-                      <end width="10" vertical-align="center" horizontal-align="end" id="p585k">
-                        <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{item.pointnum || !item.computedParentAssetLocation}" id="ab_3n">
-                          <button disabled="{!item.hideLockIcon}" icon="Carbon:operation--gauge" on-click="openMeterReadingDrawer" on-click-arg="{{'item': item}}" id="md7yq"/>
-                        </box>
-                      </end>
-                    </border-layout>
-                    <border-layout fill-parent="true" hidden="{item.inspectionbatchresult === undefined || !page.state.inspectionAccess}" id="ekea_">
-                      <start id="k9na_" width="95">
-                        <border-layout fill-parent="true" top-border="{item.description_longdescription || !item.computedParentAssetLocation || item.pointnum}" id="z36nn">
-                          <top id="yj9nr"/>
-                          <middle vertical-align="center" id="we7bd">
-                            <box id="jkn_78" padding-top="0.5" padding-bottom="0.5">
-                              <adaptive-row id="b3x88">
-                                <adaptive-column small-width="100" id="dx4gn">
-                                  <label label="Conduct an inspection" padding="top" theme="16-bold" id="dsd_5"/>
-                                </adaptive-column>
-                                <adaptive-column small-width="100" id="fx_7j">
-                                  <wrapped-text size="medium" label="{item.inspname}" sub-label="{item.inspectionbatchresult ? item.inspectionbatchresult[0].inspresult : ''}" id="fd_87" truncation-type="end"/>
-                                </adaptive-column>
-                                <!-- GRAPHITE-44838 - it should be re-introduced when mobile limitation gets resolved
+                      </top>
+                      <middle id="bpqrg">
+                        <border-layout fill-parent="true" width="100" top-border="true" hidden="{!item.asset || !item.asset[0].plusacatid || item.computedParentAssetLocation || app.state.selectedWoListDs != 'todaywoassignedDS'}" id="v6vn4">
+                          <start width="90" vertical-align="center" id="yaedd">
+                            <border-layout fill-parent="true" top-border="{(item.asset &amp;&amp; item.asset[0].plusacatid) || !item.computedParentAssetLocation}" id="eabmn">
+                              <top id="kbv8k"/>
+                              <middle vertical-align="center" id="yq5mn">
+                                <box id="by53g">
+                                  <label label="Asset configuration manager" theme="16-bold" id="mpb9q"/>
+                                </box>
+                              </middle>
+                            </border-layout>
+                          </start>
+                          <end width="10" vertical-align="center" horizontal-align="end" id="gxrpz">
+                            <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{(item.asset &amp;&amp;item.asset[0].plusacatid) || !item.computedParentAssetLocation}" id="ze2dr">
+                              <button icon="maximo:asset--settings" on-click="navigateToAcm" on-click-arg="{{'item': {...item,wonum: page.params.wonum},'datasource': woPlanTaskDetailds}}" disabled="{!page.state.assetSwicthAccess}" id="qb92j"/>
+                            </box>
+                          </end>
+                        </border-layout>
+                        <border-layout fill-parent="true" width="100" top-border="true" hidden="{!item.pointnum}" id="ew3mj">
+                          <start width="90" vertical-align="center" id="m9m6x">
+                            <border-layout fill-parent="true" id="k4gkp" top-border="{item.assetnum &amp;&amp; item.assetdescription &amp;&amp; item.description_longdescription &amp;&amp; item.locationdesc}">
+                              <top id="dsdz4"/>
+                              <middle vertical-align="center" id="fd5hk">
+                                <adaptive-row id="daz23">
+                                  <adaptive-column small-width="100" id="qggmy">
+                                    <box padding-top="0.5" padding-bottom="0.5" id="dsd_7">
+                                      <label label="Conduct a measurement" padding="top" theme="16-bold" id="mnq_b"/>
+                                    </box>
+                                  </adaptive-column>
+                                  <adaptive-column small-width="100" id="ar_5x">
+                                    <box padding-bottom="0.5" id="sfd_7">
+                                      <field value="{item.measurepoint.description}" padding="bottom" hide-label="true" id="dya97"/>
+                                    </box>
+                                  </adaptive-column>
+                                </adaptive-row>
+                              </middle>
+                            </border-layout>
+                          </start>
+                          <end width="10" vertical-align="center" horizontal-align="end" id="gxbym">
+                            <box id="r2dj4" vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{item.assetdescription &amp;&amp; item.description_longdescription}">
+                              <button disabled="{!item.hideLockIcon}" icon="Carbon:operation--gauge" id="r98jq" on-click="openMeasurementDrawer" on-click-arg="{{'item':item,'datasource':woPlanTaskDetailds}}"/>
+                            </box>
+                          </end>
+                        </border-layout>
+                        <border-layout fill-parent="true" width="100" top-border="true" id="pr2v8" hidden="{(item.computedParentAssetLocation || item.pointnum) || (!item.assetmetercount &amp;&amp; !item.locationmetercount)}">
+                          <start width="90" vertical-align="center" id="prpwp">
+                            <border-layout fill-parent="true" top-border="{item.pointnum || !item.computedParentAssetLocation}" id="xam3m">
+                              <top id="pw2pj"/>
+                              <middle vertical-align="center" id="zdnz3">
+                                <box id="x3kr9">
+                                  <label label="Enter meter reading" theme="16-bold" id="bzbb_"/>
+                                </box>
+                              </middle>
+                            </border-layout>
+                          </start>
+                          <end width="10" vertical-align="center" horizontal-align="end" id="p585k">
+                            <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{item.pointnum || !item.computedParentAssetLocation}" id="ab_3n">
+                              <button disabled="{!item.hideLockIcon}" icon="Carbon:operation--gauge" on-click="openMeterReadingDrawer" on-click-arg="{{'item': item}}" id="md7yq"/>
+                            </box>
+                          </end>
+                        </border-layout>
+                        <border-layout fill-parent="true" hidden="{item.inspectionbatchresult === undefined || !page.state.inspectionAccess}" id="ekea_">
+                          <start id="k9na_" width="95">
+                            <border-layout fill-parent="true" top-border="{item.description_longdescription || !item.computedParentAssetLocation || item.pointnum}" id="z36nn">
+                              <top id="yj9nr"/>
+                              <middle vertical-align="center" id="we7bd">
+                                <box id="jkn_78" padding-top="0.5" padding-bottom="0.5">
+                                  <adaptive-row id="b3x88">
+                                    <adaptive-column small-width="100" id="dx4gn">
+                                      <label label="Conduct an inspection" padding="top" theme="16-bold" id="dsd_5"/>
+                                    </adaptive-column>
+                                    <adaptive-column small-width="100" id="fx_7j">
+                                      <wrapped-text size="medium" label="{item.inspname}" sub-label="{item.inspectionbatchresult ? item.inspectionbatchresult[0].inspresult : ''}" id="fd_87" truncation-type="end"/>
+                                    </adaptive-column>
+                                    <!-- GRAPHITE-44838 - it should be re-introduced when mobile limitation gets resolved
                           <adaptive-column small-width="50" medium-width="33" id="gpray">
                             <tag-group align="start" tags="{[{label: `${item.inspectionbatchresult ? item.inspectionbatchresult[0].status_description : ''}`}]}" id="gj6gj"/>
                           </adaptive-column> -->
-                              </adaptive-row>
+                                  </adaptive-row>
+                                </box>
+                              </middle>
+                            </border-layout>
+                          </start>
+                          <middle id="qzbgj" width="5" vertical-align="center" horizontal-align="end">
+                            <box fill-parent-vertical="true" fill-parent-horizontal="true" vertical-align="center" id="fdk89" border-top="{item.description_longdescription || !item.computedParentAssetLocation || item.pointnum}">
+                              <button id="qer7r" icon="maximo:inspections" disabled="{!item.hideLockIcon}" kind="ghost" on-click="loadApp" on-click-arg="{{appName: app.state.appnames.inspection, context: {page: 'execution_panel', inspectionresultid: item.inspectionbatchresult[0].inspresultid, href: item.inspectionbatchresult[0].href}}}"/>
                             </box>
                           </middle>
                         </border-layout>
-                      </start>
-                      <middle id="qzbgj" width="5" vertical-align="center" horizontal-align="end">
-                        <box fill-parent-vertical="true" fill-parent-horizontal="true" vertical-align="center" id="fdk89" border-top="{item.description_longdescription || !item.computedParentAssetLocation || item.pointnum}">
-                          <button id="qer7r" icon="maximo:inspections" disabled="{!item.hideLockIcon}" kind="ghost" on-click="loadApp" on-click-arg="{{appName: app.state.appnames.inspection, context: {page: 'execution_panel', inspectionresultid: item.inspectionbatchresult[0].inspresultid, href: item.inspectionbatchresult[0].href}}}"/>
-                        </box>
                       </middle>
                     </border-layout>
-                  </middle>
-                  <bottom id="x86k2">
-                    <border-layout fill-parent="true" padding="false" id="x_yqr" top-border="true">
-                      <start id="ap7pd">
-                        <box hidden="{!item.doclinks.member.length}" padding-start="-0.5" padding-bottom="0.5" direction="row" fill-parent-horizontal="true" id="d8bav" border-top="true">
-                          <panel id="rgm_j">
-                            <attachment-list datasource="{woPlanTaskDetailds.getChildDatasource('doclinks', item, {query: {attachment: true}})}" border="false" hide-when-empty="{!item.doclinks.member.length}" is-editable="false" show-managed-header="false" show-search="false" allow-naming="true" id="kwdnz"/>
-                          </panel>
-                        </box>
-                      </start>
-                    </border-layout>
-                    <!-- Inline Checklists -->
-                    <box direction="column" fill-parent-horizontal="true" id="tskspecinlinecontainer01" border-top="true">
-                      <border-layout fill-parent="true" padding="false" id="tskspecinlineheaderlayout01">
-                        <start id="tskspecinlineheaderstart01">
-                          <box padding-start="1" padding-top="0.5" padding-bottom="0.25" direction="row" fill-parent-horizontal="true" id="tskspecinlineheaderbox01">
-                            <label label="Checklists" theme="16-bold" id="tskspecrowlabel01"/>
-                            <label label=" ({page.state.specFilledCount})" theme="14-regular" id="tskspecrowsublabel01"/>
-                          </box>
-                        </start>
-                        <end horizontal-align="end" vertical-align="center" id="tskspecinlineheaderend01">
-                          <button icon="carbon:checkmark" kind="primary" loading="{page.state.taskSpecLoader}" on-click="saveTaskSpecification" padding="false" id="tskspecinlinesavebtn01"/>
-                        </end>
-                      </border-layout>
-                      <data-list datasource="taskSpecDisplayDS" show-search="false" id="tskspecinlinelist01">
-                        <border-layout slot="item" padding="false" fill-parent="true" bottom-border="true" id="tskspecinlinelayout01">
-                          <start horizontal-overflow="hidden" id="tskspecinlinestart01">
-                            <box direction="column" fill-parent-horizontal="true" padding="0.5" id="tskspecinlinecardbox01">
-                              <label label="{item.assetattributedesc}" theme="16-bold" padding="none" wrap="true" id="tskspecinlinelbl01"/>
-                              <label label="{item.assetattrid}" theme="14-regular" padding="none" id="tskspecinlinelbl02"/>
-                              <field label="Value" swap-position="false" id="tskspecinlinevalf01">
-                                <sub-field value="{item.alnvalue}" id="tskspecinlinevalsub01"/>
-                              </field>
-                            </box>
-                          </start>
-                          <end width="15" vertical-align="center" horizontal-align="end" id="tskspecinlinevalend01">
-                            <button icon="carbon:chevron--right" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspecinlinelookupbtn01"/>
-                          </end>
-                        </border-layout>
-                      </data-list>
-                    </box>
                   </bottom>
                 </border-layout>
-              </bottom>
-            </border-layout>
-          </list-details>
-          <list-item id="r6bdn">
-            <adaptive-row id="pkm5g">
-              <adaptive-column small-width="60" medium-width="50" large-width="50" small-horizontal-align="start" medium-horizontal-align="start" large-horizontal-align="start" id="w7pg_">
-                <border-layout fill-parent="true" padding="false" id="gar9_">
-                  <start width="5" id="vzp4j" vertical-align="center">
-                    <box fill-parent-horizontal="true" id="kw5bn">
-                      <label label="{item.taskid}." theme="20-regular" id="e9rgg"/>
+                <!-- Change Status button row -->
+                <!-- <border-layout fill-parent="true" padding="false" top-border="true" id="tskChangeStatusRow01">
+                  <start width="90" vertical-align="center" id="tskChangeStatusStart01">
+                    <box padding-top="0.5" padding-bottom="0.5" padding-start="1" id="tskChangeStatusLabelBox01">
+                      <label label="Change status" theme="16-bold" id="tskChangeStatusLabel01"/>
+                      <label label="{item.status_description}" theme="14-regular" color="gray60" id="tskChangeStatusCurrent01"/>
                     </box>
-                  </start>
-                  <end id="kaz_j" width="95" vertical-align="center">
-                    <box fill-parent-horizontal="true" id="k3gmr">
-                      <label label="{item.description}" theme="16-bold" wrap="true" id="q_k3x"/>
+                  </start>       
+                </border-layout> -->
+                <!-- Task Specification Inline Data -->
+                <box direction="column" fill-parent-horizontal="true" hidden="{!item.workorderspec || !item.workorderspec.length}" id="tskspecrow01" border-top="true">
+                  <box padding-start="1" padding-top="0.5" direction="row" fill-parent-horizontal="true" id="tskspecinlinehdr01">
+                    <box direction="column" fill-parent-horizontal="true" id="tskspecinlinehdrbox01">
+                      <label label="Checklists" theme="16-bold" id="tskspecrowlabel01"/>
                     </box>
-                  </end>
-                </border-layout>
-              </adaptive-column>
-              <adaptive-column small-width="40" medium-width="50" large-width="50" small-horizontal-align="end" medium-horizontal-align="end" large-horizontal-align="end" id="jpn5d">
-                <border-layout fill-parent="true" padding="false" hidden="{!item.allowTaskInteract}" id="v8w35">
-                  <start id="wqby3"/>
-                  <end horizontal-align="end" id="nyvpv">
-                    <box padding=".25" vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" id="yn9rr">
-                      <box padding="1" id="z96yb">
-                        <icon icon="Carbon:locked" hidden="{item.hideLockIcon || item.status_maxvalue === 'COMP'}" id="n_yb2"/>
-                        <icon id="cnjkdsu6" icon="Carbon:checkmark--outline" fill="green" hidden="{item.status_maxvalue !== 'COMP'}"/>
-                      </box>
+                    <box horizontal-align="end" vertical-align="center" padding-end="1" id="tskspecinlinesavebox01">
+                      <button icon="carbon:checkmark" kind="primary" loading="{page.state.taskSpecLoader}" on-click="saveTaskSpecification" on-click-arg="{{'item': item, 'datasource': woPlanTaskDetailds}}" id="tskspecinlinesavebtn01"/>
                     </box>
-                  </end>
-                </border-layout>
-              </adaptive-column>
-            </adaptive-row>
+                  </box>
+                  <repeat datasource="{woPlanTaskDetailds.getChildDatasource('workorderspec', item)}" id="tskspecinlinerepeat01">
+                    <box slot="item" direction="column" fill-parent-horizontal="true" padding-start="1" padding-end="1" padding-top="0.5" padding-bottom="0.5" border-bottom="true" id="tskspecinlineitembox01">
+                      <field value="{item.assetattributedesc || item.assetattrid_description || item.assetattrid}" override-required="true" field-class-name="16-bold" padding="none" hide-label="true" id="tskspecinlinelabel01"/>
+                      <border-layout fill-parent="true" padding="false" id="tskspecinlinevalueborder01">
+                        <start width="85" horizontal-overflow="hidden" id="tskspecinlinevalstart01">
+                          <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecinlinevalbox01">
+                            <field label="Value" swap-position="false" id="tskspecinlinevalf01">
+                              <sub-field value="{item.alnvalue}" id="tskspecinlinevalsub01"/>
+                            </field>
+                          </box>
+                        </start>
+                        <end width="15" id="tskspecinlinevalend01">
+                          <button icon="carbon:search" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspecinlinelookupbtn01"/>
+                        </end>
+                      </border-layout>
+                    </box>
+                  </repeat>
+                </box>
+              </box>
+              <!-- end tskdetailbox01 -->
+            </box>
+            <!-- end tskitemwrap01 -->
           </list-item>
         </data-list>
       </box>
@@ -2104,6 +2095,7 @@
             <attribute name="formattedaddress--formattedaddress" id="qrpjw"/>
             <attribute name="latitudey" id="je2n4"/>
             <attribute name="longitudex" id="jwr58"/>
+            <attribute name="geocode" id="jeGeoCd"/>
           </attribute>
           <attribute name="schedstart" id="g8bj5"/>
           <attribute name="targstartdate" id="kgjnd"/>
@@ -2198,7 +2190,7 @@
           <attribute name="wogroup" id="ek3yq"/>
           <attribute name="taskid" id="rj394"/>
           <attribute name="flowcontrolled" id="m57va"/>
-          <attribute name="woactivity{taskid,status,IGTWOACTIVITYSPECALN{assetattributedesc,alnvalue}}" id="a226d"/>
+          <attribute name="woactivity{taskid,status,workorderspec{assetattribute.description--assetattributedesc,assetattrid_description,alnvalue,assetattrid}}" id="a226d"/>
           <attribute name="anywhererefid" id="ya4g8"/>
           <attribute name="rel.asset.mxapiasset{assetnum,description,plusacatid,islinear,lrm,direction,startmeasure,endmeasure}" id="kpn4_"/>
           <attribute name="location.location--locationnum" id="jmpan"/>
@@ -2250,6 +2242,7 @@
             <attribute name="direction" id="bxm8m"/>
             <attribute name="_imagelibref" id="jr54e"/>
             <attribute name="rel.sparepart{quantity,itemnum,assetnum,siteid,orgid,rel.item{DESCRIPTION,itemnum}}" id="e76_2"/>
+            <attribute name="rel.serviceaddress{latitudey,longitudex,geocode}" id="igtAssetSa2"/>
           </schema>
         </maximo-datasource>
         <maximo-datasource id="woDetailsMaterialds" relationship="wpmaterialtask" can-load="{page.state.canLoadWoDetailResourceChilds}" depends-on="woDetailResource" selection-mode="none" controller="WorkOrderDataController">
@@ -2300,6 +2293,7 @@
             <attribute name="latitudey" id="awem6"/>
             <attribute name="longitudex" id="y_67d"/>
             <attribute name="anywhererefid" id="wk2z2"/>
+            <attribute name="geocode" id="jeGeoCd2"/>
             <attribute name="maxvar.coordinate" id="pwp8g"/>
           </schema>
         </maximo-datasource>
@@ -2935,10 +2929,10 @@
               <top id="bkxw4">
                 <box id="e53wm" fill-parent-horizontal="true" border-bottom="{app.device.isMaximoMobile ? page.state.linearAsset: woAssetLocationds.item.islinear}" padding-start="1" padding-end="1" padding-top="1" padding-bottom="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row'}">
                   <box id="b69b_" manage-children="false" fill-parent="true" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '1.5'}"/>
-                        <box direction="row" padding-top="1" manage-children="false" id="qg2_2" vertical-align="center">
-                          <button hidden="{!woDetailResource.item.autolocate || !app.state.isMapValid}" on-click="handleMapPage" on-click-arg="{{'item': woDetailResource.item, 'prevPage': 'wodetail'}}" icon="carbon:map" kind="secondary" id="jk9r5"/>
-                          <field value="{woDetailResource.item.formattedaddress ? woDetailResource.item.formattedaddress : woDetailResource.item.serviceaddressdesc}" wrap="true" hide-label="true" id="bg7a9"/>
-                        </box>
+                  <box direction="row" padding-top="1" manage-children="false" id="qg2_2" vertical-align="center">
+                    <button hidden="{!woDetailResource.item.autolocate || !app.state.isMapValid}" on-click="handleMapPage" on-click-arg="{{'item': woDetailResource.item, 'prevPage': 'wodetail'}}" icon="carbon:map" kind="secondary" id="jk9r5"/>
+                    <field value="{woDetailResource.item.formattedaddress ? woDetailResource.item.formattedaddress : woDetailResource.item.serviceaddressdesc}" wrap="true" hide-label="true" id="bg7a9"/>
+                  </box>
                 </box>
               </top>
               <middle id="ypxvd">
@@ -3212,7 +3206,7 @@
         <state name="loadingDel" value="false" type="boolean" id="r8qqg"/>
         <state name="hasConditionCode" value="false" type="boolean" id="j77vm"/>
       </states>
-      <maximo-datasource id="woMaterialRequestResource" object-structure="mxapiwodetail" item-url="{page.params.href}">
+      <maximo-datasource id="woMaterialRequestResource" object-structure="igtapiwodetail" item-url="{page.params.href}">
         <schema id="pxprz">
           <attribute name="wonum" unique-id="true" id="yz4k2"/>
           <attribute name="description" id="brk25"/>
@@ -3509,7 +3503,7 @@
         <state name="sendSelectedAssets" value="true" type="boolean" id="m_bv6"/>
         <state name="type" value="" type="string" id="kzg_g"/>
       </states>
-      <maximo-datasource id="woMaterialResource" object-structure="mxapiwodetail" item-url="{page.params.href}">
+      <maximo-datasource id="woMaterialResource" object-structure="igtapiwodetail" item-url="{page.params.href}">
         <schema id="xgddx">
           <attribute name="wonum" unique-id="true" id="y8wwq"/>
           <attribute name="description" id="p8y5p"/>
@@ -3817,7 +3811,7 @@
         <state name="skipQualification" value="false" type="boolean" id="kdb95"/>
         <state name="canLoadWoDetailsReportWork" value="true" type="boolean" id="kdp95"/>
       </states>
-      <maximo-datasource id="woDetailsReportWork" default="true" can-load="{page.state.canLoadWoDetailsReportWork}" object-structure="mxapiwodetail" item-url="{page.params.itemhref ? page.params.itemhref : page.params.href}" controller="ReportWorkDataController">
+      <maximo-datasource id="woDetailsReportWork" default="true" can-load="{page.state.canLoadWoDetailsReportWork}" object-structure="igtapiwodetail" item-url="{page.params.itemhref ? page.params.itemhref : page.params.href}" controller="ReportWorkDataController">
         <schema id="zp59q">
           <attribute name="workorderid" unique-id="true" id="rnxdv"/>
           <attribute name="wonum" id="qbbd8"/>
@@ -5283,7 +5277,7 @@
       </split-view-template>
     </page>
     <page id="attachments" title="Attachments" padding="true" controller="AttachmentController">
-      <maximo-datasource id="workOrderAttachmentResource" default="true" object-structure="mxapiwodetail">
+      <maximo-datasource id="workOrderAttachmentResource" default="true" object-structure="igtapiwodetail">
         <schema id="j2d__">
           <attribute name="wonum" id="xbmn_"/>
           <attribute name="description" id="nqz35"/>
@@ -5384,7 +5378,7 @@
       <states id="d9gdk">
         <state name="forceSyncFollowUP" value="false" type="boolean" id="e2n5d"/>
       </states>
-      <maximo-datasource id="woDetailRelatedWorkOrder" default="true" object-structure="mxapiwodetail" item-url="{page.params.itemhref}">
+      <maximo-datasource id="woDetailRelatedWorkOrder" default="true" object-structure="igtapiwodetail" item-url="{page.params.itemhref}">
         <schema id="w8_wa">
           <attribute name="workorderid" unique-id="true" id="pba3q"/>
           <attribute name="wonum" id="ak5eg"/>
@@ -5664,7 +5658,7 @@
           <attribute name="locationdesc" id="zbnx7"/>
         </schema>
       </json-datasource>
-      <maximo-datasource id="newWorkOrderds" id-attribute="workorderid" where="wonum=&quot;0&quot;" object-structure="mxapiwodetail">
+      <maximo-datasource id="newWorkOrderds" id-attribute="workorderid" where="wonum=&quot;0&quot;" object-structure="igtapiwodetail">
         <schema id="we72x">
           <attribute name="workorderid" unique-id="true" id="ydz6z"/>
           <attribute name="wonum" id="e642e"/>
@@ -5958,7 +5952,7 @@
       <header-template title-column-width="{app.state.screen.size === 'lg' ? 45 : 80}" id="kngx7">
         <button slot="buttons" disabled="{page.state.saveInProgress}" label="Save" icon="carbon:checkmark" on-click="createWorkorder" on-click-arg="{{'item':dsCreateWo.item,'datasource':dsCreateWo,'page':page,'app':app}}" kind="primary" id="mjbgg" loading="{page.state.saveInProgress}"/>
       </header-template>
-      <maximo-datasource id="dsCreateWo" object-structure="mxapiwodetail" where="wonum=&quot;0&quot;" item-url="{app.device.isMaximoMobile ? 'nohref' : undefined}" auto-save="false">
+      <maximo-datasource id="dsCreateWo" object-structure="igtapiwodetail" where="wonum=&quot;0&quot;" item-url="{app.device.isMaximoMobile ? 'nohref' : undefined}" auto-save="false">
         <schema id="w224k">
           <attribute name="workorderid" searchable="true" unique-id="true" id="bj6qp"/>
           <attribute name="wonum" searchable="true" id="n52n8"/>
@@ -6279,7 +6273,7 @@
           <attribute name="computedItemNum" id="pj6m2"/>
         </schema>
       </json-datasource>
-      <maximo-datasource id="woToolsResource" object-structure="mxapiwodetail" can-load="{app.state.canLoadWoDetailDS}" item-url="{page.params.href}">
+      <maximo-datasource id="woToolsResource" object-structure="igtapiwodetail" can-load="{app.state.canLoadWoDetailDS}" item-url="{page.params.href}">
         <schema id="zxyga">
           <attribute name="wonum" unique-id="true" id="a4424"/>
           <attribute name="description" id="akbw4"/>

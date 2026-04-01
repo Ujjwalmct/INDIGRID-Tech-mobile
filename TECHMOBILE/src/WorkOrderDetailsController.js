@@ -123,7 +123,7 @@ class WorkOrderDetailsController {
     }
     page.state.isMobile = Device.get().isMaximoMobile;
     const reportWork = this.app.findPage('report_work');
-    if(reportWork)
+    if (reportWork)
       reportWork.state.fieldChangedManually = false;
     const woDetailResource = page.findDatasource('woDetailResource');
     if (!page.params?.href) {
@@ -160,9 +160,9 @@ class WorkOrderDetailsController {
         itemUrl: page.params.href,
       });
       this.page.state.disConnected = false;
-    } 
+    }
     //calculate the badge value of datasheets on calibration icon
-    if(woDetailResource?.item?.pluscloop){
+    if (woDetailResource?.item?.pluscloop) {
       for (let wod of woDetailResource.item.pluscwods || []) {
         // istanbul ignore else
         if (wod.assetnum) {
@@ -170,7 +170,7 @@ class WorkOrderDetailsController {
         }
       }
     }
-     //Open the tools/material drawer if navigated back from reserve item page or MR page
+    //Open the tools/material drawer if navigated back from reserve item page or MR page
     if (((app.lastPage?.name === 'reserveMaterials' && this.app.state.openedFrom === '') || app.lastPage?.name === 'materialRequest') && !CommonUtil.sharedData.approvalRequest) {
       this.openMaterialToolDrawer({
         item: woDetailResource.item,
@@ -1101,6 +1101,8 @@ class WorkOrderDetailsController {
     let updateValue = this.currentField;
     let woSpecCombinedDS = this.app.findDatasource("woSpecificationsCombinedDS");
     updateValue.alnvalue = itemSelected.value;
+    updateValue.igtentered = this.app.dataFormatter.convertDatetoISO(new Date());
+    updateValue.igtenteredby = this.app?.client?.userInfo?.personid || this.app?.userInfo?.personid;
     woSpecCombinedDS?.items.push(updateValue);
     this.validateSpecification();
   }
@@ -1115,6 +1117,8 @@ class WorkOrderDetailsController {
     let updateValue = this.currentField;
     let woSpecCombinedDS = this.app.findDatasource("woSpecificationsCombinedDS");
     updateValue.numvalue = itemSelected.value;
+    updateValue.igtentered = this.app.dataFormatter.convertDatetoISO(new Date());
+    updateValue.igtenteredby = this.app?.client?.userInfo?.personid || this.app?.userInfo?.personid;
     woSpecCombinedDS?.items.push(updateValue);
     this.validateSpecification();
   }
@@ -1170,7 +1174,7 @@ class WorkOrderDetailsController {
    */
   validateSpecification() {
     const datasource = this.app.findDatasource('woSpecificationsCombinedDS');
-    this.page.state.specificationSaveDisable = datasource?.state?.clientWarnings? Object.keys(datasource.state.clientWarnings).length : false;
+    this.page.state.specificationSaveDisable = datasource?.state?.clientWarnings ? Object.keys(datasource.state.clientWarnings).length : false;
   }
 
   // Assisted by watsonx Code Assistant 
@@ -1325,7 +1329,7 @@ class WorkOrderDetailsController {
    * Method to open the asset workOrder history.
    */
   openAssetWorkOrder(event) {
-    
+
     this.app.setCurrentPage({ name: 'assetWorkOrder' });
     // istanbul ignore else
     if (this.app.currentPage) {

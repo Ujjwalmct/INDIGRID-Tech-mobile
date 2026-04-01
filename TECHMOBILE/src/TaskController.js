@@ -13,6 +13,11 @@ import { log, Device } from '@maximo/maximo-js-api';
 import SynonymUtil from './utils/SynonymUtil';
 import commonUtil from "./utils/CommonUtil";
 const TAG = "TaskController";
+
+// IGT Geofencing: Maximum allowed distance (in meters) between
+// the user's GPS position and the parent WO service address.
+const GEOFENCE_DISTANCE_METERS = 100;
+
 class TaskController {
   pageInitialized(page, app) {
     this.app = app;
@@ -460,7 +465,7 @@ class TaskController {
     let taskDataSource = app.findDatasource('woPlanTaskDetailds');
 
     if (device.isMaximoMobile) {
-      let externalStatusList = await SynonymUtil.getExternalStatusList(app, ['INPRG', 'WAPPR', 'WMATL', 'APPR', 'WSCH', 'WPCOND', 'COMP']);
+      let externalStatusList = await SynonymUtil.getExternalStatusList(app, ['INPRG', 'WMATL', 'APPR', 'WSCH', 'WPCOND', 'COMP']);
       await taskDataSource.initializeQbe();
       taskDataSource.setQBE('status', 'in', externalStatusList);
       await taskDataSource.searchQBE(undefined, true);
@@ -499,73 +504,50 @@ class TaskController {
    */
   async openChangeStatusDialog(event) {
     let statusArr = [];
-    const workTypeDs = this.app.findDatasource("dsworktype");
-    const woDetailds = this.app.findDatasource("woDetailds");
-    const taskds = this.app.findDatasource('woPlanTaskDetailds');
-    const woWorkType = woDetailds.item.worktype;
-    let workType = [];
-    const isFlowControlled = this.app.findDatasource('woDetailds')?.item?.flowcontrolled;
-    /* istanbul ignore else */
-    if (woWorkType) {
-      workType = workTypeDs.items.filter(
-        (item) => item.worktype === woWorkType
-      );
-    }
-
-    statusArr = await commonUtil.getOfflineAllowedStatusList(this.app, event, false);
     this.page.state.disableDoneButton = true;
     this.page.state.selectedTaskItem = event.item;
     let statusLstDS = this.page.findDatasource("taskstatusDomainList");
     statusLstDS.clearSelections();
 
-    // istanbul ignore else
-    if (isFlowControlled) {
-      let filterValues = []
-      let maxVal = event.item.status_maxvalue;
-      /* istanbul ignore next */
-      let workTypeStartMaxVal = workType?.length && workType[0].startstatus ? workType[0].startstatus_maxvalue : '';
-      let isAllPredessorComp = true;
-      // istanbul ignore else
-      if (event.item.predessorwos && maxVal !== 'COMP') {
-        isAllPredessorComp = this.app.callController('validatePredessor', taskds.items, event.item);
-      }
-      /* istanbul ignore else */
-      if (!woWorkType) {
-        // istanbul ignore else
-        if (maxVal !== 'COMP') {
-          filterValues = ['WAPPR']
-        }
+    // Fetch ALL WOSTATUS synonyms directly (bypass cached offlineStatusList)
+    const synonymDS = this.app.findDatasource('synonymdomainData');
+    await synonymDS.initializeQbe();
+    synonymDS.setQBE('domainid', 'WOSTATUS');
+    synonymDS.setQBE('orgid', event.item.orgid);
+    synonymDS.setQBE('siteid', event.item.siteid);
+    let domainValues = await synonymDS.searchQBE();
 
-        // istanbul ignore else
-        if (maxVal === 'INPRG') {
-          filterValues = ['WMATL', 'WAPPR'];
-        }
-      } else if (woWorkType && workType?.length) {
-        // istanbul ignore else
-        if (workTypeStartMaxVal) {
-          // istanbul ignore else
-          if (workTypeStartMaxVal === 'APPR' || workTypeStartMaxVal === 'WMATL' || workTypeStartMaxVal === 'WSCH') {
-            filterValues = ['WAPPR'];
-
-            // istanbul ignore else
-            if (!isAllPredessorComp) {
-              filterValues = ['WAPPR', 'INPRG', 'WMATL', 'COMP', 'APPR', 'CLOSE', 'WSCH'];
-            }
-          }
-
-          // istanbul ignore else
-          if (workTypeStartMaxVal === 'INPRG' && (!isAllPredessorComp || (maxVal !== 'INPRG' && maxVal !== 'COMP'))) {
-            filterValues = ['CLOSE', 'COMP', 'INPRG'];
-          } else if (workTypeStartMaxVal === 'INPRG' && maxVal === 'INPRG') {
-            filterValues = ['WMATL', 'WAPPR'];
-          }
-        }
-      }
-      /* istanbul ignore else */
-      if (filterValues?.length) {
-        statusArr = statusArr.filter(item => filterValues.indexOf(item.maxvalue) === -1);
-      }
+    // Fallback: org-level (no site)
+    if (!domainValues || domainValues.length < 1) {
+      synonymDS.setQBE('domainid', 'WOSTATUS');
+      synonymDS.setQBE('orgid', '=', event.item.orgid);
+      synonymDS.setQBE('siteid', '=', 'null');
+      domainValues = await synonymDS.searchQBE();
     }
+
+    // Fallback: system-level (no org, no site)
+    if (!domainValues || domainValues.length < 1) {
+      synonymDS.setQBE('domainid', 'WOSTATUS');
+      synonymDS.setQBE('orgid', '=', 'null');
+      synonymDS.setQBE('siteid', '=', 'null');
+      domainValues = await synonymDS.searchQBE();
+    }
+
+    synonymDS.clearQBE();
+
+    // Build status list — include ALL entries except the current status
+    (domainValues || []).forEach((element) => {
+      if (element.value && element.value !== event.item.status) {
+        statusArr.push({
+          id: element.value,
+          value: element.value,
+          description: element.description,
+          defaults: element.defaults,
+          maxvalue: element.maxvalue,
+          _bulkid: element.value
+        });
+      }
+    });
 
     await statusLstDS.load({ src: statusArr, noCache: true });
     this.page.showDialog("taskStatusChangeDialog", { parent: this.page });
@@ -715,95 +697,63 @@ class TaskController {
       this.page.state.measurementSaveDisabled = false;
     }
   }
+
   /**
    * Handles task item click on the task list.
-   * The rel.IGTWOACTIVITYSPECALN / rel.workorderspec attributes aggregate
-   * ALL specs across ALL tasks into flat arrays. We filter by matching
-   * refobjectid (the owning workorderid) to the clicked task's workorderid.
+   * Toggles the inline detail section for the clicked row using openTaskId state.
+   * Clicking anywhere on a row opens/closes its detail — no chevron needed.
    */
   async onTaskItemClick(event) {
-    const item = event?.item || event;
-    if (!item) return;
+    // Maximo data-list passes the clicked datasource item directly as the event
+    const taskid = event?.taskid ?? event?.item?.taskid;
+    if (!taskid) return;
 
-    try {
-      this.page.state.currentSpecTask = item;
-      const taskSpecDisplayDS = this.app.findDatasource('taskSpecDisplayDS');
-      if (!taskSpecDisplayDS) return;
-
-      const taskWorkorderId = item.workorderid;
-      let specs = [];
-
-      // Try to get child datasource specs (aggregated) and filter by refobjectid
-      const taskDS = this.app.findDatasource('woPlanTaskDetailds');
-      if (taskDS) {
-        // Try workorderspec first, then igtwoactivityspecaln
-        const allWorkorderSpecs = taskDS.getChildDatasource
-          ? null
-          : (item.workorderspec || []);
-        const allIgtSpecs = item.igtwoactivityspecaln || [];
-
-        // Combine all available specs
-        const allSpecs = [...(allWorkorderSpecs || []), ...allIgtSpecs];
-
-        if (allSpecs.length > 0 && taskWorkorderId) {
-          // Filter: only specs that belong to THIS task (by refobjectid)
-          specs = allSpecs.filter(s => 
-            String(s.refobjectid) === String(taskWorkorderId)
-          );
-          
-          // If refobjectid filter returned nothing, specs may not have
-          // refobjectid yet (first load before schema update).
-          // Fall back to showing all if filter returned 0 but source had data.
-          if (specs.length === 0 && allSpecs.length > 0) {
-            log.t(TAG, `refobjectid filter returned 0 specs for workorderid ${taskWorkorderId}, using unfiltered`);
-            specs = allSpecs;
-          }
-        }
+    // Toggle: if already open collapse it, otherwise open this item
+    if (this.page.state.openTaskId === taskid) {
+      this.page.state.openTaskId = null;
+    } else {
+      // --- IGT Geofencing check ---
+      // Apply geofencing check using the parent work order's service address.
+      // We skip the check if the work order lacks an asset.
+      const parentWo = this.page.state.workorder;
+      if (parentWo) {
+        const allowed = await this._checkGeofence(parentWo);
+        if (!allowed) return;
       }
+      // --- End geofencing ---
 
-      // Deduplicate by workorderspecid (in case both rel arrays have same records)
-      const seen = new Set();
-      specs = specs.filter(s => {
-        if (seen.has(s.workorderspecid)) return false;
-        seen.add(s.workorderspecid);
-        return true;
-      });
-
-      log.t(TAG, `Task ${item.taskid} (woid: ${taskWorkorderId}): ${specs.length} specs loaded`);
-
-      await taskSpecDisplayDS.load({ src: specs, noCache: true });
-      this.updateSpecFilledCount(taskSpecDisplayDS.items || []);
-    } catch (error) {
-      log.e(TAG, 'Error loading task specs for display', error);
+      this.page.state.openTaskId = taskid;
     }
   }
 
   /**
-   * Updates the filled/total counter for task specs (e.g. "2/4")
-   */
-  updateSpecFilledCount(specs) {
-    const total = specs.length;
-    const filled = specs.filter(s => s.alnvalue && s.alnvalue.trim() !== '').length;
-    this.page.state.specFilledCount = `${filled}/${total}`;
-  }
-
-  /**
-   * Opens the task specification sliding drawer (legacy - kept for compatibility).
+   * Opens the task specification sliding drawer.
+   * Loads all workorderspec entries from the clicked task into the taskSpecDS
+   * JSON datasource so they can be edited via smart-input fields.
+   *
+   * @param {object} event - Click event with {item, datasource}
    */
   async openTaskSpecification(event) {
     const item = event?.item;
     if (!item) return;
 
     try {
+      // Store reference to the parent task for saving later
       this.page.state.currentSpecTask = item;
+
+      // Open the drawer first so the DS inside it gets rendered
       this.page.showDialog('taskSpecificationDrawer');
 
+      // Find the datasource (inside the drawer, use app-level lookup)
       const taskSpecDS = this.app.findDatasource('taskSpecDS');
       if (!taskSpecDS) {
         log.e(TAG, 'taskSpecDS not found');
         return;
       }
-      const specs = item.igtwoactivityspecaln || [];
+
+      // Enrich spec descriptions from assetAttributeDS before loading
+      const specs = item.workorderspec || [];
+      await this._enrichSpecDescriptions(specs);
       await taskSpecDS.load({ src: specs, noCache: true });
     } catch (error) {
       log.e(TAG, 'Error opening task specifications', error);
@@ -811,69 +761,146 @@ class TaskController {
   }
 
   /**
-   * Saves task specification changes to the server.
-   * Uses woDetailds.update() to PATCH the parent WO with updated
-   * workorderspec alnvalue data nested inside the woactivity.
+   * Enriches an array of spec items with descriptions from assetAttributeDS.
+   * Follows the same pattern as WOCreateEditUtils.updateSpecificationAttributes.
+   * @param {Array} specs - workorderspec items
    */
-  async saveTaskSpecification() {
-    this.page.state.taskSpecLoader = true;
+  async _enrichSpecDescriptions(specs) {
     try {
-      const taskSpecDisplayDS = this.app.findDatasource('taskSpecDisplayDS');
-      const parentTask = this.page.state.currentSpecTask;
-      const woDetailds = this.app.findDatasource('woDetailds');
+      if (!specs || !specs.length) return;
+      const assetAttributeDS = this.app.findDatasource('assetAttributeDS');
+      if (!assetAttributeDS) return;
 
-      if (!parentTask || !woDetailds) {
-        this.app.toast('No task selected to save', 'error');
+      const attrIds = [];
+      specs.forEach(spec => {
+        if (spec.assetattrid && !spec.assetattributedesc) {
+          attrIds.push(spec.assetattrid);
+        }
+      });
+      if (!attrIds.length) return;
+
+      await assetAttributeDS.initializeQbe();
+      assetAttributeDS.setQBE('assetattrid', 'in', attrIds);
+      await assetAttributeDS.searchQBE();
+
+      const descMap = {};
+      assetAttributeDS.items.forEach(attr => {
+        if (attr.description) {
+          descMap[attr.assetattrid] = attr.description;
+        }
+      });
+
+      specs.forEach(spec => {
+        if (spec.assetattrid && !spec.assetattributedesc && descMap[spec.assetattrid]) {
+          spec.assetattributedesc = descMap[spec.assetattrid];
+        }
+      });
+    } catch (e) {
+      log.t(TAG, 'Non-critical: spec description enrichment failed', e);
+    }
+  }
+
+  /**
+   * Saves all modified specification values from the taskSpecDS back to the
+   * parent task's workorderspec array and persists via the task datasource.
+   * If all specs are filled after saving, changes task status to INSPCOMP
+   * using the same SynonymUtil + completeWoTask pattern as changeWoTaskStatus.
+   */
+  async saveTaskSpecification(event) {
+    try {
+      const taskDS = this.app.findDatasource('woPlanTaskDetailds');
+      const parentTask = event?.item;
+
+      if (!taskDS || !parentTask) {
+        log.e(TAG, 'Cannot save: missing datasource or parent task reference');
         return;
       }
 
-      // Get the edited specs from display DS
-      const specs = taskSpecDisplayDS ? (taskSpecDisplayDS.items || []) : [];
-      if (specs.length === 0) {
-        this.app.toast('No specifications to save', 'warning');
-        return;
-      }
+      const specs = parentTask.workorderspec || [];
 
-      // Build workorderspec payload with only changed alnvalue fields
-      const specPayload = specs.map(s => ({
-        workorderspecid: s.workorderspecid,
-        alnvalue: s.alnvalue || ''
-      }));
+      if (specs.length > 0) {
+        // Update the workorderspec on the parent task item directly,
+        // mirroring the pattern used in WorkOrderDetailsController.saveSpecification()
+        parentTask.workorderspec = specs.map(spec => ({
+          ...spec,
+          remarks: ''
+        }));
 
-      // Build the PATCH payload: update workorderspec via the woactivity localref
-      const dataToUpdate = {
-        href: woDetailds.item.href,
-        woactivity: [{
-          localref: parentTask.localref,
-          workorderspec: specPayload
-        }]
-      };
+        let interactive = { interactive: !Device.get().isMaximoMobile };
+        interactive.localPayload = {
+          ...parentTask,
+          workorderspec: parentTask.workorderspec
+        };
 
-      log.t(TAG, `Saving ${specPayload.length} specs for task ${parentTask.taskid}`);
+        await taskDS.save(interactive);
 
-      // Use the standard ds.update() pattern (same as WorkOrderEditController)
-      await woDetailds.update(dataToUpdate, {});
+        // Check if all specs are filled — if so change task status to INSPCOMP
+        const allFilled = specs.every(s => s.alnvalue && s.alnvalue.trim() !== '');
 
-      // Sync alnvalue back to the in-memory parent task specs
-      const originalSpecs = parentTask.igtwoactivityspecaln || [];
-      for (const editedSpec of specs) {
-        const original = originalSpecs.find(
-          s => s.workorderspecid === editedSpec.workorderspecid
-        );
-        if (original) {
-          original.alnvalue = editedSpec.alnvalue || '';
+        if (allFilled) {
+          try {
+            // Look up the INSPCOMP synonym by external value
+            const synonymDS = this.app.findDatasource('synonymdomainData');
+            await synonymDS.initializeQbe();
+            synonymDS.setQBE('domainid', '=', 'WOSTATUS');
+            synonymDS.setQBE('value', '=', 'INSPCOMP');
+            const synonymResults = await synonymDS.searchQBE();
+            const inspcompStatus = synonymResults?.[0];
+
+            if (inspcompStatus) {
+              // Directly invoke changeStatus on the task datasource
+              const statusAction = {
+                parameters: {
+                  status: inspcompStatus.value,
+                  date: this.app.dataFormatter.currentUserDateTime()
+                },
+                record: { href: parentTask.localref },
+                responseProperties: 'status,status_maxvalue,workorderid',
+                localPayload: {
+                  woactivity: [{
+                    href: parentTask.href,
+                    status: inspcompStatus.value,
+                    date: this.app.dataFormatter.currentUserDateTime(),
+                    status_maxvalue: inspcompStatus.maxvalue,
+                    status_description: inspcompStatus.description || inspcompStatus.value,
+                    workorderid: parentTask.workorderid
+                  }],
+                  href: taskDS.dependsOn.currentItem.href
+                },
+              };
+
+              await taskDS.invokeAction('changeStatus', statusAction);
+
+              // Update the task item locally
+              parentTask.status = inspcompStatus.value;
+              parentTask.status_maxvalue = inspcompStatus.maxvalue;
+              parentTask.status_description = inspcompStatus.description || inspcompStatus.value;
+
+              log.t(TAG, 'Task status changed to INSPCOMP');
+            } else {
+              log.e(TAG, 'INSPCOMP synonym not found in WOSTATUS domain');
+            }
+          } catch (statusError) {
+            log.e(TAG, 'Could not change status to INSPCOMP', statusError);
+          }
+        }
+
+        // Reload and recompute spec progress
+        await taskDS.forceReload();
+        const dataController = taskDS.dataController;
+        if (dataController && taskDS.items) {
+          taskDS.items.forEach(task => {
+            task.computedSpecProgress = dataController.computedSpecProgress(task);
+            task.computedAllSpecsFilled = dataController.computedAllSpecsFilled(task);
+          });
         }
       }
 
-      this.updateSpecFilledCount(specs);
-      this.app.toast('Specifications saved', 'success');
       log.t(TAG, 'Task specifications saved successfully');
-    } catch (error) {
-      const errMsg = error?.message || error?.toString() || 'Unknown error';
+    }
+    catch (error) {
       log.e(TAG, 'Error saving task specifications', error);
-      this.app.toast(`Save failed: ${errMsg.substring(0, 100)}`, 'error');
-    } finally {
-      this.page.state.taskSpecLoader = false;
+      this.app.toast('Failed to save specifications', 'error');
     }
   }
 
@@ -888,6 +915,7 @@ class TaskController {
     const specItem = event?.item;
     if (!specItem) return;
 
+    this.page.state.taskSpecLookupLoader = true;
     // Store current spec item so chooseTaskSpecDomain can update it
     this.currentTaskSpecField = specItem;
 
@@ -907,6 +935,7 @@ class TaskController {
 
       if (!domainId) {
         this.app.toast('No domain found for this attribute', 'warning');
+        this.page.state.taskSpecLookupLoader = false;
         return;
       }
 
@@ -919,55 +948,164 @@ class TaskController {
         await alnDS.searchQBE();
       }
 
+      this.page.state.taskSpecLookupLoader = false;
       this.page.showDialog('taskSpecAlnDomainLookup');
     } catch (error) {
       log.e(TAG, 'Error opening task spec lookup', error);
+      this.page.state.taskSpecLookupLoader = false;
     }
   }
 
   /**
    * Handles selection from the task specification ALN domain lookup.
-   * Sets the selected domain value onto the current spec item's alnvalue
-   * and syncs back to the parent task's embedded spec array.
+   * Sets the selected domain value onto the current spec item's alnvalue.
    *
    * @param {Object} itemSelected - The selected domain item with {value, description}
    */
-  async chooseTaskSpecDomain(itemSelected) {
+  chooseTaskSpecDomain(itemSelected) {
     if (this.currentTaskSpecField && itemSelected) {
-      // Update the JSON datasource item (for display)
       this.currentTaskSpecField.alnvalue = itemSelected.value;
-
-      // Sync to the aggregated spec arrays (for persistence on save)
-      const parentTask = this.page.state.currentSpecTask;
-      if (parentTask) {
-        const allSpecArrays = [parentTask.workorderspec, parentTask.igtwoactivityspecaln].filter(Boolean);
-        for (const specArr of allSpecArrays) {
-          const original = specArr.find(
-            s => s.workorderspecid === this.currentTaskSpecField.workorderspecid
-          );
-          if (original) {
-            original.alnvalue = itemSelected.value;
-          }
-        }
-      }
-
-      // Reload the display DS from its own items (already filtered per-task)
-      const taskSpecDisplayDS = this.app.findDatasource('taskSpecDisplayDS');
-      if (taskSpecDisplayDS) {
-        const currentSpecs = taskSpecDisplayDS.items || [];
-        // Update the matching spec in the items array
-        const specToUpdate = currentSpecs.find(
-          s => s.workorderspecid === this.currentTaskSpecField.workorderspecid
-        );
-        if (specToUpdate) {
-          specToUpdate.alnvalue = itemSelected.value;
-        }
-        await taskSpecDisplayDS.load({ src: currentSpecs, noCache: true });
-        this.updateSpecFilledCount(taskSpecDisplayDS.items || []);
-      }
-
+      this.currentTaskSpecField.igtentered = this.app.dataFormatter.convertDatetoISO(new Date());
+      this.currentTaskSpecField.igtenteredby = this.app?.client?.userInfo?.personid || this.app?.userInfo?.personid;
       log.t(TAG, `Task spec domain selected: ${itemSelected.value} for ${this.currentTaskSpecField.assetattrid}`);
     }
+  }
+
+  // =========================================================================
+  // IGT Geofencing helpers
+  // =========================================================================
+
+  /**
+   * IGT Geofencing: Checks if the user is within GEOFENCE_DISTANCE_METERS
+   * of the parent work order's service address. If the WO has no asset the
+   * check is skipped (matching old Anywhere behaviour).
+   *
+   * @param  {Object}  item  Parent work order item
+   * @return {boolean} true  → navigation expands task
+   *                   false → navigation is blocked (toast already shown)
+   */
+  async _checkGeofence(item) {
+    // If WO has no asset, skip geofencing (same as old code)
+    if (!item.assetnumber && !item.assetnum) {
+      return true;
+    }
+
+    // Helper to detect missing or 0,0 coordinates
+    const isInvalidCoord = (lat, lon) => {
+      const pLat = parseFloat(lat);
+      const pLon = parseFloat(lon);
+      return isNaN(pLat) || isNaN(pLon) || (pLat === 0 && pLon === 0);
+    };
+
+    // Check explicitly loaded WOSERVICEADDRESS datasource first
+    const woSaDs = this.app.findDatasource('woServiceAddress') || this.page.findDatasource('woServiceAddress');
+    let saItem = woSaDs?.item || (woSaDs && woSaDs[0]) || null;
+    if (Array.isArray(saItem)) saItem = saItem[0]; // just in case
+
+    let lat1 = saItem?.latitudey;
+    let lon1 = saItem?.longitudex;
+    let geocodeEnabled = saItem?.geocode;
+
+    // Get WO service address coordinates and toggle, falling back to direct WO fields
+    if (isInvalidCoord(lat1, lon1)) {
+      lat1 = item.serviceaddress?.latitudey ?? item.latitudey;
+      lon1 = item.serviceaddress?.longitudex ?? item.longitudex;
+      geocodeEnabled = item.serviceaddress?.geocode ?? geocodeEnabled;
+    }
+
+    // Finally, fallback to the Asset's service address using the loaded woAssetLocationds
+    if (isInvalidCoord(lat1, lon1)) {
+      // The datasource could be at the app level or the page level
+      const woAssetDs = this.app.findDatasource('woAssetLocationds') || this.page.findDatasource('woAssetLocationds');
+      if (woAssetDs?.item?.serviceaddress) {
+        // rel. queries in OSLC return an array even for 1:1 relationships
+        const sa = Array.isArray(woAssetDs.item.serviceaddress) ? woAssetDs.item.serviceaddress[0] : woAssetDs.item.serviceaddress;
+        if (sa && !isInvalidCoord(sa.latitudey, sa.longitudex)) {
+          lat1 = sa.latitudey;
+          lon1 = sa.longitudex;
+          geocodeEnabled = sa.geocode ?? geocodeEnabled;
+        }
+      }
+    }
+
+    // If the Maximo GEOCODE toggle is set to false/0/N, skip geofencing completely
+    const isGeocodeDisabled = typeof geocodeEnabled === 'string' ?
+      ['false', '0', 'n'].includes(geocodeEnabled.toLowerCase()) :
+      (geocodeEnabled === false || geocodeEnabled === 0);
+
+    if (isGeocodeDisabled) {
+      return true;
+    }
+
+    if (isInvalidCoord(lat1, lon1)) {
+      const assetId = item.assetnumber || item.assetnum || '';
+      this.page.error(
+        this.app.getLocalizedLabel(
+          'geofence_no_coords',
+          `Equipment ${assetId} latitude and longitude are not defined. Contact System Administrator.`,
+          [assetId]
+        )
+      );
+      return false;
+    }
+
+    // Obtain current GPS position
+    try {
+      if (this.app.geolocation) {
+        await this.app.geolocation.updateGeolocation({ enableHighAccuracy: true });
+      }
+    } catch (e) {
+      log.t(TAG, 'Geofence: GPS update failed — ' + e);
+    }
+
+    const lat2 = this.app.geolocation?.state?.latitude;
+    const lon2 = this.app.geolocation?.state?.longitude;
+
+    if (lat2 == null || lon2 == null || (lat2 === 0 && lon2 === 0)) {
+      this.page.error(
+        this.app.getLocalizedLabel(
+          'geofence_no_gps',
+          'Unable to acquire GPS position. Please enable location services.'
+        )
+      );
+      return false;
+    }
+
+    // Haversine distance
+    const distanceMeters = this._haversineDistance(lat1, lon1, lat2, lon2);
+
+    if (distanceMeters > GEOFENCE_DISTANCE_METERS) {
+      const eqLatLong = `${lat1},${lon1}`;
+      const gpsLatLong = `${lat2},${lon2}`;
+      this.page.error(
+        this.app.getLocalizedLabel(
+          'geofence_too_far',
+          `Distance between Equipment location ${eqLatLong} and current GPS location ${gpsLatLong} is more than ${GEOFENCE_DISTANCE_METERS} Meters.`,
+          [eqLatLong, gpsLatLong, GEOFENCE_DISTANCE_METERS]
+        )
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Haversine formula — returns the great-circle distance in **meters**
+   * between two lat/lon points.
+   */
+  _haversineDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth radius in km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c * 1000; // convert km → meters
   }
 }
 

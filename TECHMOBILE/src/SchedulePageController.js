@@ -54,10 +54,10 @@ class SchedulePageController {
 
     try {
       this.mapPreloadAPI = new MapPreLoadAPI();
-    } catch(error) {
+    } catch (error) {
       log.t(TAG, error);
     }
-  
+
     let device = Device.get();
     this.page.state.mapWOListHeight = "35%";
     this.page.state.mapWOCardHeight = "45%";
@@ -116,16 +116,6 @@ class SchedulePageController {
           firstLogin: this.page.state.firstLogin,
         },
       });
-    }
-  }
-
-  navigateToTask(item) {
-    if (item?.wonum) {
-      this.app.setCurrentPage({
-        name: 'tasks',
-        params: { wonum: item.wonum, href: item.href },
-      });
-      this.page.state.navigateToTaskPage = true;
     }
   }
 
@@ -247,9 +237,9 @@ class SchedulePageController {
         createby:
           this.app.client.userInfo.displayName ||
           this.app.client.userInfo.personid,
-        personid: 
+        personid:
           this.app.client.userInfo.displayName ||
-          this.app.client.userInfo.personid,  
+          this.app.client.userInfo.personid,
         createdate: new Date(),
         description: summary,
         logtype: longType,
@@ -323,15 +313,15 @@ class SchedulePageController {
     let statusArr = [];
     let workType = [];
     const workTypeDs = this.app.findDatasource("dsworktype");
-    const {longitudex, latitudey} = event.item.serviceaddress || {};
+    const { longitudex, latitudey } = event.item.serviceaddress || {};
     const lastLabTransData = event.item.labtrans ? event.item.labtrans[event.item.labtrans.length - 1] : null;
     const maxVal = event.item.status_maxvalue;
     // istanbul ignore else
-    if(event.item.worktype) {
+    if (event.item.worktype) {
       workType = workTypeDs.items.filter(
         (item) => item.worktype === event.item.worktype
       );
-    }  
+    }
 
     statusArr = await CommonUtil.getOfflineAllowedStatusList(this.app, event, false);
     log.t(
@@ -343,33 +333,33 @@ class SchedulePageController {
     statusLstDS.clearSelections();
 
     // istanbul ignore else
-    if(event.item.flowcontrolled) {
-      let filterValues= []
-      
+    if (event.item.flowcontrolled) {
+      let filterValues = []
+
       let workTypeStartMaxVal = workType?.length && workType[0].startstatus ? workType[0].startstatus_maxvalue : '';
       let workTypeEndMaxVal = workType?.length && workType[0].completestatus ? workType[0].completestatus_maxvalue : '';
-      if(!event.item.worktype || !workTypeStartMaxVal) {
+      if (!event.item.worktype || !workTypeStartMaxVal) {
         // istanbul ignore if
-        if(maxVal !== 'COMP') {
-          filterValues = ['CLOSE', 'COMP']; 
+        if (maxVal !== 'COMP') {
+          filterValues = ['CLOSE', 'COMP'];
         }
-        
-        if(maxVal === 'INPRG') {
-          filterValues = ['CLOSE', 'COMP', 'WMATL', 'WAPPR']; 
+
+        if (maxVal === 'INPRG') {
+          filterValues = ['CLOSE', 'COMP', 'WMATL', 'WAPPR'];
         }
-        
-      } else if(event.item.worktype && event.item.flowcontrolled && workType?.length) {
+
+      } else if (event.item.worktype && event.item.flowcontrolled && workType?.length) {
         // istanbul ignore else
-        if(workTypeEndMaxVal === 'COMP') {
+        if (workTypeEndMaxVal === 'COMP') {
           filterValues = ['CLOSE'];
-        } else if(workTypeEndMaxVal === 'CLOSE') {
+        } else if (workTypeEndMaxVal === 'CLOSE') {
           filterValues = ['CLOSE'];
-        } else if(workTypeEndMaxVal === 'INPRG') {
-          filterValues = ['CLOSE','COMP', 'INPRG'];
+        } else if (workTypeEndMaxVal === 'INPRG') {
+          filterValues = ['CLOSE', 'COMP', 'INPRG'];
         }
         // istanbul ignore next
-        if(workTypeStartMaxVal) {
-          if(workTypeStartMaxVal === 'APPR' || workTypeStartMaxVal === 'WMATL' || workTypeStartMaxVal === 'WSCH') {
+        if (workTypeStartMaxVal) {
+          if (workTypeStartMaxVal === 'APPR' || workTypeStartMaxVal === 'WMATL' || workTypeStartMaxVal === 'WSCH') {
             if (maxVal !== 'COMP') {
               filterValues = [...filterValues, 'WAPPR', 'COMP'];
             } else {
@@ -377,7 +367,7 @@ class SchedulePageController {
             }
           }
           // istanbul ignore if
-          if(workTypeStartMaxVal === 'INPRG' &&  maxVal === 'INPRG') {
+          if (workTypeStartMaxVal === 'INPRG' && maxVal === 'INPRG') {
             filterValues = [...filterValues, 'WMATL', 'WAPPR', 'COMP'];
             // istanbul ignore next
             if (event?.item?.flowcontrolled && event?.item?.iscalibration && event?.item?.pluscwodscount) {
@@ -395,17 +385,17 @@ class SchedulePageController {
       }
 
       // istanbul ignore else
-      if(maxVal === 'COMP' && longitudex && latitudey) {
+      if (maxVal === 'COMP' && longitudex && latitudey) {
         filterValues = ['WAPPR', 'CLOSE'];
       }
 
       // istanbul ignore else
-      if(filterValues?.length) {
+      if (filterValues?.length) {
         statusArr = statusArr.filter(item => filterValues.indexOf(item.maxvalue) === -1);
       }
     } // istanbul ignore else
-     else if(longitudex && latitudey && lastLabTransData?.timerstatus_maxvalue === 'ACTIVE') {
-        statusArr = statusArr.filter(item => ['CLOSE'].indexOf(item.maxvalue) === -1);
+    else if (longitudex && latitudey && lastLabTransData?.timerstatus_maxvalue === 'ACTIVE') {
+      statusArr = statusArr.filter(item => ['CLOSE'].indexOf(item.maxvalue) === -1);
     }
 
     await statusLstDS.load({ src: statusArr, noCache: true });
@@ -440,7 +430,7 @@ class SchedulePageController {
    * @param {Event} event The event that triggered the function.
    * @returns {Promise<void>} A promise that resolves when the drawer is opened.
    */
-   async openReassignmentDrawer(event) {
+  async openReassignmentDrawer(event) {
     this.page.state.currentItem = event.item?.wonum;
     this.app.state.assignmentLoading = true;
     const wodetails = this.app.findDatasource("wodetails");
@@ -470,13 +460,13 @@ class SchedulePageController {
    */
   async openReassignmentDialog(event) {
     //istanbul ignore else
-    if(event.item.computedTimerStatus) {
-      this.app.toast(this.app.getLocalizedLabel('infoOnReassign',`Stop or pause the work to remove or transfer the assignment.`), 'info');
+    if (event.item.computedTimerStatus) {
+      this.app.toast(this.app.getLocalizedLabel('infoOnReassign', `Stop or pause the work to remove or transfer the assignment.`), 'info');
       return;
     }
     this.page.state.currentItem = event.item.wonum;
     this.app.state.assignmentLoading = true;
- 
+
     if (!event?.item?.href) {
       log.d(TAG, 'Event.item has no href to load');
       this.page.state.canLoadWoDetails = false;
@@ -539,7 +529,7 @@ class SchedulePageController {
       //istanbul ignore else
       if (assignmentLength > 0 && index > -1) {
         // need to do for each and keep adding all the regularhrs in question with vinicius and pedro
-        const woDs = this.app.findDatasource(isListPage? "wodetails":"woDetailResource");
+        const woDs = this.app.findDatasource(isListPage ? "wodetails" : "woDetailResource");
         const completedLaborTimer = woDs?.item?.labtrans?.find((member) => (member.timerstatus_maxvalue === "COMPLETE" && member.laborcode === this.app.client.userInfo?.labor?.laborcode && member.transtype_maxvalue === "WORK"));
 
         let tempRecord = woDetailDs.item.assignment[index];
@@ -602,8 +592,8 @@ class SchedulePageController {
       //istanbul ignore else
       if (labor.laborcode !== this.app.client.userInfo.personid && this.app.name !== "supmobile") {
         this.app.navigateBack();
-      } else if(this.app.lastPage.name === 'relatedWorkOrder') {
-        this.app.navigateBack({keepCurrentParams: false});
+      } else if (this.app.lastPage.name === 'relatedWorkOrder') {
+        this.app.navigateBack({ keepCurrentParams: false });
       }
     }
     this.app.state.assignmentLoading = false;
@@ -639,7 +629,7 @@ class SchedulePageController {
     }
   }
 
-   // Assisted by watsonx Code Assistant 
+  // Assisted by watsonx Code Assistant 
   /**
    * Adds a new assignment to a work order.
    *
@@ -689,7 +679,7 @@ class SchedulePageController {
       log.t("Reject", "Failed assignment rejection : work order --> f--> " + error);
     }
   }
- 
+
   // Assisted by watsonx Code Assistant 
   /**
    * Close the dialogs for rejecting an assignment and looking up labor assignments.
@@ -742,14 +732,14 @@ class SchedulePageController {
       log.d(TAG, 'Event.item has no href to load');
       this.page.state.canLoadWoDetails = false;
     }
-    
+
     await wodetails.load({
       noCache: true,
       itemUrl: event.item.href,
     });
     this.page.state.canLoadWoDetails = true;
     this.page.state.currentItem = event.item.wonum;
-    
+
     await CommonUtil.markStatusAssigned(this.app, this.page, wodetails, wolistds);
     this.app.state.showLoaderOnAllWO = this.page.state.workloading = false;
   }
@@ -788,18 +778,18 @@ class SchedulePageController {
 
     const rejectDS = this.page.findDatasource("rejectList");
     //istanbul ignore else
-    if(!rejectDS?.items?.length) {
+    if (!rejectDS?.items?.length) {
       let dnewreadingDS = this.app.findDatasource("alnDomainDS");
       await dnewreadingDS.initializeQbe();
       dnewreadingDS?.setQBE('domainid', '=', 'WOREJECT');
       await dnewreadingDS?.searchQBE();
-      
-      if(dnewreadingDS.items) {
+
+      if (dnewreadingDS.items) {
         await statusLstDS.load({ src: [...dnewreadingDS.items], noCache: true });
       }
     }
     //istanbul ignore else
-    if(CommonUtil.sharedData.clickedUnassignment) {
+    if (CommonUtil.sharedData.clickedUnassignment) {
       this.page.state.assignmentHeader = this.app.getLocalizedLabel(
         "unassign_header",
         "Unassign Assignment"
@@ -903,7 +893,7 @@ class SchedulePageController {
     CommonUtil.callGeoLocation(this.app, event.action);
     const wolistds = this.page.findDatasource(this.page.state.selectedDS);
     const woLaborDetailDS = this.page.findDatasource("woLaborDetaildsOnSchedule");
-    if(!event.item.href) return;
+    if (!event.item.href) return;
 
     this.page.state.transactionProgress = true;
     this.page.state.currentItem = event.item.wonum;
@@ -913,7 +903,7 @@ class SchedulePageController {
     if (event.action !== 'start' || hazardReviewedReq === '1') {
       this.page.state.canLoadWoDetailsChilds = false;
       this.page.state.canLoadWoLaborDetaildsOnSchedule = true;
-      
+
       if (!event?.item?.href) {
         log.d(TAG, 'Event.item has no href to load');
         this.page.state.canLoadWoDetails = false;
@@ -943,7 +933,7 @@ class SchedulePageController {
   /**
   * Deletes the timer entry from the database.
   */
-  onDeleteEntry(){
+  onDeleteEntry() {
     WOTimerUtil.deleteTimerEntry(this.app, this.page);
   }
 
@@ -986,7 +976,7 @@ class SchedulePageController {
       woLaborDetailDS,
       event.item
     );
-    
+
     //set the updated wo list
     await wolistds.forceReload();
   }
@@ -1025,12 +1015,12 @@ class SchedulePageController {
         this.app.state.screen.size === "sm" ? 68 : 50;
     }
     CommonUtil.setGeoLocationState(this.app);
-    
+
     //Get system properties again.
     CommonUtil.getTravelSystemProperties(this.app);
 
     // istanbul ignore else
-    if(CommonUtil.sharedData?.clickedWo) {
+    if (CommonUtil.sharedData?.clickedWo) {
       this.filterListUsingPageParams(CommonUtil.sharedData?.clickedWo);
     }
   }
@@ -1047,7 +1037,7 @@ class SchedulePageController {
     const datasource = this.page.findDatasource(this.page.state.selectedDS);
     // istanbul ignore else
     if (!datasource || this.page.state.selectedSwitch === 0) {
-        return;
+      return;
     }
     await datasource.initializeQbe();
     datasource.setQBE("wonum", "=", item);
@@ -1058,8 +1048,8 @@ class SchedulePageController {
   async pagePaused() {
     this.page.findDialog('workLogDrawer')?.closeDialog();
     this.page.findDialog('slidingwomaterials')?.closeDialog();
-    this.page.findDialog('woStatusChangeDialog')?.closeDialog(); 
-    this.page.findDialog('slidingwohazard')?.closeDialog(); 
+    this.page.findDialog('woStatusChangeDialog')?.closeDialog();
+    this.page.findDialog('slidingwohazard')?.closeDialog();
     this.app?.findPage("schedule")?.findDialog('woStatusChangeDialog')?.closeDialog();
     this.app?.findPage("schedule")?.findDialog('laborAssignmentLookup')?.closeDialog();
   }
@@ -1074,21 +1064,21 @@ class SchedulePageController {
     if (!firstLoginData || (Math.abs(newDate - this.app.dataFormatter.convertISOtoDate(firstLoginData)) / 3600000) > 24) {
       localStorage.setItem(storageKey, newDate);
       page.state.firstLogin = true;
-    }  
+    }
   }
 
   /**
    * Redirects to Wo Card on Map view
    * @param {Object} item - clicked item from list
    */
-   async openWOCard(event) {
+  async openWOCard(event) {
     let loadMap = false;
     this.page.state.mapHighlightedItem = event?.item;
     // this code block will invoke in case we are highlighting map point by code
     // istanbul ignore else
-    if(event?.wonum && !event?.item) {
+    if (event?.wonum && !event?.item) {
       event = {
-        item : event,
+        item: event,
         prevPage: 'mapwolist'
       }
       loadMap = true;
@@ -1193,20 +1183,20 @@ class SchedulePageController {
       item.featuresAndLayers &&
       item.featuresAndLayers.length > 0
     ) {
-        const layer = item.featuresAndLayers[0].layer;
+      const layer = item.featuresAndLayers[0].layer;
       if (
         item.featuresAndLayers[0].feature.values_.features &&
         item.featuresAndLayers[0].feature.values_.features.length > 1
       ) {
         let featureCluster = item.featuresAndLayers[0].feature;
         let styleCluster = this.app.map.getNewStyle(highlightSymbolCluster);
-        
+
         this.app.map.changeFeatureStyle(
-          featureCluster, 
+          featureCluster,
           styleCluster, {
-            layer: item.featuresAndLayers[0].layer,
-            autoHideOriginalStyle: false
-          }
+          layer: item.featuresAndLayers[0].layer,
+          autoHideOriginalStyle: false
+        }
         );
 
         let wonums = [];
@@ -1232,8 +1222,8 @@ class SchedulePageController {
         const style = this.app.map.getNewStyle(highlightSymbol);
 
         this.app.map.changeFeatureStyle(
-          feature, 
-          style, 
+          feature,
+          style,
           {
             autoRestoreOnZoom: false,
             layer: item.featuresAndLayers[0].layer,
@@ -1242,22 +1232,22 @@ class SchedulePageController {
         );
         if ((feature?.values_?.features?.length) || isMarkerLayer) {
           const singleFeature = isMarkerLayer
-          ? feature
-          : feature.get('features')[0];
+            ? feature
+            : feature.get('features')[0];
           if (wasFeatureHighlighted) {
             datasource.clearQBE();
             await datasource.searchQBE(undefined, true);
-          } else {     
+          } else {
             maximoAttributes = singleFeature.get(
               "maximoAttributes"
             );
-            if(this.page.state.showMapOverlay) {
+            if (this.page.state.showMapOverlay) {
               await datasource.load({ itemUrl: maximoAttributes.href });
             } else {
               datasource.setQBE('wonum', '=', maximoAttributes.wonum);
-              datasource.searchQBE(); 
-            }     
-          }     
+              datasource.searchQBE();
+            }
+          }
         }
       }
     } else {
@@ -1276,7 +1266,7 @@ class SchedulePageController {
   // istanbul ignore next
   // ignoring as for map openlayers cannot be emulated
   handleItemClick(item) {
-    if(!item.autolocate) {
+    if (!item.autolocate) {
       return;
     }
     let itemGeometry = this.app.map.parseGeometry(item.autolocate);
@@ -1360,11 +1350,11 @@ class SchedulePageController {
   onUpdateDataFailed() {
     this.saveDataSuccessful = false;
   }
-  
+
   /**
    * Handle Delete transaction
    */
-   async handleDeleteTransaction(event) { 
+  async handleDeleteTransaction(event) {
     // istanbul ignore else
     if (event && event.app === this.app.name &&
       (this.app.currentPage.name === this.page.name || this.app.lastPage.name === this.page.name)
@@ -1376,14 +1366,14 @@ class SchedulePageController {
   /**
    * open safetyplan drawer
    */
-  async openHazardDrawer(event) { 
+  async openHazardDrawer(event) {
     WOUtil.openWOHazardDrawer(this.app, this.page, event, "slidingwohazard");
   }
-  
+
   /**
    * Review the safetyplan
    */
-   async reviewSafetyPlan() {
+  async reviewSafetyPlan() {
     WOUtil.reviewSafetyPlan(this.app);
   }
 
@@ -1394,12 +1384,12 @@ class SchedulePageController {
   async handleMapLongPress(data) {
     let createAccess = this.app.checkSigOption(`${this.app.state.woOSName}.CREATEWO`);
     // istanbul ignore if
-    if(!createAccess) {
+    if (!createAccess) {
       return
     }
-    
-    
-    const {coordinate, position} = data
+
+
+    const { coordinate, position } = data
     if (typeof data === 'object' && coordinate) {
       this.app.state.currentMapData = data;
     }
@@ -1411,13 +1401,13 @@ class SchedulePageController {
     }
     // istanbul ignore else
     if (integrationData) {
-      const {mboValues, geometryCenter} = integrationData;
+      const { mboValues, geometryCenter } = integrationData;
       this.app.state.currentMapData.gisIntegrationData = mboValues;
       // istanbul ignore else
-      if (geometryCenter){
+      if (geometryCenter) {
         this.app.state.currentMapData.coordinate = geometryCenter;
       }
-    } 
+    }
   }
 
   /**
@@ -1438,7 +1428,7 @@ class SchedulePageController {
    * Changes status of selected work order. This method is being used in approvals app
    * @param {Object} item 
    */
-   async changeWorkorderStatus(inputData) {
+  async changeWorkorderStatus(inputData) {
 
     this.page.state.loading = true;
     this.page.state.currentItem = inputData.item.wonum;
@@ -1467,7 +1457,7 @@ class SchedulePageController {
         status_description: approvedStatus.description,
         workorderid: item.workorderid
       },
-      query: {interactive: false},
+      query: { interactive: false },
       esigCheck: 0
     };
     //istanbul ignore else
@@ -1490,7 +1480,7 @@ class SchedulePageController {
     const allowedSignature = esigCheck
       .split(',')
       .map((status) => status.trim());
-      const addEsig = allowedSignature.length > 0 &&
+    const addEsig = allowedSignature.length > 0 &&
       allowedSignature.indexOf(status) > -1;
     return (addEsig) ? 1 : 0;
   }
