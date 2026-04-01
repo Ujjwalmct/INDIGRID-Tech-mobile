@@ -232,7 +232,7 @@ class WorkOrderDataController {
 
       items.forEach((item) => {
         let status = item.status_maxvalue;
-        if (item.taskid && status !== 'COMP' && status !== 'CLOSE' && status !== 'CAN' && status !== 'DRAFT' && status !== 'WAPPR') {
+        if (item.taskid && status !== 'CLOSE' && status !== 'CAN' && status !== 'WAPPR') {
           incompleteItems.push(item);
         }
         if (this.app.currentPage.name === 'tasks' && page.state.itemToOpen === '' && status !== 'CLOSE' && status !== 'CAN' && status !== 'COMP') {
@@ -242,19 +242,12 @@ class WorkOrderDataController {
         item.computedSpecProgress = this.computedSpecProgress(item);
         item.computedSpecCount = this.computedSpecCount(item);
         item.computedAllSpecsFilled = this.computedAllSpecsFilled(item);
-        //DT365530 :: incomplete task completion issue
+        //DT365530 :: incomplete task completion issue  
         //  item.computedTaskStatus = this.computedTaskStatus(item);
 
       });
-      // Set the task count correctly by using the filtered items array.
-      // (Depends on app.xml having page-size="200" or similar so all items are evaluated at once)
-      this.app.state.taskCount = incompleteItems.length;
-    }
 
-    //Filter the assets on basis of not null
-    if (dataSource.name === 'woMultiAssetLocationds' && items.length) {
-      this.computedMultiAssetProgressCount(items);
-      await dataSource.initializeQbe();
+      this.app.state.taskCount = incompleteItems.length;
       await dataSource.searchQBE();
 
       //Set assetToOpen attribute value

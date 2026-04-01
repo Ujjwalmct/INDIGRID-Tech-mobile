@@ -16,7 +16,7 @@ const TAG = "TaskController";
 
 // IGT Geofencing: Maximum allowed distance (in meters) between
 // the user's GPS position and the parent WO service address.
-const GEOFENCE_DISTANCE_METERS = 100;
+const GEOFENCE_DISTANCE_METERS = 200;
 
 class TaskController {
   pageInitialized(page, app) {
@@ -1052,23 +1052,25 @@ class TaskController {
     // Obtain current GPS position
     try {
       if (this.app.geolocation) {
-        // Trigger the GPS native request ONCE. 
-        // Awaiting it often returns immediately before the hardware actually gets a lock.
-        this.app.geolocation.updateGeolocation({ enableHighAccuracy: true });
-        
-        // The first time GPS is accessed, it may take several seconds to acquire a lock and populate state.
-        // We poll up to 8 times (approx 4 seconds) to allow the native module to update the coords.
-        let retries = 8;
-        let gpsAcquired = false;
+        // Quick check to see if we already have valid coordinates cached
+        let initialLat = this.app.geolocation?.state?.latitude;
+        let initialLon = this.app.geolocation?.state?.longitude;
+        let alreadyValid = initialLat != null && initialLon != null && (initialLat !== 0 || initialLon !== 0);
 
+        // Only force a high-accuracy update if we don't have valid coordinates yet
+        if (!alreadyValid) {
+          this.app.geolocation.updateGeolocation({ enableHighAccuracy: true });
+        }
+
+        let retries = alreadyValid ? 1 : 8; // Iterate once if valid, else wait up to 4s
+        let gpsAcquired = false;
         while (retries > 0 && !gpsAcquired) {
           const tempLat = this.app.geolocation?.state?.latitude;
           const tempLon = this.app.geolocation?.state?.longitude;
-          
+
           if (tempLat != null && tempLon != null && (tempLat !== 0 || tempLon !== 0)) {
             gpsAcquired = true;
           } else {
-            // Wait 500ms before checking the state again
             await new Promise(resolve => setTimeout(resolve, 500));
           }
           retries--;
