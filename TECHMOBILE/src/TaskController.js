@@ -16,7 +16,7 @@ const TAG = "TaskController";
 
 // IGT Geofencing: Maximum allowed distance (in meters) between
 // the user's GPS position and the parent WO service address.
-const GEOFENCE_DISTANCE_METERS = 100;
+const GEOFENCE_DISTANCE_METERS = 200;
 
 class TaskController {
   pageInitialized(page, app) {
@@ -228,8 +228,7 @@ class TaskController {
                   incompTaskCount.push(item._rowstamp);
                 }
               });
-              // Show total items
-              this.app.state.taskCount = taskds.state.totalCount || taskds.items.length;
+              this.app.state.taskCount = incompTaskCount.length;
             }
             this.page.state.itemToOpens = [];
             this.page.state.itemToOpen = '';
@@ -1052,8 +1051,17 @@ class TaskController {
     // Obtain current GPS position
     try {
       if (this.app.geolocation) {
-        this.app.geolocation.updateGeolocation({ enableHighAccuracy: true });
-        let retries = 8;
+        // Quick check to see if we already have valid coordinates cached
+        let initialLat = this.app.geolocation?.state?.latitude;
+        let initialLon = this.app.geolocation?.state?.longitude;
+        let alreadyValid = initialLat != null && initialLon != null && (initialLat !== 0 || initialLon !== 0);
+
+        // Only force a high-accuracy update if we don't have valid coordinates yet
+        if (!alreadyValid) {
+          this.app.geolocation.updateGeolocation({ enableHighAccuracy: true });
+        }
+
+        let retries = alreadyValid ? 1 : 8; // Iterate once if valid, else wait up to 4s
         let gpsAcquired = false;
         while (retries > 0 && !gpsAcquired) {
           const tempLat = this.app.geolocation?.state?.latitude;

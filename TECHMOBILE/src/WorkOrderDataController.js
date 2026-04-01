@@ -242,12 +242,20 @@ class WorkOrderDataController {
         item.computedSpecProgress = this.computedSpecProgress(item);
         item.computedSpecCount = this.computedSpecCount(item);
         item.computedAllSpecsFilled = this.computedAllSpecsFilled(item);
-        //DT365530 :: incomplete task completion issue
+        //DT365530 :: incomplete task completion issue  
         //  item.computedTaskStatus = this.computedTaskStatus(item);
 
       });
-      // Count all items in woactivity regardless of taskid
-      this.app.state.taskCount = dataSource.state.totalCount || items.length;
+      // Count all items in woactivity, avoiding DRAFT tasks (which shouldn't be loaded on mobile)
+      let validTaskCount = 0;
+      let woDetailDS = this.app.findDatasource("woDetailds");
+      if (woDetailDS && woDetailDS.item && woDetailDS.item.woactivity) {
+        validTaskCount = woDetailDS.item.woactivity.filter(task => task.status_maxvalue !== 'DRAFT').length;
+      } else {
+        // Fallback to the filtered item length, or totalCount
+        validTaskCount = items.length;
+      }
+      this.app.state.taskCount = validTaskCount;
     }
 
     //Filter the assets on basis of not null
