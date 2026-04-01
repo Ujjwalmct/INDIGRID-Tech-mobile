@@ -246,7 +246,8 @@ class WorkOrderDataController {
         //  item.computedTaskStatus = this.computedTaskStatus(item);
 
       });
-      this.app.state.taskCount = incompleteItems.length;
+      // Show total tasks on the UI badge, not just incomplete ones
+      this.app.state.taskCount = items.filter(item => item.taskid).length;
     }
 
     //Filter the assets on basis of not null

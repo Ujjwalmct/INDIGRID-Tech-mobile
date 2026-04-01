@@ -228,7 +228,8 @@ class TaskController {
                   incompTaskCount.push(item._rowstamp);
                 }
               });
-              this.app.state.taskCount = incompTaskCount.length;
+              // Show total tasks on the UI badge, not just incomplete ones
+              this.app.state.taskCount = taskds.items.filter(item => item.taskid).length;
             }
             this.page.state.itemToOpens = [];
             this.page.state.itemToOpen = '';
