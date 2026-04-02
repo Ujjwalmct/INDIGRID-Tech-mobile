@@ -14,15 +14,21 @@ import SynonymUtil from './utils/SynonymUtil';
 import commonUtil from "./utils/CommonUtil";
 const TAG = "TaskController";
 
-// IGT Geofencing: Maximum allowed distance (in meters) between
-// the user's GPS position and the parent WO service address.
-const GEOFENCE_DISTANCE_METERS = 200;
+// IGT Geofencing: The allowed distance threshold is read at runtime from the
+// Maximo system property 'igtmobile.towerdistance'. The constant below is NOT
+// used; it is kept only as a documentation reference for the default value (200 m).
+// See _checkGeofence() for the actual lookup.
 
 class TaskController {
   pageInitialized(page, app) {
     this.app = app;
     this.page = page;
     this.page.state.inspectionAccess = this.app.checkSigOption(`${this.app.state.appnames.inspection}.READ`);
+    
+    // Ensure system properties (like igtmobile.towerdistance) are fetched if this page is loaded directly
+    if (commonUtil && commonUtil.getTravelSystemProperties) {
+      commonUtil.getTravelSystemProperties(this.app);
+    }
   }
 
   /*
@@ -1032,12 +1038,32 @@ class TaskController {
       }
     }
 
-    // If the Maximo GEOCODE toggle is set to false/0/N, skip geofencing completely
-    const isGeocodeDisabled = typeof geocodeEnabled === 'string' ?
-      ['false', '0', 'n'].includes(geocodeEnabled.toLowerCase()) :
-      (geocodeEnabled === false || geocodeEnabled === 0);
+    // Check the global system property toggle first
+    let isGeofenceEnabledProp = this.app?.state?.systemProp?.['igtmobile.geofencing'];
 
-    if (isGeocodeDisabled) {
+    // Convert the global property to a boolean (default to true if missing/unparseable)
+    let isGlobalGeofenceEnabled = typeof isGeofenceEnabledProp === 'string'
+      ? ['true', '1', 'y'].includes(isGeofenceEnabledProp.toLowerCase())
+      : (isGeofenceEnabledProp !== false && isGeofenceEnabledProp !== 0);
+
+    // 1. Master Kill-Switch: If system property is false, do not even check the Service Address
+    if (!isGlobalGeofenceEnabled) {
+      log.t(TAG, 'Geofence: system property igtmobile.geofencing is false — completely skipping geofencing check.');
+      return true;
+    }
+
+    // 2. Local Override: Global is true, now we check WOSERVICEADDRESS.GEOCODE
+    let isLocalGeofenceEnabled = true;
+    if (geocodeEnabled !== undefined && geocodeEnabled !== null) {
+      if (typeof geocodeEnabled === 'string' && geocodeEnabled.trim() !== '') {
+        isLocalGeofenceEnabled = !['false', '0', 'n'].includes(geocodeEnabled.toLowerCase());
+      } else if (typeof geocodeEnabled === 'boolean' || typeof geocodeEnabled === 'number') {
+        isLocalGeofenceEnabled = !!geocodeEnabled;
+      }
+    }
+
+    if (!isLocalGeofenceEnabled) {
+      log.t(TAG, 'Geofence: global is true, but WO geocode flag is false — skipping distance check for this specific task.');
       return true;
     }
 
@@ -1083,7 +1109,6 @@ class TaskController {
     } catch (e) {
       log.t(TAG, 'Geofence: GPS update failed — ' + e);
     }
-
     const lat2 = this.app.geolocation?.state?.latitude;
     const lon2 = this.app.geolocation?.state?.longitude;
 
@@ -1100,14 +1125,31 @@ class TaskController {
     // Haversine distance
     const distanceMeters = this._haversineDistance(lat1, lon1, lat2, lon2);
 
-    if (distanceMeters > GEOFENCE_DISTANCE_METERS) {
+    // Read the allowed tower distance strictly from the Maximo system property
+    // 'igtmobile.towerdistance'. If the property is not configured or cannot
+    // be parsed, skip the distance check and allow access.
+    const rawProp = this.app?.state?.systemProp?.['igtmobile.towerdistance'];
+    const allowedTowerDistance = parseFloat(rawProp);
+
+    if (isNaN(allowedTowerDistance)) {
+      log.t(TAG, 'Geofence: igtmobile.towerdistance not configured.');
+      this.page.error(
+        this.app.getLocalizedLabel(
+          'geofence_no_distance',
+          `Allowed tower distance is not configured correctly in System Properties (Received: "${rawProp}"). Contact System Administrator.`
+        )
+      );
+      return false;
+    }
+
+    if (distanceMeters > allowedTowerDistance) {
       const eqLatLong = `${lat1},${lon1}`;
       const gpsLatLong = `${lat2},${lon2}`;
       this.page.error(
         this.app.getLocalizedLabel(
           'geofence_too_far',
-          `Distance between Equipment location ${eqLatLong} and current GPS location ${gpsLatLong} is more than ${GEOFENCE_DISTANCE_METERS} Meters.`,
-          [eqLatLong, gpsLatLong, GEOFENCE_DISTANCE_METERS]
+          `Distance between Equipment location ${eqLatLong} and current GPS location ${gpsLatLong} is more than ${allowedTowerDistance} Meters.`,
+          [eqLatLong, gpsLatLong, allowedTowerDistance]
         )
       );
       return false;

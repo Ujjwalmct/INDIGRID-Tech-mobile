@@ -110,7 +110,7 @@ const getOfflineStatusList = async (app, orgId, siteId) => {
    */
   const getTravelSystemProperties = async (app) => {   
     if (app.client && typeof app.client.getSystemProperties === 'function'){
-      app.state.systemProp = await app.client.getSystemProperties('mxe.mobile.travel.prompt,mxe.mobile.travel.radius,mxe.mobile.travel.navigation,maximo.mobile.usetimer,maximo.mobile.statusforphysicalsignature,maximo.mobile.completestatus,mxe.mobile.navigation.windows,mxe.mobile.navigation.android,mxe.mobile.navigation.ios,maximo.mobile.allowmultipletimers,maximo.mobile.safetyplan.review,maximo.mobile.gotoreportwork');
+      app.state.systemProp = await app.client.getSystemProperties('mxe.mobile.travel.prompt,mxe.mobile.travel.radius,mxe.mobile.travel.navigation,maximo.mobile.usetimer,maximo.mobile.statusforphysicalsignature,maximo.mobile.completestatus,mxe.mobile.navigation.windows,mxe.mobile.navigation.android,mxe.mobile.navigation.ios,maximo.mobile.allowmultipletimers,maximo.mobile.safetyplan.review,maximo.mobile.gotoreportwork,igtmobile.towerdistance,igtmobile.geofencing');
     }    
   }
 
