@@ -16,6 +16,8 @@
     <property name="maximo.mobile.WOSchedulingDates" id="env_e"/>
     <property name="maximo.mobile.QuickWoPriority" id="vk9b6"/>
     <property name="maximo.mobile.QuickWoWorktype" id="dyaa5"/>
+    <property name="igtmobile.geofencing" id="igt_geofencing_enabled"/>
+    <property name="igtmobile.towerdistance" id="igt_geofencing_distance"/>
   </properties>
   <states id="v_5ez">
     <state name="map" type="object" id="v3p3k">
