@@ -1692,7 +1692,7 @@
         <lookup id="taskSpecAlnDomainLookup" show-search="true" enable-barcode-scanner="true" lookup-heading="Domain" datasource="alnDomainDS" on-item-click="chooseTaskSpecDomain" border="true" lookup-attributes="{['value', 'description']}" height="400"/>
       </dialogs>
       <box direction="column" id="jkknb" fill-parent-horizontal="true" padding-bottom="0" padding-top="0">
-        <data-list id="q439v" datasource="woPlanTaskDetailds" on-item-click="onTaskItemClick" show-search="false" data-list-height-hint="75">
+        <data-list id="q439v" datasource="woPlanTaskDetailds" on-item-click="onTaskItemClick" show-search="false" data-list-height-hint="75" item-to-open="{page.state.itemToOpen}" no-select-behavior="true">
           <!-- renderer for list item details -->
           <list-item id="r6bdn_outer">
             <box direction="column" fill-parent-horizontal="true" id="tskitemwrap01">
@@ -1717,7 +1717,7 @@
                 </border-layout>
               </box>
               <!-- Expanded detail section - shown when this item is open -->
-              <box direction="column" fill-parent-horizontal="true" hidden="{page.state.openTaskId !== item.taskid}" id="tskdetailbox01">
+              <box direction="column" fill-parent-horizontal="true" hidden="{page.state.itemToOpen != item.workorderid}" id="tskdetailbox01">
                 <border-layout fill-parent="true" middle-border="{item.computedBorderDisplay}" top-border="{item.description_longdescription || app.state.isAssistAccessible || (page.state.inspectionAccess &amp;&amp; item.inspectionbatchresult)}" padding="false" id="b5zn8">
                   <top id="x29yd">
                     <box direction="column" fill-parent-horizontal="true" id="mpk_z">

@@ -443,6 +443,7 @@ class TaskController {
     page.state.enforceAssetScan = app.checkSigOption(`${app.state.woOSName}.ENFORCEASSETSCAN`);
     page.state.assetSwicthAccess = app.checkSigOption(`${app.state.appnames.assetswitch}.READ`) ? true : false;
     let device = Device.get();
+    page.state.openTaskId = null;
     page.state.itemToOpen = '';
     let woDetailds = app.findDatasource('woDetailds');
 
@@ -701,16 +702,18 @@ class TaskController {
 
   /**
    * Handles task item click on the task list.
-   * Toggles the inline detail section for the clicked row using openTaskId state.
+   * Toggles the inline detail section for the clicked row using itemToOpen state.
    * Clicking anywhere on a row opens/closes its detail — no chevron needed.
    */
   async onTaskItemClick(event) {
     // Maximo data-list passes the clicked datasource item directly as the event
     const taskid = event?.taskid ?? event?.item?.taskid;
-    if (!taskid) return;
+    const workorderid = event?.workorderid ?? event?.item?.workorderid;
+    if (!taskid || workorderid === undefined || workorderid === null) return;
 
     // Toggle: if already open collapse it, otherwise open this item
-    if (this.page.state.openTaskId === taskid) {
+    if (`${this.page.state.itemToOpen}` === `${workorderid}`) {
+      this.page.state.itemToOpen = '';
       this.page.state.openTaskId = null;
     } else {
       // --- IGT Geofencing check ---
@@ -723,6 +726,7 @@ class TaskController {
       }
       // --- End geofencing ---
 
+      this.page.state.itemToOpen = workorderid;
       this.page.state.openTaskId = taskid;
     }
   }

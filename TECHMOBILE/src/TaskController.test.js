@@ -575,4 +575,29 @@ describe("TaskController", () => {
     expect(dialogMock.findDatasource().item.newreading).toBe("TEST_VALUE");
     expect(page.state.measurementSaveDisabled).toBe(false);
   });
+
+  it("should toggle the open task row using itemToOpen", async () => {
+    await controller.onTaskItemClick({ taskid: 10, workorderid: 1201 });
+
+    expect(page.state.itemToOpen).toBe(1201);
+    expect(page.state.openTaskId).toBe(10);
+
+    await controller.onTaskItemClick({ taskid: 10, workorderid: 1201 });
+
+    expect(page.state.itemToOpen).toBe("");
+    expect(page.state.openTaskId).toBeNull();
+  });
+
+  it("should keep the current task row open when geofence blocks another row", async () => {
+    page.state.itemToOpen = 1201;
+    page.state.openTaskId = 10;
+    page.state.workorder = { assetnum: "ASSET-1" };
+
+    jest.spyOn(controller, "_checkGeofence").mockResolvedValue(false);
+
+    await controller.onTaskItemClick({ taskid: 20, workorderid: 1202 });
+
+    expect(page.state.itemToOpen).toBe(1201);
+    expect(page.state.openTaskId).toBe(10);
+  });
 });
