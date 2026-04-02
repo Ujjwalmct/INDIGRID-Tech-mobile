@@ -232,7 +232,7 @@ class WorkOrderDataController {
 
       items.forEach((item) => {
         let status = item.status_maxvalue;
-        if (item.taskid && status !== 'COMP' && status !== 'CLOSE' && status !== 'CAN') {
+        if (item.taskid && status !== 'CLOSE' && status !== 'CAN' && status !== 'WAPPR') {
           incompleteItems.push(item);
         }
         if (this.app.currentPage.name === 'tasks' && page.state.itemToOpen === '' && status !== 'CLOSE' && status !== 'CAN' && status !== 'COMP') {
@@ -246,22 +246,8 @@ class WorkOrderDataController {
         //  item.computedTaskStatus = this.computedTaskStatus(item);
 
       });
-      // Count all items in woactivity, avoiding DRAFT tasks (which shouldn't be loaded on mobile)
-      let validTaskCount = 0;
-      let woDetailDS = this.app.findDatasource("woDetailds");
-      if (woDetailDS && woDetailDS.item && woDetailDS.item.woactivity) {
-        validTaskCount = woDetailDS.item.woactivity.filter(task => task.status_maxvalue !== 'DRAFT').length;
-      } else {
-        // Fallback to the filtered item length, or totalCount
-        validTaskCount = items.length;
-      }
-      this.app.state.taskCount = validTaskCount;
-    }
 
-    //Filter the assets on basis of not null
-    if (dataSource.name === 'woMultiAssetLocationds' && items.length) {
-      this.computedMultiAssetProgressCount(items);
-      await dataSource.initializeQbe();
+      this.app.state.taskCount = incompleteItems.length;
       await dataSource.searchQBE();
 
       //Set assetToOpen attribute value
