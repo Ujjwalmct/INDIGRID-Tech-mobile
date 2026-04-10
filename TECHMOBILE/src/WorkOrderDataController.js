@@ -517,7 +517,7 @@ class WorkOrderDataController {
       taskItems.forEach(task => {
         const specs = task.workorderspec || [];
         specs.forEach(spec => {
-          if (spec.assetattrid && !spec.assetattributedesc) {
+          if (spec.assetattrid && (!spec.assetattributedesc || !spec.domainid)) {
             allAttrIds.add(spec.assetattrid);
           }
         });
@@ -530,20 +530,29 @@ class WorkOrderDataController {
       assetAttributeDS.setQBE('assetattrid', 'in', Array.from(allAttrIds));
       await assetAttributeDS.searchQBE();
 
-      // Build a lookup map: assetattrid -> description
+      // Build lookup maps: assetattrid -> description, assetattrid -> domainid
       const descMap = {};
+      const domainMap = {};
       assetAttributeDS.items.forEach(attr => {
         if (attr.description) {
           descMap[attr.assetattrid] = attr.description;
         }
+        if (attr.domainid) {
+          domainMap[attr.assetattrid] = attr.domainid;
+        }
       });
 
-      // Inject descriptions into each spec item
+      // Inject descriptions and domainid into each spec item
       taskItems.forEach(task => {
         const specs = task.workorderspec || [];
         specs.forEach(spec => {
-          if (spec.assetattrid && !spec.assetattributedesc && descMap[spec.assetattrid]) {
-            spec.assetattributedesc = descMap[spec.assetattrid];
+          if (spec.assetattrid) {
+            if (!spec.assetattributedesc && descMap[spec.assetattrid]) {
+              spec.assetattributedesc = descMap[spec.assetattrid];
+            }
+            if (!spec.domainid && domainMap[spec.assetattrid]) {
+              spec.domainid = domainMap[spec.assetattrid];
+            }
           }
         });
       });

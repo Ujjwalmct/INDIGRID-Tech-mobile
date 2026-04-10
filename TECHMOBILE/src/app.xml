@@ -235,7 +235,7 @@
         <attribute name="finishdate" id="wj66d"/>
       </schema>
     </maximo-datasource>
-    <maximo-datasource id="woPlanTaskDetailds" relationship="woactivity" page-size="200" order-by="taskid" domain-internal-where="status=INPRG,WAPPR,WMATL,APPR,WSCH,WPCOND,COMP" selection-mode="single" controller="WorkOrderDataController">
+    <maximo-datasource id="woPlanTaskDetailds" relationship="woactivity" page-size="200" order-by="taskid" domain-internal-where="status=INPRG,WMATL,APPR,WSCH,WPCOND,COMP" selection-mode="single" controller="WorkOrderDataController">
       <schema id="nrqzd">
         <attribute name="workorderid" unique-id="true" id="vv3x7"/>
         <attribute name="taskid" searchable="true" id="nywdm" sub-type="ALN"/>
@@ -2904,7 +2904,7 @@
                       <border-layout fill-parent="true" padding="false" id="tskspecinlinevalueborder01">
                         <start width="85" horizontal-overflow="hidden" id="tskspecinlinevalstart01">
                           <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecinlinevalbox01">
-                            <dropdown datasource="alnDomainDS" selected-item="{item.alnvalue}" datasource-value-field="value" datasource-text-field="value" datasource-icon-field="iconName" datasource-icon-color-field="name" id="tskspecinlinedd01"/>
+                            <dropdown datasource="alnDomainDS" selected-item="{item.alnvalue}" datasource-value-field="value" datasource-text-field="value" datasource-icon-field="iconName" datasource-icon-color-field="name" on-change="onTaskSpecDropdownChange" on-change-arg="{{'spec': item}}" id="tskspecinlinedd01"/>
                             <smart-input label="Remarks" value="{item.remarks}" id="tskspecinlinevalrem01"/>
                           </box>
                         </start>
