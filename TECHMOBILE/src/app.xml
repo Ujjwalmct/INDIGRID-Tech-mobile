@@ -235,7 +235,7 @@
         <attribute name="finishdate" id="wj66d"/>
       </schema>
     </maximo-datasource>
-    <maximo-datasource id="woPlanTaskDetailds" relationship="woactivity" page-size="200" order-by="taskid" domain-internal-where="status=INPRG,WMATL,APPR,WSCH,WPCOND,COMP" selection-mode="single" controller="WorkOrderDataController">
+    <maximo-datasource id="woPlanTaskDetailds" relationship="woactivity" page-size="200" order-by="taskid" domain-internal-where="status=INPRG,COMP" selection-mode="single" controller="WorkOrderDataController">
       <schema id="nrqzd">
         <attribute name="workorderid" unique-id="true" id="vv3x7"/>
         <attribute name="taskid" searchable="true" id="nywdm" sub-type="ALN"/>
@@ -285,8 +285,8 @@
         <attribute name="parentchgsstatus" id="jynmp"/>
         <attribute name="activeassetmetermobile._dbcount--assetmetercount" id="x5g7d"/>
         <attribute name="activelocationmetermobile._dbcount--locationmetercount" id="ayz27"/>
-        <attribute name="IGTWOACTIVITYSPECALN{workorderspecid,assetattrid,assetattrid_description,alnvalue,remarks,assetattribute.description--assetattributedesc}" id="tsk_spec01"/>
-        <attribute name="workorderspec{workorderspecid,assetattrid,assetattrid_description,alnvalue,remarks,assetattribute.description--assetattributedesc,domainid}" id="tsk_spec02"/>
+        <attribute name="IGTWOACTIVITYSPECALN{workorderspecid,assetattrid,assetattrid_description,alnvalue,remarks,assetattribute.description--assetattributedesc,igtentered,igtenteredby}" id="tsk_spec01"/>
+        <attribute name="workorderspec{workorderspecid,assetattrid,assetattrid_description,alnvalue,remarks,assetattribute.description--assetattributedesc,domainid,igtentered,igtenteredby}" id="tsk_spec02"/>
       </schema>
     </maximo-datasource>
     <maximo-datasource id="wohazardmaterials" relationship="hazardousmaterials" selection-mode="none" notify-when-parent-loads="true" controller="ScheduleDataController">
@@ -670,6 +670,8 @@
       <attribute name="datatype" id="ar6_6"/>
       <attribute name="computedLabel" id="gn3me"/>
       <attribute name="tablevalue" id="ab9e9"/>
+      <attribute name="igtentered" id="igt_entered_dt"/>
+      <attribute name="igtenteredby" id="igt_enteredby"/>
     </schema>
   </json-datasource>
   <dialogs id="w5jqr">
@@ -1937,7 +1939,7 @@
             <attribute name="hierarchypath" id="rzz58"/>
             <attribute name="classstructureid" id="j552w"/>
           </attribute>
-          <attribute name="workorderspec{workorderspecid,assetattrid,measureunitid,tablevalue,datevalue,numvalue,alnvalue,assetattribute.description--assetattributedesc,displaysequence,domainid}" id="zrkm9"/>
+          <attribute name="workorderspec{workorderspecid,assetattrid,measureunitid,tablevalue,datevalue,numvalue,alnvalue,assetattribute.description--assetattributedesc,displaysequence,domainid,igtentered,igtenteredby}" id="zrkm9"/>
           <attribute name="maxvar.coordinate" id="x8x84"/>
           <attribute name="orgid" id="ma383"/>
           <attribute name="woclass" id="wg2mn"/>
@@ -1949,7 +1951,7 @@
           <attribute name="wogroup" id="ek3yq"/>
           <attribute name="taskid" id="rj394"/>
           <attribute name="flowcontrolled" id="m57va"/>
-          <attribute name="woactivity{taskid,status,workorderspec{assetattribute.description--assetattributedesc,assetattrid_description,alnvalue,remarks,assetattrid,domainid}}" id="a226d"/>
+          <attribute name="woactivity{taskid,status,workorderspec{assetattribute.description--assetattributedesc,assetattrid_description,alnvalue,remarks,assetattrid,domainid,igtentered,igtenteredby}}" id="a226d"/>
           <attribute name="anywhererefid" id="ya4g8"/>
           <attribute name="rel.asset.mxapiasset{assetnum,description,plusacatid,islinear,lrm,direction,startmeasure,endmeasure}" id="kpn4_"/>
           <attribute name="location.location--locationnum" id="jmpan"/>
@@ -1976,6 +1978,8 @@
             <attribute name="datevalue" id="ykr2x"/>
             <attribute name="assetattribute.description--assetattributedesc" id="a4885"/>
             <attribute name="displaysequence" id="mmg76"/>
+            <attribute name="igtentered" id="wospec_igt_dt"/>
+            <attribute name="igtenteredby" id="wospec_igt_by"/>
           </schema>
         </maximo-datasource>
         <maximo-datasource id="woDetailsWorklogDs" relationship="woworklog" can-load="{page.state.canLoadWoDetailResourceChilds}" object-name="worklog" page-size="200" order-by="createdate" selection-mode="none" notify-when-parent-loads="true" cache-expiry-ms="1">
@@ -2579,6 +2583,8 @@
         <lookup id="woSpecAlnDomainLookup" show-search="true" enable-barcode-scanner="true" lookup-heading="Domain" datasource="alnDomainDS" on-item-click="chooseWoSpecDomain" border="true" lookup-attributes="{['value', 'description']}" height="400"/>
         <lookup id="woSpecNumericDomainLookup" show-search="true" enable-barcode-scanner="true" lookup-heading="Domain" datasource="numericDomainDS" on-item-click="chooseWoSpecNumDomain" border="true" lookup-attributes="{['value', 'description']}" height="400"/>
         <lookup id="woSpecTableDomainLookup" show-search="true" enable-barcode-scanner="true" lookup-heading="Domain" datasource="tableDomainDS" on-item-click="chooseWoSpecTableDomain" border="true" lookup-attributes="{['value', 'description']}" height="400"/>
+        <!-- Task Specification ALN Domain Lookup (for inline task checklists) -->
+        <lookup id="woDetailTaskSpecAlnLookup" show-search="true" enable-barcode-scanner="true" lookup-heading="Domain" datasource="alnDomainDS" on-item-click="chooseTaskSpecDomain" border="true" lookup-attributes="{['value', 'description']}" height="400"/>
         <sliding-drawer id="woSpecificationEditDrawer" validate="onSpecificationClose" content-padding="false" align="start" header-text="Edit Specifications">
           <panel id="wexvr">
             <box padding-top="1" id="ged5e"/>
@@ -2675,7 +2681,7 @@
         <border-layout padding="false" fill-parent="true" top-border="true" id="egry_">
           <top id="d3rqy">
             <box padding-start="1" padding-end="1" id="bk7dw" padding-top=".75" padding-bottom=".75">
-              <label label="Details" theme="20-regular" id="bp5bq"/>
+              <label label="Tasks" theme="20-regular" id="bp5bq"/>
             </box>
           </top>    
         </border-layout>
@@ -2901,17 +2907,10 @@
                   <repeat datasource="{woPlanTaskDetailds.getChildDatasource('workorderspec', item)}" id="tskspecinlinerepeat01">
                     <box slot="item" direction="column" fill-parent-horizontal="true" padding-start="1" padding-end="1" padding-top="0.5" padding-bottom="0.5" border-bottom="true" id="tskspecinlineitembox01">
                       <field value="{item.assetattributedesc || item.assetattrid_description || item.assetattrid}" override-required="true" field-class-name="16-bold" padding="none" hide-label="true" id="tskspecinlinelabel01"/>
-                      <border-layout fill-parent="true" padding="false" id="tskspecinlinevalueborder01">
-                        <start width="85" horizontal-overflow="hidden" id="tskspecinlinevalstart01">
-                          <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecinlinevalbox01">
-                            <dropdown datasource="alnDomainDS" selected-item="{item.alnvalue}" datasource-value-field="value" datasource-text-field="value" datasource-icon-field="iconName" datasource-icon-color-field="name" on-change="onTaskSpecDropdownChange" on-change-arg="{{'spec': item}}" id="tskspecinlinedd01"/>
-                            <smart-input label="Remarks" value="{item.remarks}" id="tskspecinlinevalrem01"/>
-                          </box>
-                        </start>
-                        
-                      
-                        
-                      </border-layout>
+                      <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecinlinevalbox01">
+                        <dropdown datasource="alnDomainDS" selected-item="{item.alnvalue}" datasource-value-field="value" datasource-text-field="value" on-change="onTaskSpecDropdownChange" on-change-arg="{{'spec': item}}" id="tskspecinlinedd01"/>
+                        <smart-input label="Remarks" value="{item.remarks}" id="tskspecinlinevalrem01"/>
+                      </box>
                     </box>
                   </repeat>
                 </box>

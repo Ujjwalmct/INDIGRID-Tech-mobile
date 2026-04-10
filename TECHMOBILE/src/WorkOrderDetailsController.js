@@ -241,7 +241,16 @@ class WorkOrderDetailsController {
     // istanbul ignore else
     if (woPlanTaskDetailds) {
       CommonUtil._resetDataSource(woPlanTaskDetailds);
-      await woPlanTaskDetailds?.load({ noCache: true });
+      // On mobile, apply QBE filter to only show INPRG and COMP tasks
+      // (mirrors the same filter applied in TaskController.pageResumed)
+      if (Device.get().isMaximoMobile) {
+        let externalStatusList = await SynonymUtil.getExternalStatusList(app, ['INPRG', 'COMP']);
+        await woPlanTaskDetailds.initializeQbe();
+        woPlanTaskDetailds.setQBE('status', 'in', externalStatusList);
+        await woPlanTaskDetailds.searchQBE(undefined, true);
+      } else {
+        await woPlanTaskDetailds?.load({ noCache: true });
+      }
     }
     page.state.loading = false;
     const rejectLabel = app.getLocalizedLabel('rejected', 'Rejected').toUpperCase();
@@ -2061,10 +2070,16 @@ async saveTaskSpecification(event) {
       const specs = parentTask.workorderspec || [];
 
       if (specs.length > 0) {
+        // Stamp igtentered/igtenteredby on every spec with a filled value
+        const nowISO = this.app.dataFormatter.convertDatetoISO(new Date());
+        const personId = this.app?.client?.userInfo?.personid || this.app?.userInfo?.personid;
+
         // Update the workorderspec on the parent task item directly,
         // mirroring the pattern used in WorkOrderDetailsController.saveSpecification()
         parentTask.workorderspec = specs.map(spec => ({
-          ...spec
+          ...spec,
+          igtentered: (spec.alnvalue && spec.alnvalue.trim() !== '') ? nowISO : spec.igtentered,
+          igtenteredby: (spec.alnvalue && spec.alnvalue.trim() !== '') ? personId : spec.igtenteredby
         }));
 
         let interactive = { interactive: !Device.get().isMaximoMobile };
@@ -2154,16 +2169,19 @@ async openTaskSpecLookup(event) {
     this.currentTaskSpecField = specItem;
 
     try {
-      // Get domainid from assetAttributeDS using assetattrid
-      const assetAttrDS = this.app.findDatasource('assetAttributeDS');
-      let domainId = null;
+      // Use domainid already on the spec item (enriched from schema) if available,
+      // otherwise fall back to looking it up from assetAttributeDS
+      let domainId = specItem.domainid || null;
 
-      if (assetAttrDS) {
-        await assetAttrDS.initializeQbe();
-        assetAttrDS.setQBE('assetattrid', '=', specItem.assetattrid);
-        const results = await assetAttrDS.searchQBE();
-        if (results && results.length > 0) {
-          domainId = results[0].domainid;
+      if (!domainId) {
+        const assetAttrDS = this.app.findDatasource('assetAttributeDS');
+        if (assetAttrDS) {
+          await assetAttrDS.initializeQbe();
+          assetAttrDS.setQBE('assetattrid', '=', specItem.assetattrid);
+          const results = await assetAttrDS.searchQBE();
+          if (results && results.length > 0) {
+            domainId = results[0].domainid;
+          }
         }
       }
 
@@ -2183,7 +2201,7 @@ async openTaskSpecLookup(event) {
       }
 
       this.page.state.taskSpecLookupLoader = false;
-      this.page.showDialog('taskSpecAlnDomainLookup');
+      this.page.showDialog('woDetailTaskSpecAlnLookup');
     } catch (error) {
       log.e(TAG, 'Error opening task spec lookup', error);
       this.page.state.taskSpecLookupLoader = false;
@@ -2215,76 +2233,101 @@ chooseTaskSpecDomain(itemSelected) {
 
 
   async _checkGeofence(item) {
-    // If WO has no asset, skip geofencing (same as old code)
-    if (!item.assetnumber && !item.assetnum) {
+    // ═══════════════════════════════════════════════════════════════
+    // STEP 1 — GLOBAL SYSTEM PROPERTY CHECK (igtmobile.geofencing)
+    // If false/missing → geofence is OFF globally, skip everything.
+    // ═══════════════════════════════════════════════════════════════
+    const rawGlobalProp = this.app?.state?.systemProp?.['igtmobile.geofencing'];
+    log.t(TAG, `Geofence: raw system prop igtmobile.geofencing = "${rawGlobalProp}" (type: ${typeof rawGlobalProp})`);
+
+    const isGlobalEnabled = this._isTruthy(rawGlobalProp);
+    if (!isGlobalEnabled) {
+      log.t(TAG, 'Geofence: GLOBAL property is false/missing — geofence OFF. Allowing access.');
       return true;
     }
+    log.t(TAG, 'Geofence: GLOBAL property is true — checking WO-level geocode…');
 
-    // Helper to detect missing or 0,0 coordinates
+    // ═══════════════════════════════════════════════════════════════
+    // STEP 2 — WO SERVICE ADDRESS GEOCODE CHECK
+    // ═══════════════════════════════════════════════════════════════
+    let geocodeValue = undefined;
+
+    // 2a. From the parent WO item's service address
+    const woSA = item?.serviceaddress;
+    if (woSA) {
+      const sa = Array.isArray(woSA) ? woSA[0] : woSA;
+      geocodeValue = sa?.geocode;
+      log.t(TAG, `Geofence: woDetailResource serviceaddress.geocode = "${geocodeValue}"`);
+    }
+
+    // 2b. From woServiceAddress datasource
+    if (geocodeValue === undefined || geocodeValue === null) {
+      const woSaDs = this.app.findDatasource('woServiceAddress') || this.page?.findDatasource('woServiceAddress');
+      let saItem = woSaDs?.item;
+      if (Array.isArray(saItem)) saItem = saItem[0];
+      if (saItem) {
+        geocodeValue = saItem.geocode;
+        log.t(TAG, `Geofence: woServiceAddress DS geocode = "${geocodeValue}"`);
+      }
+    }
+
+    // 2c. From asset service address
+    if (geocodeValue === undefined || geocodeValue === null) {
+      const woAssetDs = this.app.findDatasource('woAssetLocationds') || this.page?.findDatasource('woAssetLocationds');
+      if (woAssetDs?.item?.serviceaddress) {
+        const assetSa = Array.isArray(woAssetDs.item.serviceaddress) ? woAssetDs.item.serviceaddress[0] : woAssetDs.item.serviceaddress;
+        if (assetSa) {
+          geocodeValue = assetSa.geocode;
+          log.t(TAG, `Geofence: asset serviceaddress geocode = "${geocodeValue}"`);
+        }
+      }
+    }
+
+    log.t(TAG, `Geofence: resolved geocode = "${geocodeValue}" (type: ${typeof geocodeValue})`);
+
+    const isWOGeofenceEnabled = this._isTruthy(geocodeValue);
+    if (!isWOGeofenceEnabled) {
+      log.t(TAG, 'Geofence: WO geocode is false/missing — geofence OFF for this WO. Allowing access.');
+      return true;
+    }
+    log.t(TAG, 'Geofence: WO geocode is true — performing distance check…');
+
+    // ═══════════════════════════════════════════════════════════════
+    // STEP 3 — GET EQUIPMENT COORDINATES
+    // ═══════════════════════════════════════════════════════════════
     const isInvalidCoord = (lat, lon) => {
       const pLat = parseFloat(lat);
       const pLon = parseFloat(lon);
       return isNaN(pLat) || isNaN(pLon) || (pLat === 0 && pLon === 0);
     };
 
-    // Check explicitly loaded WOSERVICEADDRESS datasource first
-    const woSaDs = this.app.findDatasource('woServiceAddress') || this.page.findDatasource('woServiceAddress');
-    let saItem = woSaDs?.item || (woSaDs && woSaDs[0]) || null;
-    if (Array.isArray(saItem)) saItem = saItem[0]; // just in case
+    let lat1, lon1;
 
-    let lat1 = saItem?.latitudey;
-    let lon1 = saItem?.longitudex;
-    let geocodeEnabled = saItem?.geocode;
-
-    // Get WO service address coordinates and toggle, falling back to direct WO fields
-    if (isInvalidCoord(lat1, lon1)) {
-      lat1 = item.serviceaddress?.latitudey ?? item.latitudey;
-      lon1 = item.serviceaddress?.longitudex ?? item.longitudex;
-      geocodeEnabled = item.serviceaddress?.geocode ?? geocodeEnabled;
+    if (woSA) {
+      const sa = Array.isArray(woSA) ? woSA[0] : woSA;
+      lat1 = sa?.latitudey;
+      lon1 = sa?.longitudex;
     }
 
-    // Finally, fallback to the Asset's service address using the loaded woAssetLocationds
     if (isInvalidCoord(lat1, lon1)) {
-      // The datasource could be at the app level or the page level
-      const woAssetDs = this.app.findDatasource('woAssetLocationds') || this.page.findDatasource('woAssetLocationds');
+      const woSaDs = this.app.findDatasource('woServiceAddress') || this.page?.findDatasource('woServiceAddress');
+      let saItem = woSaDs?.item;
+      if (Array.isArray(saItem)) saItem = saItem[0];
+      if (saItem) {
+        lat1 = saItem.latitudey;
+        lon1 = saItem.longitudex;
+      }
+    }
+
+    if (isInvalidCoord(lat1, lon1)) {
+      const woAssetDs = this.app.findDatasource('woAssetLocationds') || this.page?.findDatasource('woAssetLocationds');
       if (woAssetDs?.item?.serviceaddress) {
-        // rel. queries in OSLC return an array even for 1:1 relationships
-        const sa = Array.isArray(woAssetDs.item.serviceaddress) ? woAssetDs.item.serviceaddress[0] : woAssetDs.item.serviceaddress;
-        if (sa && !isInvalidCoord(sa.latitudey, sa.longitudex)) {
-          lat1 = sa.latitudey;
-          lon1 = sa.longitudex;
-          geocodeEnabled = sa.geocode ?? geocodeEnabled;
+        const assetSa = Array.isArray(woAssetDs.item.serviceaddress) ? woAssetDs.item.serviceaddress[0] : woAssetDs.item.serviceaddress;
+        if (assetSa && !isInvalidCoord(assetSa.latitudey, assetSa.longitudex)) {
+          lat1 = assetSa.latitudey;
+          lon1 = assetSa.longitudex;
         }
       }
-    }
-
-    // Check the global system property toggle first
-    let isGeofenceEnabledProp = this.app?.state?.systemProp?.['igtmobile.geofencing'];
-
-    // Convert the global property to a boolean (default to true if missing/unparseable)
-    let isGlobalGeofenceEnabled = typeof isGeofenceEnabledProp === 'string'
-      ? ['true', '1', 'y'].includes(isGeofenceEnabledProp.toLowerCase())
-      : (isGeofenceEnabledProp !== false && isGeofenceEnabledProp !== 0);
-
-    // 1. Master Kill-Switch: If system property is false, do not even check the Service Address
-    if (!isGlobalGeofenceEnabled) {
-      log.t(TAG, 'Geofence: system property igtmobile.geofencing is false — completely skipping geofencing check.');
-      return true;
-    }
-
-    // 2. Local Override: Global is true, now we check WOSERVICEADDRESS.GEOCODE
-    let isLocalGeofenceEnabled = true;
-    if (geocodeEnabled !== undefined && geocodeEnabled !== null) {
-      if (typeof geocodeEnabled === 'string' && geocodeEnabled.trim() !== '') {
-        isLocalGeofenceEnabled = !['false', '0', 'n'].includes(geocodeEnabled.toLowerCase());
-      } else if (typeof geocodeEnabled === 'boolean' || typeof geocodeEnabled === 'number') {
-        isLocalGeofenceEnabled = !!geocodeEnabled;
-      }
-    }
-
-    if (!isLocalGeofenceEnabled) {
-      log.t(TAG, 'Geofence: global is true, but WO geocode flag is false — skipping distance check for this specific task.');
-      return true;
     }
 
     if (isInvalidCoord(lat1, lon1)) {
@@ -2299,25 +2342,24 @@ chooseTaskSpecDomain(itemSelected) {
       return false;
     }
 
-    // Obtain current GPS position
+    // ═══════════════════════════════════════════════════════════════
+    // STEP 4 — GET GPS POSITION & CHECK DISTANCE
+    // ═══════════════════════════════════════════════════════════════
     try {
       if (this.app.geolocation) {
-        // Quick check to see if we already have valid coordinates cached
         let initialLat = this.app.geolocation?.state?.latitude;
         let initialLon = this.app.geolocation?.state?.longitude;
         let alreadyValid = initialLat != null && initialLon != null && (initialLat !== 0 || initialLon !== 0);
 
-        // Only force a high-accuracy update if we don't have valid coordinates yet
         if (!alreadyValid) {
           this.app.geolocation.updateGeolocation({ enableHighAccuracy: true });
         }
 
-        let retries = alreadyValid ? 1 : 8; // Iterate once if valid, else wait up to 4s
+        let retries = alreadyValid ? 1 : 8;
         let gpsAcquired = false;
         while (retries > 0 && !gpsAcquired) {
           const tempLat = this.app.geolocation?.state?.latitude;
           const tempLon = this.app.geolocation?.state?.longitude;
-
           if (tempLat != null && tempLon != null && (tempLat !== 0 || tempLon !== 0)) {
             gpsAcquired = true;
           } else {
@@ -2329,6 +2371,7 @@ chooseTaskSpecDomain(itemSelected) {
     } catch (e) {
       log.t(TAG, 'Geofence: GPS update failed — ' + e);
     }
+
     const lat2 = this.app.geolocation?.state?.latitude;
     const lon2 = this.app.geolocation?.state?.longitude;
 
@@ -2342,25 +2385,23 @@ chooseTaskSpecDomain(itemSelected) {
       return false;
     }
 
-    // Haversine distance
     const distanceMeters = this._haversineDistance(lat1, lon1, lat2, lon2);
 
-    // Read the allowed tower distance strictly from the Maximo system property
-    // 'igtmobile.towerdistance'. If the property is not configured or cannot
-    // be parsed, skip the distance check and allow access.
-    const rawProp = this.app?.state?.systemProp?.['igtmobile.towerdistance'];
-    const allowedTowerDistance = parseFloat(rawProp);
+    const rawDistProp = this.app?.state?.systemProp?.['igtmobile.towerdistance'];
+    const allowedTowerDistance = parseFloat(rawDistProp);
 
     if (isNaN(allowedTowerDistance)) {
       log.t(TAG, 'Geofence: igtmobile.towerdistance not configured.');
       this.page.error(
         this.app.getLocalizedLabel(
           'geofence_no_distance',
-          `Allowed tower distance is not configured correctly in System Properties (Received: "${rawProp}"). Contact System Administrator.`
+          `Allowed tower distance is not configured correctly in System Properties (Received: "${rawDistProp}"). Contact System Administrator.`
         )
       );
       return false;
     }
+
+    log.t(TAG, `Geofence: distance = ${distanceMeters.toFixed(1)}m, allowed = ${allowedTowerDistance}m`);
 
     if (distanceMeters > allowedTowerDistance) {
       const eqLatLong = `${lat1},${lon1}`;
@@ -2376,6 +2417,21 @@ chooseTaskSpecDomain(itemSelected) {
     }
 
     return true;
+  }
+
+  /**
+   * Converts various truthy/falsy representations to boolean.
+   * Returns true for: true, 1, "true", "1", "y", "yes"
+   * Returns false for everything else including undefined/null/empty.
+   */
+  _isTruthy(val) {
+    if (val === undefined || val === null) return false;
+    if (typeof val === 'boolean') return val;
+    if (typeof val === 'number') return val !== 0;
+    if (typeof val === 'string') {
+      return ['true', '1', 'y', 'yes'].includes(val.trim().toLowerCase());
+    }
+    return !!val;
   }
 
   /**
