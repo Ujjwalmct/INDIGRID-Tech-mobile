@@ -146,10 +146,9 @@ class WorkOrderDetailsController {
     page.state.loadedLog = true;
     page.state.taskLoading = true;
     page.params.href = page.params.href || page.params.itemhref;
-    app.findDatasource('woPlanTaskDetailds')?.resetState();
-    if (woDetailResource?.item.istask) {
-      app.findDatasource('woPlanTaskDetailds')?.load();
-    }
+
+    // ── Kick off task-list load early (runs in parallel with everything below) ──
+    const taskListPromise = this._loadTaskList(app, page);
     /*
      * Syncing the woDetailResource while coming back from offline to online mode
      */
@@ -237,21 +236,8 @@ class WorkOrderDetailsController {
           woDetailResource.item.relatedrecord.length;
       }
     }
-    const woPlanTaskDetailds = app.findDatasource("woPlanTaskDetailds");
-    // istanbul ignore else
-    if (woPlanTaskDetailds) {
-      CommonUtil._resetDataSource(woPlanTaskDetailds);
-      // On mobile, apply QBE filter to only show INPRG and COMP tasks
-      // (mirrors the same filter applied in TaskController.pageResumed)
-      if (Device.get().isMaximoMobile) {
-        let externalStatusList = await SynonymUtil.getExternalStatusList(app, ['INPRG', 'COMP']);
-        await woPlanTaskDetailds.initializeQbe();
-        woPlanTaskDetailds.setQBE('status', 'in', externalStatusList);
-        await woPlanTaskDetailds.searchQBE(undefined, true);
-      } else {
-        await woPlanTaskDetailds?.load({ noCache: true });
-      }
-    }
+    // ── Await the task-list promise that was kicked off earlier ──
+    await taskListPromise;
     page.state.loading = false;
     const rejectLabel = app.getLocalizedLabel('rejected', 'Rejected').toUpperCase();
     const index = (woDetailResource?.item?.assignment?.length > 0) ? woDetailResource?.item?.assignment?.findIndex(assignment => assignment?.laborcode === this.app.client?.userInfo?.labor?.laborcode) : 0;
@@ -306,12 +292,11 @@ class WorkOrderDetailsController {
         : woDetailResource?.item.doclinkscount;
     }
 
-    //Reload the attachment list
+    // Sync attachment / related-record counts on mobile
+    // (uses data already loaded at line 133 — no redundant forceReload)
     if (device.isMaximoMobile) {
-      let woDetailResource = page.findDatasource('woDetailResource');
-
-      await woDetailResource.forceReload();
-      await page.findDatasource('woSpecification')?.load();
+      // Load woSpecification in parallel (non-blocking for task list)
+      page.findDatasource('woSpecification')?.load();
 
       woDetailResource.item.relatedrecordcount =
         woDetailResource.item.relatedwo?.length || woDetailResource.item.relatedrecordcount;
@@ -1014,6 +999,23 @@ class WorkOrderDetailsController {
     this.app.setCurrentPage({
       name: 'attachments',
       params: { itemhref: event.item.href },
+    });
+  }
+
+  /**
+   * Redirects to attachments page for a specific task item.
+   * Called from the inline task checklist attachment button.
+   */
+  showTaskAttachmentPage(event) {
+    const taskItem = event?.item;
+    if (!taskItem || !taskItem.href) {
+      log.e(TAG, 'showTaskAttachmentPage: no task item or href');
+      return;
+    }
+    this.app.state.woStatus = taskItem.status_maxvalue;
+    this.app.setCurrentPage({
+      name: 'attachments',
+      params: { itemhref: taskItem.href },
     });
   }
 
@@ -1936,7 +1938,38 @@ class WorkOrderDetailsController {
 
   // --- Migrated from TaskController for q439v inline task list ---
 
-async onTaskItemClick(event) {
+  /**
+   * Loads the task list datasource (woPlanTaskDetailds).
+   * Extracted so it can be started early in pageResumed and run in parallel
+   * with other non-dependent datasource loads.
+   */
+  async _loadTaskList(app, page) {
+    try {
+      const woPlanTaskDetailds = app.findDatasource('woPlanTaskDetailds');
+      if (!woPlanTaskDetailds) return;
+
+      // Hide the task list while we reset + reload to prevent "no results" flash
+      page.state.taskLoading = true;
+
+      CommonUtil._resetDataSource(woPlanTaskDetailds);
+
+      // On mobile, apply QBE filter to only show INPRG and COMP tasks
+      if (Device.get().isMaximoMobile) {
+        let externalStatusList = await SynonymUtil.getExternalStatusList(app, ['INPRG', 'COMP']);
+        await woPlanTaskDetailds.initializeQbe();
+        woPlanTaskDetailds.setQBE('status', 'in', externalStatusList);
+        await woPlanTaskDetailds.searchQBE(undefined, true);
+      } else {
+        await woPlanTaskDetailds.load({ noCache: true });
+      }
+
+      page.state.taskLoading = false;
+    } catch (e) {
+      log.e(TAG, '_loadTaskList error:', e);
+      page.state.taskLoading = false;
+    }
+  }
+  async onTaskItemClick(event) {
     // Maximo data-list passes the clicked datasource item directly as the event
     const taskid = event?.taskid ?? event?.item?.taskid;
     const workorderid = event?.workorderid ?? event?.item?.workorderid;
@@ -2015,7 +2048,7 @@ async onTaskItemClick(event) {
     }
   }
 
-async redirectToAssetDetails(item) {
+  async redirectToAssetDetails(item) {
     this.page.state.loadAssetData = true;
     try {
       this.page.state.loadAssetData = false;
@@ -2038,7 +2071,7 @@ async redirectToAssetDetails(item) {
     }
   }
 
-openTaskLongDesc(item) {
+  openTaskLongDesc(item) {
     if (item) {
       this.page.state.taskLongDesc = item.description_longdescription;
       this.page.showDialog('planTaskLongDesc');
@@ -2046,7 +2079,7 @@ openTaskLongDesc(item) {
     }
   }
 
-openMeasurementDrawer(event) {
+  openMeasurementDrawer(event) {
     if (event.item) {
       const woPlanTaskDetailDS = this.app.findDatasource("woPlanTaskDetaildsSelected");
       woPlanTaskDetailDS?.clearWarnings(woPlanTaskDetailDS.item, "measuredate");
@@ -2057,7 +2090,7 @@ openMeasurementDrawer(event) {
     }
   }
 
-async saveTaskSpecification(event) {
+  async saveTaskSpecification(event) {
     try {
       const taskDS = this.app.findDatasource('woPlanTaskDetailds');
       const parentTask = event?.item;
@@ -2160,7 +2193,7 @@ async saveTaskSpecification(event) {
     }
   }
 
-async openTaskSpecLookup(event) {
+  async openTaskSpecLookup(event) {
     const specItem = event?.item;
     if (!specItem) return;
 
@@ -2208,7 +2241,7 @@ async openTaskSpecLookup(event) {
     }
   }
 
-chooseTaskSpecDomain(itemSelected) {
+  chooseTaskSpecDomain(itemSelected) {
     if (this.currentTaskSpecField && itemSelected) {
       this.currentTaskSpecField.alnvalue = itemSelected.value;
       this.currentTaskSpecField.igtentered = this.app.dataFormatter.convertDatetoISO(new Date());

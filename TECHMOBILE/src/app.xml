@@ -1809,6 +1809,7 @@
         <state name="assetLocation" value="true" type="boolean" id="edv7y"/>
         <state name="canLoadWoDetailResource" value="true" type="boolean" id="xdv7y"/>
         <state name="canLoadWoDetailResourceChilds" value="true" type="boolean" id="bpw3g"/>
+        <state name="taskLoading" value="true" type="boolean" id="igtTskLoad01"/>
       </states>
       <maximo-datasource id="woDetailResource" default="true" can-load="{page.state.canLoadWoDetailResource}" object-structure="IGTAPIWODETAIL" where="wonum=&quot;{page.params.wonum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="WorkOrderDataController" item-url="{page.params.href}" cache-expiry-ms="1" geometry-format="geojson">
         <schema id="qmvzy">
@@ -2670,11 +2671,11 @@
               <tag-group align="{app.state.screen.size === 'sm' ? 'start' : 'end'}" wrap="true" tags="{woDetailResource.item.computedWODtlStatusPriority}" id="j85kz"/>
             </box>
           </adaptive-column>
-          <adaptive-column xlarge-width="5" large-width="50" medium-width="40" small-width="30" id="jjzv6" xlarge-horizontal-align="end" large-horizontal-align="end" medium-horizontal-align="end" small-horizontal-align="end">
+          <!-- <adaptive-column xlarge-width="5" large-width="50" medium-width="40" small-width="30" id="jjzv6" xlarge-horizontal-align="end" large-horizontal-align="end" medium-horizontal-align="end" small-horizontal-align="end">
             <box fill-parent-horizontal="true" padding-bottom="0" padding-top="0" id="nmjm_">
               <button icon="carbon:edit" kind="ghost" padding="false" loading="{page.state.loading}" on-click="workOrderEdit" on-click-arg="{{'item':woDetailResource.item,'datasource':'woDetailResource'}}" disabled="{(!page.state.editDetails) || !app.checkSigOption(`${app.state.woOSName}.EDITWO`)}" hidden="{!app.state.showAssignment}" id="a7d9q"/>
             </box>
-          </adaptive-column>
+          </adaptive-column> -->
         </adaptive-row>
       </box>
       <box direction="column" background-color="ui-01" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-top="0" padding-bottom="0" id="xgr_a">
@@ -2686,7 +2687,7 @@
           </top>    
         </border-layout>
       </box>
-      <box direction="column" id="jkknb" fill-parent-horizontal="true" padding-bottom="0" padding-top="0">
+      <box direction="column" id="jkknb" fill-parent-horizontal="true" padding-bottom="0" padding-top="0" hidden="{page.state.taskLoading}">
         <data-list id="q439v" datasource="woPlanTaskDetailds" on-item-click="onTaskItemClick" show-search="false" data-list-height-hint="75" item-to-open="{page.state.itemToOpen}" no-select-behavior="true">
           <!-- renderer for list item details -->
           <list-item id="r6bdn_outer">
@@ -2900,7 +2901,8 @@
                     <box direction="column" fill-parent-horizontal="true" id="tskspecinlinehdrbox01">
                       <label label="Checklists" theme="16-bold" id="tskspecrowlabel01"/>
                     </box>
-                    <box horizontal-align="end" vertical-align="center" padding-end="1" id="tskspecinlinesavebox01">
+                    <box horizontal-align="end" vertical-align="center" padding-end="1" direction="row" id="tskspecinlinesavebox01">
+                      <button icon="carbon:attachment" kind="ghost" on-click="showTaskAttachmentPage" on-click-arg="{{'item': item}}" id="tskspecattachbtn01"/>
                       <button icon="carbon:checkmark" kind="primary" loading="{page.state.taskSpecLoader}" on-click="saveTaskSpecification" on-click-arg="{{'item': item, 'datasource': woPlanTaskDetailds}}" id="tskspecinlinesavebtn01"/>
                     </box>
                   </box>
@@ -2908,7 +2910,7 @@
                     <box slot="item" direction="column" fill-parent-horizontal="true" padding-start="1" padding-end="1" padding-top="0.5" padding-bottom="0.5" border-bottom="true" id="tskspecinlineitembox01">
                       <field value="{item.assetattributedesc}" override-required="true" field-class-name="16-bold" padding="none" hide-label="true" id="tskspecinlinelabel01"/>
                       <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecinlinevalbox01">
-                        <dropdown datasource="alnDomainDS" selected-item="{item.alnvalue}" datasource-value-field="value" datasource-text-field="value" on-change="onTaskSpecDropdownChange" on-change-arg="{{'spec': item}}" id="tskspecinlinedd01"/>
+                        <dropdown label="Value" datasource="alnDomainDS" selected-item="{item.alnvalue}" datasource-value-field="value" datasource-text-field="value" on-change="onTaskSpecDropdownChange" on-change-arg="{{'spec': item}}" id="tskspecinlinedd01"/>
                         <smart-input label="Remarks" value="{item.remarks}" id="tskspecinlinevalrem01"/>
                       </box>
                     </box>
