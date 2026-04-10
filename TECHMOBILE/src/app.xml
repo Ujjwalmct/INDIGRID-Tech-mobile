@@ -2906,7 +2906,7 @@
                   </box>
                   <repeat datasource="{woPlanTaskDetailds.getChildDatasource('workorderspec', item)}" id="tskspecinlinerepeat01">
                     <box slot="item" direction="column" fill-parent-horizontal="true" padding-start="1" padding-end="1" padding-top="0.5" padding-bottom="0.5" border-bottom="true" id="tskspecinlineitembox01">
-                      <field value="{item.assetattributedesc || item.assetattrid_description || item.assetattrid}" override-required="true" field-class-name="16-bold" padding="none" hide-label="true" id="tskspecinlinelabel01"/>
+                      <field value="{item.assetattributedesc}" override-required="true" field-class-name="16-bold" padding="none" hide-label="true" id="tskspecinlinelabel01"/>
                       <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecinlinevalbox01">
                         <dropdown datasource="alnDomainDS" selected-item="{item.alnvalue}" datasource-value-field="value" datasource-text-field="value" on-change="onTaskSpecDropdownChange" on-change-arg="{{'spec': item}}" id="tskspecinlinedd01"/>
                         <smart-input label="Remarks" value="{item.remarks}" id="tskspecinlinevalrem01"/>
