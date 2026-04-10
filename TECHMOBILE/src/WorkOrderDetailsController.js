@@ -1923,6 +1923,478 @@ class WorkOrderDetailsController {
       });
     }
   }
-}
 
+
+  // --- Migrated from TaskController for q439v inline task list ---
+
+async onTaskItemClick(event) {
+    // Maximo data-list passes the clicked datasource item directly as the event
+    const taskid = event?.taskid ?? event?.item?.taskid;
+    const workorderid = event?.workorderid ?? event?.item?.workorderid;
+    if (!taskid || workorderid === undefined || workorderid === null) return;
+
+    // Toggle: if already open collapse it, otherwise open this item
+    if (`${this.page.state.itemToOpen}` === `${workorderid}`) {
+      this.page.state.itemToOpen = '';
+      this.page.state.openTaskId = null;
+    } else {
+      // --- IGT Geofencing check ---
+      const parentWo = this.page.findDatasource('woDetailResource')?.item;
+      if (parentWo) {
+        const allowed = await this._checkGeofence(parentWo);
+        if (!allowed) return;
+      }
+      // --- End geofencing ---
+
+      // ★ Load alnDomainDS with the correct domain values BEFORE expanding
+      // the task row, so the dropdown never renders with stale data.
+      const taskItem = event?.item || event;
+      if (taskItem && taskItem.workorderspec && taskItem.workorderspec.length > 0) {
+        await this._loadAlnDomainForTask(taskItem);
+      }
+
+      // Only NOW expand the row — dropdown will render with correct data
+      this.page.state.itemToOpen = workorderid;
+      this.page.state.openTaskId = taskid;
+    }
+  }
+
+  /**
+   * Loads alnDomainDS with the correct domain values for the given task's
+   * workorderspec items. All specs within a task share the same domain.
+   * Resolves domainid from assetAttributeDS if not already on the spec.
+   * @param {Object} taskItem - the clicked task item
+   */
+  async _loadAlnDomainForTask(taskItem) {
+    try {
+      const specs = taskItem.workorderspec || [];
+      if (!specs.length) return;
+
+      // Find the first spec that has or could have an ALN domain
+      const firstAlnSpec = specs.find(
+        s => s.domainid || s.datatype_maxvalue === 'ALN' || s.alnvalue !== undefined
+      );
+      if (!firstAlnSpec) return;
+
+      // Resolve domainid — prefer what's already on the spec
+      let domainId = firstAlnSpec.domainid;
+      if (!domainId) {
+        const assetAttrDS = this.app.findDatasource('assetAttributeDS');
+        if (assetAttrDS) {
+          await assetAttrDS.initializeQbe();
+          assetAttrDS.setQBE('assetattrid', '=', firstAlnSpec.assetattrid);
+          const results = await assetAttrDS.searchQBE();
+          if (results && results.length > 0) {
+            domainId = results[0].domainid;
+            // Stamp domainid on ALL specs so future opens are instant
+            specs.forEach(s => { if (!s.domainid) s.domainid = domainId; });
+          }
+        }
+      }
+
+      if (!domainId) return;
+
+      const alnDS = this.app.findDatasource('alnDomainDS');
+      if (alnDS) {
+        await alnDS.clearState();
+        await alnDS.initializeQbe();
+        alnDS.setQBE('domainid', '=', domainId);
+        await alnDS.searchQBE();
+      }
+    } catch (e) {
+      log.e(TAG, 'Error loading alnDomainDS for task', e);
+    }
+  }
+
+async redirectToAssetDetails(item) {
+    this.page.state.loadAssetData = true;
+    try {
+      this.page.state.loadAssetData = false;
+      //istanbul ignore if
+      if (item?.item?.href) {
+        const context = {
+          page: 'assetDetails',
+          assetnum: item.item?.assetnum,
+          siteid: this.page.state.currentAssetSite,
+          href: item.item?.href,
+        };
+        this.app.callController('loadApp', {
+          appName: this.app.state.appnames.assetmobile,
+          context,
+        });
+      }
+    } catch {
+    } finally {
+      this.page.state.loadAssetData = false;
+    }
+  }
+
+openTaskLongDesc(item) {
+    if (item) {
+      this.page.state.taskLongDesc = item.description_longdescription;
+      this.page.showDialog('planTaskLongDesc');
+      this.page.state.dialogOpend = true;
+    }
+  }
+
+openMeasurementDrawer(event) {
+    if (event.item) {
+      const woPlanTaskDetailDS = this.app.findDatasource("woPlanTaskDetaildsSelected");
+      woPlanTaskDetailDS?.clearWarnings(woPlanTaskDetailDS.item, "measuredate");
+      this.page.state.assetMeterHeader = `${event?.item?.measurepoint?.assetnum || ""} ${event.item?.measurepoint?.asset?.description || ""}`;
+      this.page.state.measurementSaveDisabled = true;
+      event.datasource.items[0]._selected = event.item.workorderid;
+      this.page.showDialog("taskMeasurementDialog", { parent: this.page }, event.item);
+    }
+  }
+
+async saveTaskSpecification(event) {
+    try {
+      const taskDS = this.app.findDatasource('woPlanTaskDetailds');
+      const parentTask = event?.item;
+
+      if (!taskDS || !parentTask) {
+        log.e(TAG, 'Cannot save: missing datasource or parent task reference');
+        return;
+      }
+
+      const specs = parentTask.workorderspec || [];
+
+      if (specs.length > 0) {
+        // Update the workorderspec on the parent task item directly,
+        // mirroring the pattern used in WorkOrderDetailsController.saveSpecification()
+        parentTask.workorderspec = specs.map(spec => ({
+          ...spec
+        }));
+
+        let interactive = { interactive: !Device.get().isMaximoMobile };
+        interactive.localPayload = {
+          ...parentTask,
+          workorderspec: parentTask.workorderspec
+        };
+
+        await taskDS.save(interactive);
+
+        // Check if all specs are filled — if so change task status to INSPCOMP
+        const allFilled = specs.every(s => s.alnvalue && s.alnvalue.trim() !== '');
+
+        if (allFilled) {
+          try {
+            // Look up the INSPCOMP synonym by external value
+            const synonymDS = this.app.findDatasource('synonymdomainData');
+            await synonymDS.initializeQbe();
+            synonymDS.setQBE('domainid', '=', 'WOSTATUS');
+            synonymDS.setQBE('value', '=', 'INSPCOMP');
+            const synonymResults = await synonymDS.searchQBE();
+            const inspcompStatus = synonymResults?.[0];
+
+            if (inspcompStatus) {
+              // Directly invoke changeStatus on the task datasource
+              const statusAction = {
+                parameters: {
+                  status: inspcompStatus.value,
+                  date: this.app.dataFormatter.currentUserDateTime()
+                },
+                record: { href: parentTask.localref },
+                responseProperties: 'status,status_maxvalue,workorderid',
+                localPayload: {
+                  woactivity: [{
+                    href: parentTask.href,
+                    status: inspcompStatus.value,
+                    date: this.app.dataFormatter.currentUserDateTime(),
+                    status_maxvalue: inspcompStatus.maxvalue,
+                    status_description: inspcompStatus.description || inspcompStatus.value,
+                    workorderid: parentTask.workorderid
+                  }],
+                  href: taskDS.dependsOn.currentItem.href
+                },
+              };
+
+              await taskDS.invokeAction('changeStatus', statusAction);
+
+              // Update the task item locally
+              parentTask.status = inspcompStatus.value;
+              parentTask.status_maxvalue = inspcompStatus.maxvalue;
+              parentTask.status_description = inspcompStatus.description || inspcompStatus.value;
+
+              log.t(TAG, 'Task status changed to INSPCOMP');
+            } else {
+              log.e(TAG, 'INSPCOMP synonym not found in WOSTATUS domain');
+            }
+          } catch (statusError) {
+            log.e(TAG, 'Could not change status to INSPCOMP', statusError);
+          }
+        }
+
+        // Reload and recompute spec progress
+        await taskDS.forceReload();
+        const dataController = taskDS.dataController;
+        if (dataController && taskDS.items) {
+          taskDS.items.forEach(task => {
+            task.computedSpecProgress = dataController.computedSpecProgress(task);
+            task.computedAllSpecsFilled = dataController.computedAllSpecsFilled(task);
+          });
+        }
+      }
+
+      log.t(TAG, 'Task specifications saved successfully');
+    }
+    catch (error) {
+      log.e(TAG, 'Error saving task specifications', error);
+      this.app.toast('Failed to save specifications', 'error');
+    }
+  }
+
+async openTaskSpecLookup(event) {
+    const specItem = event?.item;
+    if (!specItem) return;
+
+    this.page.state.taskSpecLookupLoader = true;
+    // Store current spec item so chooseTaskSpecDomain can update it
+    this.currentTaskSpecField = specItem;
+
+    try {
+      // Get domainid from assetAttributeDS using assetattrid
+      const assetAttrDS = this.app.findDatasource('assetAttributeDS');
+      let domainId = null;
+
+      if (assetAttrDS) {
+        await assetAttrDS.initializeQbe();
+        assetAttrDS.setQBE('assetattrid', '=', specItem.assetattrid);
+        const results = await assetAttrDS.searchQBE();
+        if (results && results.length > 0) {
+          domainId = results[0].domainid;
+        }
+      }
+
+      if (!domainId) {
+        this.app.toast('No domain found for this attribute', 'warning');
+        this.page.state.taskSpecLookupLoader = false;
+        return;
+      }
+
+      // Filter alnDomainDS by the domainid
+      const alnDS = this.app.findDatasource('alnDomainDS');
+      if (alnDS) {
+        await alnDS.clearState();
+        await alnDS.initializeQbe();
+        alnDS.setQBE('domainid', '=', domainId);
+        await alnDS.searchQBE();
+      }
+
+      this.page.state.taskSpecLookupLoader = false;
+      this.page.showDialog('taskSpecAlnDomainLookup');
+    } catch (error) {
+      log.e(TAG, 'Error opening task spec lookup', error);
+      this.page.state.taskSpecLookupLoader = false;
+    }
+  }
+
+chooseTaskSpecDomain(itemSelected) {
+    if (this.currentTaskSpecField && itemSelected) {
+      this.currentTaskSpecField.alnvalue = itemSelected.value;
+      this.currentTaskSpecField.igtentered = this.app.dataFormatter.convertDatetoISO(new Date());
+      this.currentTaskSpecField.igtenteredby = this.app?.client?.userInfo?.personid || this.app?.userInfo?.personid;
+      log.t(TAG, `Task spec domain selected: ${itemSelected.value} for ${this.currentTaskSpecField.assetattrid}`);
+    }
+  }
+
+  /**
+   * Called when the inline task spec dropdown value changes.
+   * Stamps igtentered and igtenteredby on the spec item — same metadata
+   * that chooseTaskSpecDomain sets for the lookup flow.
+   * @param {Object} event - { selectedItem, spec }
+   */
+  onTaskSpecDropdownChange(event) {
+    const specItem = event?.spec;
+    if (specItem && event?.selectedItem) {
+      specItem.igtentered = this.app.dataFormatter.convertDatetoISO(new Date());
+      specItem.igtenteredby = this.app?.client?.userInfo?.personid || this.app?.userInfo?.personid;
+    }
+  }
+
+
+  async _checkGeofence(item) {
+    // If WO has no asset, skip geofencing (same as old code)
+    if (!item.assetnumber && !item.assetnum) {
+      return true;
+    }
+
+    // Helper to detect missing or 0,0 coordinates
+    const isInvalidCoord = (lat, lon) => {
+      const pLat = parseFloat(lat);
+      const pLon = parseFloat(lon);
+      return isNaN(pLat) || isNaN(pLon) || (pLat === 0 && pLon === 0);
+    };
+
+    // Check explicitly loaded WOSERVICEADDRESS datasource first
+    const woSaDs = this.app.findDatasource('woServiceAddress') || this.page.findDatasource('woServiceAddress');
+    let saItem = woSaDs?.item || (woSaDs && woSaDs[0]) || null;
+    if (Array.isArray(saItem)) saItem = saItem[0]; // just in case
+
+    let lat1 = saItem?.latitudey;
+    let lon1 = saItem?.longitudex;
+    let geocodeEnabled = saItem?.geocode;
+
+    // Get WO service address coordinates and toggle, falling back to direct WO fields
+    if (isInvalidCoord(lat1, lon1)) {
+      lat1 = item.serviceaddress?.latitudey ?? item.latitudey;
+      lon1 = item.serviceaddress?.longitudex ?? item.longitudex;
+      geocodeEnabled = item.serviceaddress?.geocode ?? geocodeEnabled;
+    }
+
+    // Finally, fallback to the Asset's service address using the loaded woAssetLocationds
+    if (isInvalidCoord(lat1, lon1)) {
+      // The datasource could be at the app level or the page level
+      const woAssetDs = this.app.findDatasource('woAssetLocationds') || this.page.findDatasource('woAssetLocationds');
+      if (woAssetDs?.item?.serviceaddress) {
+        // rel. queries in OSLC return an array even for 1:1 relationships
+        const sa = Array.isArray(woAssetDs.item.serviceaddress) ? woAssetDs.item.serviceaddress[0] : woAssetDs.item.serviceaddress;
+        if (sa && !isInvalidCoord(sa.latitudey, sa.longitudex)) {
+          lat1 = sa.latitudey;
+          lon1 = sa.longitudex;
+          geocodeEnabled = sa.geocode ?? geocodeEnabled;
+        }
+      }
+    }
+
+    // Check the global system property toggle first
+    let isGeofenceEnabledProp = this.app?.state?.systemProp?.['igtmobile.geofencing'];
+
+    // Convert the global property to a boolean (default to true if missing/unparseable)
+    let isGlobalGeofenceEnabled = typeof isGeofenceEnabledProp === 'string'
+      ? ['true', '1', 'y'].includes(isGeofenceEnabledProp.toLowerCase())
+      : (isGeofenceEnabledProp !== false && isGeofenceEnabledProp !== 0);
+
+    // 1. Master Kill-Switch: If system property is false, do not even check the Service Address
+    if (!isGlobalGeofenceEnabled) {
+      log.t(TAG, 'Geofence: system property igtmobile.geofencing is false — completely skipping geofencing check.');
+      return true;
+    }
+
+    // 2. Local Override: Global is true, now we check WOSERVICEADDRESS.GEOCODE
+    let isLocalGeofenceEnabled = true;
+    if (geocodeEnabled !== undefined && geocodeEnabled !== null) {
+      if (typeof geocodeEnabled === 'string' && geocodeEnabled.trim() !== '') {
+        isLocalGeofenceEnabled = !['false', '0', 'n'].includes(geocodeEnabled.toLowerCase());
+      } else if (typeof geocodeEnabled === 'boolean' || typeof geocodeEnabled === 'number') {
+        isLocalGeofenceEnabled = !!geocodeEnabled;
+      }
+    }
+
+    if (!isLocalGeofenceEnabled) {
+      log.t(TAG, 'Geofence: global is true, but WO geocode flag is false — skipping distance check for this specific task.');
+      return true;
+    }
+
+    if (isInvalidCoord(lat1, lon1)) {
+      const assetId = item.assetnumber || item.assetnum || '';
+      this.page.error(
+        this.app.getLocalizedLabel(
+          'geofence_no_coords',
+          `Equipment ${assetId} latitude and longitude are not defined. Contact System Administrator.`,
+          [assetId]
+        )
+      );
+      return false;
+    }
+
+    // Obtain current GPS position
+    try {
+      if (this.app.geolocation) {
+        // Quick check to see if we already have valid coordinates cached
+        let initialLat = this.app.geolocation?.state?.latitude;
+        let initialLon = this.app.geolocation?.state?.longitude;
+        let alreadyValid = initialLat != null && initialLon != null && (initialLat !== 0 || initialLon !== 0);
+
+        // Only force a high-accuracy update if we don't have valid coordinates yet
+        if (!alreadyValid) {
+          this.app.geolocation.updateGeolocation({ enableHighAccuracy: true });
+        }
+
+        let retries = alreadyValid ? 1 : 8; // Iterate once if valid, else wait up to 4s
+        let gpsAcquired = false;
+        while (retries > 0 && !gpsAcquired) {
+          const tempLat = this.app.geolocation?.state?.latitude;
+          const tempLon = this.app.geolocation?.state?.longitude;
+
+          if (tempLat != null && tempLon != null && (tempLat !== 0 || tempLon !== 0)) {
+            gpsAcquired = true;
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+          retries--;
+        }
+      }
+    } catch (e) {
+      log.t(TAG, 'Geofence: GPS update failed — ' + e);
+    }
+    const lat2 = this.app.geolocation?.state?.latitude;
+    const lon2 = this.app.geolocation?.state?.longitude;
+
+    if (lat2 == null || lon2 == null || (lat2 === 0 && lon2 === 0)) {
+      this.page.error(
+        this.app.getLocalizedLabel(
+          'geofence_no_gps',
+          'Unable to acquire GPS position. Please enable location services.'
+        )
+      );
+      return false;
+    }
+
+    // Haversine distance
+    const distanceMeters = this._haversineDistance(lat1, lon1, lat2, lon2);
+
+    // Read the allowed tower distance strictly from the Maximo system property
+    // 'igtmobile.towerdistance'. If the property is not configured or cannot
+    // be parsed, skip the distance check and allow access.
+    const rawProp = this.app?.state?.systemProp?.['igtmobile.towerdistance'];
+    const allowedTowerDistance = parseFloat(rawProp);
+
+    if (isNaN(allowedTowerDistance)) {
+      log.t(TAG, 'Geofence: igtmobile.towerdistance not configured.');
+      this.page.error(
+        this.app.getLocalizedLabel(
+          'geofence_no_distance',
+          `Allowed tower distance is not configured correctly in System Properties (Received: "${rawProp}"). Contact System Administrator.`
+        )
+      );
+      return false;
+    }
+
+    if (distanceMeters > allowedTowerDistance) {
+      const eqLatLong = `${lat1},${lon1}`;
+      const gpsLatLong = `${lat2},${lon2}`;
+      this.page.error(
+        this.app.getLocalizedLabel(
+          'geofence_too_far',
+          `Distance between Equipment location ${eqLatLong} and current GPS location ${gpsLatLong} is more than ${allowedTowerDistance} Meters.`,
+          [eqLatLong, gpsLatLong, allowedTowerDistance]
+        )
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Haversine formula — returns the great-circle distance in **meters**
+   * between two lat/lon points.
+   */
+  _haversineDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth radius in km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c * 1000; // convert km → meters
+  }
+
+}
 export default WorkOrderDetailsController;

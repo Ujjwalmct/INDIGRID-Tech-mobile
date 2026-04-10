@@ -1,4 +1,4 @@
-<maximo-application navigator-tile-order="100" controller="AppController" theme="touch" product-name="Maximo" product-name-adaptive="Maximo" title="Technician" id="techmobile" mas-id="manage" version="9.1.22.0" default-log-level="error" user-menu-enabled="true" nav-initial-open-state="false" mas-enabled="false">
+<maximo-application navigator-tile-order="100" controller="AppController" theme="touch" product-name="Maximo" product-name-adaptive="Maximo" title="Technician" id="INPECTORMOB" mas-id="manage" version="9.1.22.0" default-log-level="error" user-menu-enabled="true" nav-initial-open-state="false" mas-enabled="false">
   <properties id="nba7e">
     <property name="mxe.mobile.travel.prompt" id="rnmkq"/>
     <property name="mxe.mobile.travel.radius" id="m4z4e"/>
@@ -75,9 +75,9 @@
   <templates file="./calibration/components/calpoint-standard-deviation.xml" id="calpoint_standard_deviation"/>
   <!-- Navigation -->
   <menu slot="navigation-items" id="k9p4v">
-    <menu-item label="My Schedule" icon="maximo:schedule" page="schedulewolist" id="w6_yq"/>
-    <menu-item label="Materials &amp; Tools" icon="maximo:materialsandtools" page="materials" id="r9zjz"/>
-    <menu-item label="Map" icon="maximo:map" page="map" id="xb5jv"/>
+    <menu-item label="Inspector" icon="maximo:schedule" page="schedulewolist" id="w6_yq"/>
+    <!-- <menu-item label="Materials &amp; Tools" icon="maximo:materialsandtools" page="materials" id="r9zjz"/> -->
+    <!-- <menu-item label="Map" icon="maximo:map" page="map" id="xb5jv"/> -->
     <menu-item action-type="add" label="Create work order" icon="maximo:add--record" page="createworkorder" sigoption="IGTAPIWODETAIL.createnewwo" id="xv8pg"/>
     <menu-item action-type="add" label="New work order (via Quick Reporting)" icon="maximo:add--record" page="quickreport" sigoption="IGTAPIWODETAIL.quickrep" id="xv8pg1"/>
   </menu>
@@ -235,7 +235,7 @@
         <attribute name="finishdate" id="wj66d"/>
       </schema>
     </maximo-datasource>
-    <maximo-datasource id="woPlanTaskDetailds" relationship="woactivity" page-size="200" order-by="taskid" domain-internal-where="status=INPRG,WAPPR,WMATL,APPR,WSCH,WPCOND,COMP" selection-mode="single" controller="WorkOrderDataController">
+    <maximo-datasource id="woPlanTaskDetailds" relationship="woactivity" page-size="200" order-by="taskid" domain-internal-where="status=INPRG,WMATL,APPR,WSCH,WPCOND,COMP" selection-mode="single" controller="WorkOrderDataController">
       <schema id="nrqzd">
         <attribute name="workorderid" unique-id="true" id="vv3x7"/>
         <attribute name="taskid" searchable="true" id="nywdm" sub-type="ALN"/>
@@ -286,7 +286,7 @@
         <attribute name="activeassetmetermobile._dbcount--assetmetercount" id="x5g7d"/>
         <attribute name="activelocationmetermobile._dbcount--locationmetercount" id="ayz27"/>
         <attribute name="IGTWOACTIVITYSPECALN{workorderspecid,assetattrid,assetattrid_description,alnvalue,remarks,assetattribute.description--assetattributedesc}" id="tsk_spec01"/>
-        <attribute name="workorderspec{workorderspecid,assetattrid,assetattrid_description,alnvalue,remarks,assetattribute.description--assetattributedesc}" id="tsk_spec02"/>
+        <attribute name="workorderspec{workorderspecid,assetattrid,assetattrid_description,alnvalue,remarks,assetattribute.description--assetattributedesc,domainid}" id="tsk_spec02"/>
       </schema>
     </maximo-datasource>
     <maximo-datasource id="wohazardmaterials" relationship="hazardousmaterials" selection-mode="none" notify-when-parent-loads="true" controller="ScheduleDataController">
@@ -799,8 +799,7 @@
                 <box padding-end="0.75" id="mqzqk">
                   <button label="OK" icon="carbon:checkmark--outline" on-click="closeMismatchAssetScan" kind="primary" id="ywwe6"/>
                 </box>
-              </end>
-            </border-layout>
+              </end></border-layout>
           </bottom>
         </border-layout>
       </box>
@@ -825,8 +824,7 @@
                 <box padding-end="0.75" id="vaqrg">
                   <button label="Skip" hidden="{app.checkSigOption(`${app.state.woOSName}.MANDATEASSETSCAN`)}" icon="carbon:chevron--right" kind="secondary" icon-placement="start" on-click="skipAssetScan" id="am_6r"/>
                 </box>
-              </end>
-            </border-layout>
+              </end></border-layout>
           </bottom>
         </border-layout>
       </box>
@@ -885,6 +883,7 @@
           <start vertical-align="center" id="eqbjv">
             <label label="{item.label}" id="q4rw3"/>
           </start>
+        
         </border-layout>
       </list-item>
     </lookup>
@@ -894,6 +893,7 @@
           <start vertical-align="center" id="d4549">
             <label label="{item.label}" id="wg79a"/>
           </start>
+        
         </border-layout>
       </list-item>
     </lookup>
@@ -1288,8 +1288,7 @@
                     <box vertical-align="center" direction="column" horizontal-align="end" fill-parent="true" id="jw9e3">
                       <button icon="carbon:chevron--right" kind="ghost" on-click="openWOCard" on-click-arg="{{'item': item, 'prevPage': 'mapwolist'}}" padding="false" id="kxndj"/>
                     </box>
-                  </end>
-                </border-layout>
+                  </end></border-layout>
               </data-list>
             </map-overlay>
             <map-overlay hidden="{!(page.state.showMapOverlay===1)}" position="bottom" left="{page.state.mapPaddingLeft}" right="{page.state.mapPaddingRight}" height="{page.state.mapWOCardHeight}" width="100%" bottom="0rem" id="v5np9">
@@ -1299,6 +1298,7 @@
                     <button icon="carbon:chevron--left" kind="ghost" on-click="openPrevPage" padding="false" id="qbm84"/>
                   </box>
                 </start>
+              
               </border-layout>
               <include src="./wo-card-group.xml" id="jwq72"/>
             </map-overlay>
@@ -1388,8 +1388,7 @@
                   </middle>
                   <end direction="row" vertical-align="center" id="p5vjg">
                     <label label="{item.itemqty}" theme="20-regular" id="arge_"/>
-                  </end>
-                </border-layout>
+                  </end></border-layout>
               </data-list>
             </panel>
             <panel id="pnbm3">
@@ -1407,8 +1406,7 @@
                   </middle>
                   <end direction="row" vertical-align="center" id="bg3e8">
                     <label label="{item.itemqty}" theme="20-regular" id="pv8v8"/>
-                  </end>
-                </border-layout>
+                  </end></border-layout>
               </data-list>
             </panel>
           </box>
@@ -1461,6 +1459,7 @@
                   <start id="bavpg">
                     <text-area id="statusMemo" value="{page.state.statusMemo}" on-change="setStatusMemo" placeholder="Add a comment about the status change" max-length="{page.state.memoMaxLength}" label="Add a comment (optional)"/>
                   </start>
+                
                 </border-layout>
               </box>
             </panel>
@@ -1498,6 +1497,7 @@
                         </bottom>
                       </border-layout>
                     </start>
+                  
                   </border-layout>
                 </box>
               </middle>
@@ -1508,8 +1508,7 @@
                 <box vertical-align="center" direction="row" hidden="{!woDetailds.item.splanreviewdate}" horizontal-align="end" padding-top="1" padding-end="0.5" fill-parent="true" id="ajmmv">
                   <icon icon="Carbon:checkmark--outline" fill="green" id="pd2z_"/>
                 </box>
-              </end>
-            </border-layout>
+              </end></border-layout>
             <panel id="kgm2g">
               <data-list datasource="wohazardmaterials" hidden="{!wohazardmaterials.state.itemCount}" show-search="false" title="Hazardous materials" id="m4a69">
                 <border-layout slot="item" padding="false" fill-parent="true" id="pdg5z">
@@ -1521,6 +1520,7 @@
                       </repeat>
                     </box>
                   </start>
+                
                 </border-layout>
               </data-list>
             </panel>
@@ -1535,6 +1535,7 @@
                       </repeat>
                     </box>
                   </start>
+                
                 </border-layout>
               </data-list>
             </panel>
@@ -1679,8 +1680,7 @@
                       </start>
                       <end width="15" background-color="ui-01" id="tskspecvalend01">
                         <button icon="carbon:chevron--right" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspeclookupbtn01"/>
-                      </end>
-                    </border-layout>
+                      </end></border-layout>
                   </box>
                 </top>
               </border-layout>
@@ -1693,252 +1693,7 @@
         <!-- Task Specification ALN Domain Lookup -->
         <lookup id="taskSpecAlnDomainLookup" show-search="true" enable-barcode-scanner="true" lookup-heading="Domain" datasource="alnDomainDS" on-item-click="chooseTaskSpecDomain" border="true" lookup-attributes="{['value', 'description']}" height="400"/>
       </dialogs>
-      <box direction="column" id="jkknb" fill-parent-horizontal="true" padding-bottom="0" padding-top="0">
-        <data-list id="q439v" datasource="woPlanTaskDetailds" on-item-click="onTaskItemClick" show-search="false" data-list-height-hint="75" item-to-open="{page.state.itemToOpen}" no-select-behavior="true">
-          <!-- renderer for list item details -->
-          <list-item id="r6bdn_outer">
-            <box direction="column" fill-parent-horizontal="true" id="tskitemwrap01">
-              <!-- Single header row — green background + white text when all specs filled -->
-              <box fill-parent-horizontal="true" background-color="{item.computedAllSpecsFilled ? 'support-02' : ''}" padding="0.5" id="tskrowbox01">
-                <border-layout fill-parent="true" padding="false" id="gar9_">
-                  <start width="10" id="vzp4j" vertical-align="center">
-                    <box fill-parent-horizontal="true" id="kw5bn">
-                      <label label="{item.taskid}." theme="20-regular" id="e9rgg" color="{item.computedAllSpecsFilled ? 'white0' : ''}"/>
-                    </box>
-                  </start>
-                  <middle id="kaz_j" vertical-align="center">
-                    <box fill-parent-horizontal="true" id="k3gmr">
-                      <label label="{item.description}" theme="16-bold" wrap="true" id="q_k3x" color="{item.computedAllSpecsFilled ? 'white0' : ''}"/>
-                    </box>
-                  </middle>
-                  <end width="15" id="tskprogend" vertical-align="center" horizontal-align="end">
-                    <box fill-parent-horizontal="true" id="tskprogbox01">
-                      <label label="{item.computedSpecProgress}" theme="16-bold" hidden="{!item.workorderspec || !item.workorderspec.length}" id="tskspecprogresslbl01" color="{item.computedAllSpecsFilled ? 'white0' : ''}"/>
-                    </box>
-                  </end>
-                </border-layout>
-              </box>
-              <!-- Expanded detail section - shown when this item is open -->
-              <box direction="column" fill-parent-horizontal="true" hidden="{page.state.itemToOpen != item.workorderid}" id="tskdetailbox01">
-                <border-layout fill-parent="true" middle-border="{item.computedBorderDisplay}" top-border="{item.description_longdescription || app.state.isAssistAccessible || (page.state.inspectionAccess &amp;&amp; item.inspectionbatchresult)}" padding="false" id="b5zn8">
-                  <top id="x29yd">
-                    <box direction="column" fill-parent-horizontal="true" id="mpk_z">
-                      <border-layout fill-parent="true" hidden="true" padding="false" top-border="true" id="exnz_">
-                        <bottom id="x7pb_">
-                          <box id="jk_89" fill-parent-horizontal="true" border-top="true">
-                            <tag-group align="none" tags="{item.computedTaskStatus}" hidden="true" id="gxm55"/>
-                          </box>
-                        </bottom>
-                      </border-layout>
-                      <border-layout fill-parent="true" hidden="{item.woflowcontrolled &amp;&amp; !item.computedPredecessorString}" middle-border="{!item.hideLockIcon || !item.computedParentAssetLocation || item.pointnum}" bottom-border="{!item.hideLockIcon &amp;&amp; !item.computedParentAssetLocation &amp;&amp; !item.description_longdescription}" padding="false" id="kmkr8">
-                        <bottom vertical-align="center" id="g8wn7">
-                          <box fill-parent-horizontal="true" padding-bottom="1" padding-top="1" hidden="{item.hideLockIcon}" id="ra58z">
-                            <label label="Complete task {item.computedPredecessorString} first." wrap="true" hidden="{item.hideLockIcon}" id="jrqqj"/>
-                          </box>
-                        </bottom>
-                      </border-layout>
-                    </box>
-                  </top>
-                  <middle id="g9vn6" horizontal-overflow="hidden">
-                    <border-layout top-border="true" bottom-border="true" fill-parent="true" hidden="{item.computedParentAssetLocation}" width="100" padding="false" id="byn5n">
-                      <start id="m3je8" horizontal-overflow="hidden">
-                        <border-layout fill-parent="true" width="100" padding="false" id="rn5qm">
-                          <top id="hju87"/>
-                          <middle vertical-align="center" id="hjul9" horizontal-overflow="hidden">
-                            <adaptive-row id="hj868">
-                              <adaptive-column large-width="80" small-width="80" medium-width="70" id="gh_89">
-                                <adaptive-row id="sl_7h">
-                                  <adaptive-column large-width="45" small-width="100" medium-width="100" id="nkj98" small-horizontal-align="start" large-horizontal-align="start" medium-horizontal-align="start">
-                                    <border-layout fill-parent="true" id="dsk78">
-                                      <start id="n3747" vertical-align="center">
-                                        <button icon="carbon:asset" id="wrrn7"/>
-                                      </start>
-                                      <middle id="y5x7m" vertical-align="center">
-                                        <box padding-top="0.5" padding-bottom="0.5" padding-start="-0.5" padding-end="0.5" direction="column" vertical-align="center" fill-parent-horizontal="true" id="j3ke3">
-                                          <field hide-label="true" padding="none" empty-field-placeholder="-" value="{item.assetnum}" id="jy394"/>
-                                          <field wrap="true" hide-label="true" padding="none" empty-field-placeholder="-" value="{item.assetdescription}" id="bgpk2"/>
-                                        </box>
-                                      </middle>
-                                    </border-layout>
-                                  </adaptive-column>
-                                  <adaptive-column large-width="45" small-width="80" medium-width="100" id="gh68g" small-horizontal-align="start" large-horizontal-align="start" medium-horizontal-align="start">
-                                    <border-layout id="gfk78">
-                                      <start id="vj87f" vertical-align="center">
-                                        <button icon="carbon:location" id="cs779"/>
-                                      </start>
-                                      <middle id="hsd99" vertical-align="center">
-                                        <box padding-top="0.5" padding-bottom="0.5" padding-start="-0.5" padding-end="0.5" direction="column" children-hide-overflow="true" vertical-align="center" id="gjf90">
-                                          <field hide-label="true" padding="none" empty-field-placeholder="-" value="{item.location}" id="ds_u8"/>
-                                          <field wrap="true" hide-label="true" padding="none" empty-field-placeholder="-" value="{item.locationdesc}" id="pds6r"/>
-                                        </box>
-                                      </middle>
-                                    </border-layout>
-                                  </adaptive-column>
-                                </adaptive-row>
-                              </adaptive-column>
-                              <adaptive-column large-width="20" small-width="10" medium-width="30" id="hkj67" small-horizontal-align="end" large-horizontal-align="end" medium-horizontal-align="end">
-                                <box id="jh7jm" padding-top="{app.state.screen.size === 'sm' ? '1':'0' }" vertical-align="center" fill-parent-vertical="true">
-                                  <button id="dgfg7" hidden="{!item.hasHref &amp;&amp; item.taskid != page.state.currentTaskId}" icon="Carbon:chevron--right" disabled="{!item.hideLockIcon}" kind="ghost" on-click="redirectToAssetDetails" on-click-arg="{{'item': item}}"/>
-                                </box>
-                              </adaptive-column>
-                            </adaptive-row>
-                          </middle>
-                        </border-layout>
-                      </start>
-                    </border-layout>
-                  </middle>
-                  <bottom id="vpjq7">
-                    <border-layout fill-parent="true" width="100" padding="true" id="naa4p">
-                      <top id="jwyx_">
-                        <border-layout hidden="{!item.description_longdescription}" bottom-border="true" padding="true" fill-parent="true" id="g2ze5">
-                          <start id="mj4nj" width="80">
-                            <box direction="row" padding="0.5" id="kjv96">
-                              <rich-text-viewer id="q98gx" content="{item.description_longdescription}" stripped="true" content-limit="350"/>
-                            </box>
-                          </start>
-                          <middle id="p955q" width="5" vertical-align="end" horizontal-align="end">
-                            <button id="bknra" icon="carbon:maximize" kind="ghost" on-click="openTaskLongDesc" on-click-arg="{item}"/>
-                          </middle>
-                        </border-layout>
-                      </top>
-                      <middle id="bpqrg">
-                        <border-layout fill-parent="true" width="100" top-border="true" hidden="{!item.asset || !item.asset[0].plusacatid || item.computedParentAssetLocation || app.state.selectedWoListDs != 'todaywoassignedDS'}" id="v6vn4">
-                          <start width="90" vertical-align="center" id="yaedd">
-                            <border-layout fill-parent="true" top-border="{(item.asset &amp;&amp; item.asset[0].plusacatid) || !item.computedParentAssetLocation}" id="eabmn">
-                              <top id="kbv8k"/>
-                              <middle vertical-align="center" id="yq5mn">
-                                <box id="by53g">
-                                  <label label="Asset configuration manager" theme="16-bold" id="mpb9q"/>
-                                </box>
-                              </middle>
-                            </border-layout>
-                          </start>
-                          <end width="10" vertical-align="center" horizontal-align="end" id="gxrpz">
-                            <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{(item.asset &amp;&amp;item.asset[0].plusacatid) || !item.computedParentAssetLocation}" id="ze2dr">
-                              <button icon="maximo:asset--settings" on-click="navigateToAcm" on-click-arg="{{'item': {...item,wonum: page.params.wonum},'datasource': woPlanTaskDetailds}}" disabled="{!page.state.assetSwicthAccess}" id="qb92j"/>
-                            </box>
-                          </end>
-                        </border-layout>
-                        <border-layout fill-parent="true" width="100" top-border="true" hidden="{!item.pointnum}" id="ew3mj">
-                          <start width="90" vertical-align="center" id="m9m6x">
-                            <border-layout fill-parent="true" id="k4gkp" top-border="{item.assetnum &amp;&amp; item.assetdescription &amp;&amp; item.description_longdescription &amp;&amp; item.locationdesc}">
-                              <top id="dsdz4"/>
-                              <middle vertical-align="center" id="fd5hk">
-                                <adaptive-row id="daz23">
-                                  <adaptive-column small-width="100" id="qggmy">
-                                    <box padding-top="0.5" padding-bottom="0.5" id="dsd_7">
-                                      <label label="Conduct a measurement" padding="top" theme="16-bold" id="mnq_b"/>
-                                    </box>
-                                  </adaptive-column>
-                                  <adaptive-column small-width="100" id="ar_5x">
-                                    <box padding-bottom="0.5" id="sfd_7">
-                                      <field value="{item.measurepoint.description}" padding="bottom" hide-label="true" id="dya97"/>
-                                    </box>
-                                  </adaptive-column>
-                                </adaptive-row>
-                              </middle>
-                            </border-layout>
-                          </start>
-                          <end width="10" vertical-align="center" horizontal-align="end" id="gxbym">
-                            <box id="r2dj4" vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{item.assetdescription &amp;&amp; item.description_longdescription}">
-                              <button disabled="{!item.hideLockIcon}" icon="Carbon:operation--gauge" id="r98jq" on-click="openMeasurementDrawer" on-click-arg="{{'item':item,'datasource':woPlanTaskDetailds}}"/>
-                            </box>
-                          </end>
-                        </border-layout>
-                        <border-layout fill-parent="true" width="100" top-border="true" id="pr2v8" hidden="{(item.computedParentAssetLocation || item.pointnum) || (!item.assetmetercount &amp;&amp; !item.locationmetercount)}">
-                          <start width="90" vertical-align="center" id="prpwp">
-                            <border-layout fill-parent="true" top-border="{item.pointnum || !item.computedParentAssetLocation}" id="xam3m">
-                              <top id="pw2pj"/>
-                              <middle vertical-align="center" id="zdnz3">
-                                <box id="x3kr9">
-                                  <label label="Enter meter reading" theme="16-bold" id="bzbb_"/>
-                                </box>
-                              </middle>
-                            </border-layout>
-                          </start>
-                          <end width="10" vertical-align="center" horizontal-align="end" id="p585k">
-                            <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{item.pointnum || !item.computedParentAssetLocation}" id="ab_3n">
-                              <button disabled="{!item.hideLockIcon}" icon="Carbon:operation--gauge" on-click="openMeterReadingDrawer" on-click-arg="{{'item': item}}" id="md7yq"/>
-                            </box>
-                          </end>
-                        </border-layout>
-                        <border-layout fill-parent="true" hidden="{item.inspectionbatchresult === undefined || !page.state.inspectionAccess}" id="ekea_">
-                          <start id="k9na_" width="95">
-                            <border-layout fill-parent="true" top-border="{item.description_longdescription || !item.computedParentAssetLocation || item.pointnum}" id="z36nn">
-                              <top id="yj9nr"/>
-                              <middle vertical-align="center" id="we7bd">
-                                <box id="jkn_78" padding-top="0.5" padding-bottom="0.5">
-                                  <adaptive-row id="b3x88">
-                                    <adaptive-column small-width="100" id="dx4gn">
-                                      <label label="Conduct an inspection" padding="top" theme="16-bold" id="dsd_5"/>
-                                    </adaptive-column>
-                                    <adaptive-column small-width="100" id="fx_7j">
-                                      <wrapped-text size="medium" label="{item.inspname}" sub-label="{item.inspectionbatchresult ? item.inspectionbatchresult[0].inspresult : ''}" id="fd_87" truncation-type="end"/>
-                                    </adaptive-column>
-                                    <!-- GRAPHITE-44838 - it should be re-introduced when mobile limitation gets resolved
-                          <adaptive-column small-width="50" medium-width="33" id="gpray">
-                            <tag-group align="start" tags="{[{label: `${item.inspectionbatchresult ? item.inspectionbatchresult[0].status_description : ''}`}]}" id="gj6gj"/>
-                          </adaptive-column> -->
-                                  </adaptive-row>
-                                </box>
-                              </middle>
-                            </border-layout>
-                          </start>
-                          <middle id="qzbgj" width="5" vertical-align="center" horizontal-align="end">
-                            <box fill-parent-vertical="true" fill-parent-horizontal="true" vertical-align="center" id="fdk89" border-top="{item.description_longdescription || !item.computedParentAssetLocation || item.pointnum}">
-                              <button id="qer7r" icon="maximo:inspections" disabled="{!item.hideLockIcon}" kind="ghost" on-click="loadApp" on-click-arg="{{appName: app.state.appnames.inspection, context: {page: 'execution_panel', inspectionresultid: item.inspectionbatchresult[0].inspresultid, href: item.inspectionbatchresult[0].href}}}"/>
-                            </box>
-                          </middle>
-                        </border-layout>
-                      </middle>
-                    </border-layout>
-                  </bottom>
-                </border-layout>
-                <!-- Change Status button row -->
-                <!-- <border-layout fill-parent="true" padding="false" top-border="true" id="tskChangeStatusRow01">
-                  <start width="90" vertical-align="center" id="tskChangeStatusStart01">
-                    <box padding-top="0.5" padding-bottom="0.5" padding-start="1" id="tskChangeStatusLabelBox01">
-                      <label label="Change status" theme="16-bold" id="tskChangeStatusLabel01"/>
-                      <label label="{item.status_description}" theme="14-regular" color="gray60" id="tskChangeStatusCurrent01"/>
-                    </box>
-                  </start>       
-                </border-layout> -->
-                <!-- Task Specification Inline Data -->
-                <box direction="column" fill-parent-horizontal="true" hidden="{!item.workorderspec || !item.workorderspec.length}" id="tskspecrow01" border-top="true">
-                  <box padding-start="1" padding-top="0.5" direction="row" fill-parent-horizontal="true" id="tskspecinlinehdr01">
-                    <box direction="column" fill-parent-horizontal="true" id="tskspecinlinehdrbox01">
-                      <label label="Checklists" theme="16-bold" id="tskspecrowlabel01"/>
-                    </box>
-                    <box horizontal-align="end" vertical-align="center" padding-end="1" id="tskspecinlinesavebox01">
-                      <button icon="carbon:checkmark" kind="primary" loading="{page.state.taskSpecLoader}" on-click="saveTaskSpecification" on-click-arg="{{'item': item, 'datasource': woPlanTaskDetailds}}" id="tskspecinlinesavebtn01"/>
-                    </box>
-                  </box>
-                  <repeat datasource="{woPlanTaskDetailds.getChildDatasource('workorderspec', item)}" id="tskspecinlinerepeat01">
-                    <box slot="item" direction="column" fill-parent-horizontal="true" padding-start="1" padding-end="1" padding-top="0.5" padding-bottom="0.5" border-bottom="true" id="tskspecinlineitembox01">
-                      <field value="{item.assetattributedesc || item.assetattrid_description || item.assetattrid}" override-required="true" field-class-name="16-bold" padding="none" hide-label="true" id="tskspecinlinelabel01"/>
-                      <border-layout fill-parent="true" padding="false" id="tskspecinlinevalueborder01">
-                        <start width="85" horizontal-overflow="hidden" id="tskspecinlinevalstart01">
-                          <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecinlinevalbox01">
-                            <field label="Value" swap-position="false" id="tskspecinlinevalf01">
-                              <sub-field value="{item.alnvalue}" id="tskspecinlinevalsub01"/>
-                            </field>
-                            <smart-input label="Remarks" value="{item.remarks}" id="tskspecinlinevalrem01"/>
-                          </box>
-                        </start>
-                        <end width="15" id="tskspecinlinevalend01">
-                          <button icon="carbon:search" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspecinlinelookupbtn01"/>
-                        </end>
-                      </border-layout>
-                    </box>
-                  </repeat>
-                </box>
-              </box>
-              <!-- end tskdetailbox01 -->
-            </box>
-            <!-- end tskitemwrap01 -->
-          </list-item>
-        </data-list>
-      </box>
+      
       <box direction="column" id="n52rz">
         <border-layout fill-parent="true" id="pv9ae">
           <top horizontal-align="end" id="vbqx4">
@@ -2182,7 +1937,7 @@
             <attribute name="hierarchypath" id="rzz58"/>
             <attribute name="classstructureid" id="j552w"/>
           </attribute>
-          <attribute name="workorderspec{workorderspecid,assetattrid,measureunitid,tablevalue,datevalue,numvalue,alnvalue,assetattribute.description--assetattributedesc,displaysequence}" id="zrkm9"/>
+          <attribute name="workorderspec{workorderspecid,assetattrid,measureunitid,tablevalue,datevalue,numvalue,alnvalue,assetattribute.description--assetattributedesc,displaysequence,domainid}" id="zrkm9"/>
           <attribute name="maxvar.coordinate" id="x8x84"/>
           <attribute name="orgid" id="ma383"/>
           <attribute name="woclass" id="wg2mn"/>
@@ -2194,7 +1949,7 @@
           <attribute name="wogroup" id="ek3yq"/>
           <attribute name="taskid" id="rj394"/>
           <attribute name="flowcontrolled" id="m57va"/>
-          <attribute name="woactivity{taskid,status,workorderspec{assetattribute.description--assetattributedesc,assetattrid_description,alnvalue,remarks,assetattrid}}" id="a226d"/>
+          <attribute name="woactivity{taskid,status,workorderspec{assetattribute.description--assetattributedesc,assetattrid_description,alnvalue,remarks,assetattrid,domainid}}" id="a226d"/>
           <attribute name="anywhererefid" id="ya4g8"/>
           <attribute name="rel.asset.mxapiasset{assetnum,description,plusacatid,islinear,lrm,direction,startmeasure,endmeasure}" id="kpn4_"/>
           <attribute name="location.location--locationnum" id="jmpan"/>
@@ -2524,8 +2279,7 @@
                       <box vertical-align="center" direction="row" horizontal-align="end" padding-end="0.5" fill-parent="true" id="z2gx8">
                         <action-tag id="statusTag" class-name="14-regular" label="{item.status}" type="gray" icon-hidden="true"/>
                       </box>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </list-item>
               </data-list>
             </panel>
@@ -2560,6 +2314,7 @@
                         </bottom>
                       </border-layout>
                     </start>
+                  
                   </border-layout>
                 </box>
               </middle>
@@ -2570,8 +2325,7 @@
                 <box vertical-align="center" direction="row" hidden="{!woDetailds.item.splanreviewdate}" horizontal-align="end" padding-top="1" padding-end="0.5" fill-parent="true" id="b7prm">
                   <icon icon="Carbon:checkmark--outline" fill="green" id="y3wnw"/>
                 </box>
-              </end>
-            </border-layout>
+              </end></border-layout>
             <panel id="zxam4">
               <data-list datasource="wohazardmaterials" hidden="{!wohazardmaterials.state.itemCount}" show-search="false" title="Hazardous materials" id="j8gnm">
                 <border-layout slot="item" padding="false" fill-parent="true" id="kr9n8">
@@ -2583,6 +2337,7 @@
                       </repeat>
                     </box>
                   </start>
+                
                 </border-layout>
               </data-list>
             </panel>
@@ -2597,6 +2352,7 @@
                       </repeat>
                     </box>
                   </start>
+                
                 </border-layout>
               </data-list>
             </panel>
@@ -2621,8 +2377,7 @@
                     <box direction="row" children-hide-overflow="true" padding-top="0.5" padding-end=".5" vertical-align="center" horizontal-align="end" fill-parent="true" id="q4_8b">
                       <button icon="carbon:chevron--right" on-click="openMaterialRequestPage" on-click-arg="{{'page':page,'app':app,'item':woDetailResource.item,'mritem':item}}" kind="ghost" padding="false" id="bj_by"/>
                     </box>
-                  </end>
-                </border-layout>
+                  </end></border-layout>
               </data-list>
             </panel>
             <panel id="kp7e4">
@@ -2636,8 +2391,7 @@
                     <box padding-end="0.5" id="wb9yn">
                       <label label="{item.itemqty}" theme="20-regular" id="k9v2m"/>
                     </box>
-                  </end>
-                </border-layout>
+                  </end></border-layout>
               </data-list>
             </panel>
             <panel id="n4mmp">
@@ -2656,8 +2410,7 @@
                     <box padding-end="0.5" id="b5gmw">
                       <label label="{item.itemqty}" theme="20-regular" id="zbn73"/>
                     </box>
-                  </end>
-                </border-layout>
+                  </end></border-layout>
               </data-list>
               <border-layout fill-parent="true" id="rkmk4" hidden="{woDetailsToolds.state.itemCount || woDetailsMaterialds.state.itemCount || mrDS.state.itemCount || mrRequest.state.itemCount}">
                 <top id="z6b9y" horizontal-align="center">
@@ -2724,8 +2477,7 @@
                     <box padding-end="0.75" id="jm97y">
                       <button label="OK" icon="carbon:checkmark--outline" kind="primary" on-click="closeMisMatchDialog" id="vp487"/>
                     </box>
-                  </end>
-                </border-layout>
+                  </end></border-layout>
               </bottom>
             </border-layout>
           </box>
@@ -2746,8 +2498,7 @@
                     </start>
                     <end width="40" background-color="ui-01" id="eq23_" horizontal-align="end">
                       <button-toggle-group options="{page.state.upDownButtonGroupdata}" on-change="handleToggled" on-change-arg="{{item:event, isrunning:woDetailResource.item.assetisrunning}}" id="nab88"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-start="1" padding-end=".5" padding-top=".5" padding-bottom=".5" direction="column" fill-parent-horizontal="true" id="k7yxv" hidden="{page.state.hideUp}">
                   <smart-input show-verbose="{false}" on-change="validateDownTimeDate" value="{downTimeReportAsset.item.statuschangedate}" required="true" label="Status date" id="eynwp" input-kind="DATETIME" vertical="true"/>
@@ -2762,10 +2513,10 @@
                     </start>
                     <end width="10" background-color="ui-01" id="w49da">
                       <button icon="carbon:chevron--right" on-click="openDowntimeCodeLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="vvg8_"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
               </start>
+            
             </border-layout>
           </panel>
           <button-group slot="header-button" id="ramrx">
@@ -2816,8 +2567,7 @@
                           <sub-field value="{item.datevalue}" type="date" id="b__wa"/>
                         </field>
                       </box>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </top>
               </border-layout>
             </data-list>
@@ -2862,10 +2612,10 @@
                           </start>
                           <end width="10" background-color="ui-01" id="wqqdb">
                             <button icon="carbon:chevron--right" loading="{page.state.lookupLoader}" on-click="openSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="kvryj"/>
-                          </end>
-                        </border-layout>
+                          </end></border-layout>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </top>
               </border-layout>
@@ -2927,248 +2677,250 @@
             <box padding-start="1" padding-end="1" id="bk7dw" padding-top=".75" padding-bottom=".75">
               <label label="Details" theme="20-regular" id="bp5bq"/>
             </box>
-          </top>
-          <middle id="kevgg" horizontal-overflow="hidden">
-            <border-layout fill-parent="true" top-border="false" middle-border="true" id="md8yv">
-              <top id="bkxw4">
-                <box id="e53wm" fill-parent-horizontal="true" border-bottom="{app.device.isMaximoMobile ? page.state.linearAsset: woAssetLocationds.item.islinear}" padding-start="1" padding-end="1" padding-top="1" padding-bottom="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row'}">
-                  <box id="b69b_" manage-children="false" fill-parent="true" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '1.5'}"/>
-                  <box direction="row" padding-top="1" manage-children="false" id="qg2_2" vertical-align="center">
-                    <button hidden="{!woDetailResource.item.autolocate || !app.state.isMapValid}" on-click="handleMapPage" on-click-arg="{{'item': woDetailResource.item, 'prevPage': 'wodetail'}}" icon="carbon:map" kind="secondary" id="jk9r5"/>
-                    <field value="{woDetailResource.item.formattedaddress ? woDetailResource.item.formattedaddress : woDetailResource.item.serviceaddressdesc}" wrap="true" hide-label="true" id="bg7a9"/>
-                  </box>
-                </box>
-              </top>
-              <middle id="ypxvd">
-                <adaptive-row id="q9w95">
-                  <adaptive-column small-width="100" medium-width="100" large-width="100" id="b2r4q">
-                    <box direction="row" id="gg5bq" padding-start="1" padding-end="1" fill-parent="true" border-bottom="true" hidden="{!woDetailResource.item.classstructure.hierarchypath}">
-                      <field label="Classification" label-placement="top" value="{woDetailResource.item.classstructure.hierarchypath}" id="amjbe"/>
-                    </box>
-                  </adaptive-column>
-                  <adaptive-column small-width="1" medium-width="1" large-width="1" id="aan6k"/>
-                </adaptive-row>
-                <adaptive-row id="x3ewe">
-                  <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="xaany">
-                    <adaptive-row id="rr2pa">
-                      <adaptive-column small-width="80" medium-width="50" large-width="100" id="b2y57">
-                        <box direction="column" fill-parent="true" padding-start="1" hidden="{app.device.isMaximoMobile ? !page.state.linearAsset: !woAssetLocationds.item.islinear}" border-bottom="false" id="r_6m2">
-                          <field label="Start measures" label-placement="top" value="{page.state.linearinfo.startmeasure? page.state.linearinfo.startmeasure : linearAsset.item.startmeasure}" id="vag7b"/>
-                        </box>
-                      </adaptive-column>
-                      <adaptive-column small-width="20" medium-width="50" large-width="0" id="kpb5r">
-                        <button hidden="{!app.device.isMaximoMobile || !page.state.linearAsset }" padding="false" icon="carbon:maximize" kind="secondary" dialog="linearDetailsDialog" id="p8zy3"/>
-                      </adaptive-column>
-                    </adaptive-row>
-                  </adaptive-column>
-                  <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="mdg9x">
-                    <adaptive-row id="e7bm7">
-                      <adaptive-column small-width="50" medium-width="100" large-width="90" id="pb3_k">
-                        <box direction="column" fill-parent="true" padding-start="{app.device.isMaximoMobile ? '1':'0'}" hidden="{app.device.isMaximoMobile ? !page.state.linearAsset :!woAssetLocationds.item.islinear}" border-bottom="false" id="qkp_m">
-                          <field label="End measures" label-placement="top" value="{page.state.linearinfo.endmeasure ? page.state.linearinfo.endmeasure : linearAsset.item.endmeasure}" id="e7w89"/>
-                        </box>
-                      </adaptive-column>
-                      <adaptive-column small-width="100" medium-width="100" large-width="10" id="endax">
-                        <button hidden="{app.device.isMaximoMobile  || !woAssetLocationds.item.islinear}" padding="false" icon="carbon:maximize" kind="secondary" dialog="linearDetailsDialog" id="jywgz"/>
-                      </adaptive-column>
-                    </adaptive-row>
-                  </adaptive-column>
-                  <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="k78_y">
-                    <box direction="column" fill-parent="true" padding-start="1" hidden="{app.device.isMaximoMobile ? !page.state.linearAsset :!woAssetLocationds.item.islinear}" border-bottom="false" id="bkyem">
-                      <field label="Start reference point" label-placement="top" value="{page.state.linearinfo.startfeaturelabel ? page.state.linearinfo.startfeaturelabel : linearAsset.item.startfeaturelabel}" id="wb42z"/>
-                    </box>
-                  </adaptive-column>
-                  <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="bmk45">
-                    <box direction="column" fill-parent="true" padding-start="{app.device.isMaximoMobile ? '1':'0'}" hidden="{app.device.isMaximoMobile ? !page.state.linearAsset :!woAssetLocationds.item.islinear}" border-bottom="false" id="zjgg_">
-                      <field label="End reference point" label-placement="top" value="{page.state.linearinfo.endfeaturelabel ? page.state.linearinfo.endfeaturelabel : linearAsset.item.endfeaturelabel}" id="qe7v2"/>
-                    </box>
-                  </adaptive-column>
-                  <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="wg6qj">
-                    <box direction="column" fill-parent="true" padding-start="1" hidden="{app.device.isMaximoMobile ? !page.state.linearAsset :!woAssetLocationds.item.islinear}" border-bottom="{!app.device.isMaximoMobile}" id="nnmby">
-                      <field label="Start reference point offset" label-placement="top" value="{page.state.linearinfo.startoffset ? page.state.linearinfo.startoffset : linearAsset.item.startoffset}" id="py_pe"/>
-                    </box>
-                  </adaptive-column>
-                  <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="p7mr_">
-                    <box direction="column" padding-start="{app.device.isMaximoMobile ? '1':'0'}" fill-parent="true" hidden="{app.device.isMaximoMobile ? !page.state.linearAsset :!woAssetLocationds.item.islinear}" border-bottom="true" id="zyvp6">
-                      <field label="End reference point offset" label-placement="top" value="{page.state.linearinfo.endoffset ? page.state.linearinfo.endoffset : linearAsset.item.endoffset}" id="yrq23"/>
-                    </box>
-                  </adaptive-column>
-                  <adaptive-column id="vrnnv"/>
-                </adaptive-row>
-              </middle>
-            </border-layout>
-          </middle>
-          <bottom id="n934p">
-            <box direction="row" id="x4gwr" padding-top="0.5" padding-bottom="0.5" padding-start="1" children-hide-overflow="true" fill-parent="true">
-              <button-group padding="false" id="yyb2k" wrap="true">
-                <button icon="maximo:materialsandtools" kind="secondary" on-click="openMaterialToolDrawer" on-click-arg="{{'item': woDetailResource.item, 'datasource': woDetailResource, 'reload': true }}" id="qg3r9"/>
-                <button icon="carbon:document" kind="secondary" loading="{page.state.chatLogLoading || page.state.loadedLog}" on-click="openWorkLogDrawer" on-click-arg="{{'item': woDetailResource.item}}" disabled="{page.state.loading}" id="v8vmq"/>
-                <button icon="maximo:location-capture" hidden="{!app.geolocation.state.enabled}" action-icon="{page.state.gpsLocationSaved}" action-icon-name="carbon:checkmark--filled" on-click="saveGPSLocation" on-click-arg="{woDetailResource.item}" kind="secondary" id="m3_ea"/>
-                <button icon="maximo:inspections" on-click="loadApp" on-click-arg="{{appName: app.state.appnames.inspection, context: {page: woDetailResource.item.inspectionbatchresult[0].isbatch ? 'batch_details' : 'execution_panel', inspectionresultid: woDetailResource.item.inspectionbatchresult[0].inspresultid, href: woDetailResource.item.inspectionbatchresult[0].href, isbatch: woDetailResource.item.inspectionbatchresult[0].isbatch, type: woDetailResource.item.inspectionbatchresult[0].isbatch ? 'isBatch' : ''}}}" tag-value="{woDetailResource.item.batchlistcount}" tag-type="dark-gray" kind="secondary" hidden="{!woDetailResource.item.inspectionbatchresult || !page.state.inspectionAccess}" id="vqvzp"/>
-                <button icon="carbon:list--numbered" on-click="navigateToTask" loading="{page.state.loading}" hidden="{woPlanTaskDetailds.state.hasData &amp;&amp; woPlanTaskDetailds.state.itemCount === 0}" tag-type="dark-gray" tag-value="{app.state.taskCount}" on-click-arg="{woDetailResource.item}" kind="{page.params.wonum === app.state.firstWO ? woDetailResource.item.computedWOTimerStatus ? app.state.highlightStop ? page.state.firstLogin ? 'primary' : 'secondary' : 'primary' : 'secondary' : 'secondary'}" id="qdn4v"/>
-                <button icon="carbon:report" on-click="navigateToReportWork" hidden="{app.state.isRejected || !app.state.showAssignment}" on-click-arg="{woDetailResource.item}" kind="secondary" id="m5kg3"/>
-                <button kind="secondary" icon="carbon:study--previous" loading="{page.state.loading || app.state.assignmentLoading}" on-click="openReassignmentDialog" tag-type="dark-gray" id="reassignment_detail" hidden="{['COMP', 'CAN', 'CLOSE'].includes(woDetailResource.item.status_maxvalue) || !app.checkSigOption(`${app.state.woOSName}.ALLOWREASSIGNMENT`)}"/>
-              </button-group>
-            </box>
-          </bottom>
+          </top>    
         </border-layout>
       </box>
-      <box direction="column" background-color="ui-01" hidden="{!(woDetailResource.item.assetnum || woDetailResource.item.locationnum)}" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-top="1" padding-bottom="0" id="w3n_b">
-        <border-layout padding="false" fill-parent="true" top-border="true" middle-border="true" id="za4qp">
-          <top id="ar7kg">
-            <border-layout fill-parent="true" padding="false" id="gmprg">
-              <start width="99" id="kn7xa">
-                <box direction="row" id="vdv7y" padding-start="1" padding-end="1" vertical-align="center" fill-parent="true">
-                  <label label="{woDetailResource.item.pluscloop == true ? 'Location details' : 'Asset and location'}" theme="20-regular" id="qxpdb"/>
-                </box>
-              </start>
-              <end width="1" id="bk88r">
-                <box direction="row" hidden="{!page.state.assetAccess || woDetailResource.item.pluscloop}" id="x2jmv">
-                  <button icon="carbon:chevron--right" loading="{page.state.loadAssetData}" on-click="navigateToAssetDetails" kind="ghost" padding="false" id="p949r"/>
-                </box>
-              </end>
-            </border-layout>
-          </top>
-          <middle id="p32xg" horizontal-overflow="hidden">
-            <adaptive-row id="aj4n9">
-              <adaptive-column small-width="100" medium-width="100" large-width="50" id="pwkd7">
-                <border-layout fill-parent="true" padding="false" id="mg_ke">
-                  <top vertical-align="start" id="dw3bx">
-                    <box direction="column" vertical-align="center" fill-parent-horizontal="true" padding-start="1" padding-top="0.5" padding-bottom="0.5" id="vbpra">
-                      <adaptive-row id="mx2ag">
-                        <adaptive-column id="ppmwg">
-                          <action-tag label="Up" type="green" icon="Carbon:arrow--up" hidden="{!woDetailResource.item.assetnum || !woDetailResource.item.assetisrunning}" id="g9beg"/>
-                          <action-tag label="Down" type="red" icon="Carbon:arrow--down" hidden="{!woDetailResource.item.assetnum || woDetailResource.item.assetisrunning}" id="yb_dp"/>
-                          <adaptive-row hidden="{app.device.isMaximoMobile ? !page.state.linearAsset: !woAssetLocationds.item.islinear}" id="eymme">
-                            <adaptive-column small-width="100" id="qazw9">
-                              <action-tag label="Linear" icon-hidden="true" type="dark-gray" id="q9bky"/>
-                            </adaptive-column>
-                            <adaptive-column id="kww7g"/>
-                          </adaptive-row>
-                        </adaptive-column>
-                        <adaptive-column id="x7p8_"/>
-                      </adaptive-row>
-                      <field padding="none" label="Asset" hidden="{woDetailResource.item.pluscloop === true}" wrap="true" id="yzqaa">
-                        <sub-field value="{woDetailResource.item.assetnum}" id="a_djx"/>
-                        <sub-field value="{woDetailResource.item.assetdesc}" id="y39p4"/>
-                      </field>
-                      <field padding="top" label="Location" wrap="true" id="agajd">
-                        <sub-field value="{woDetailResource.item.locationnum}" id="ppa4d"/>
-                        <sub-field value="{woDetailResource.item.locationdesc}" id="we36d"/>
-                      </field>
-                      <field label="Manufacturer" hidden="{app.device.isMaximoMobile ? page.state.linearAsset: woAssetLocationds.item.islinear}" padding="top" id="d6rp6">
-                        <sub-field value="{woDetailResource.item.company}" id="yy4_e"/>
-                      </field>
-                    </box>
-                  </top>
-                </border-layout>
-              </adaptive-column>
-              <adaptive-column small-width="100" large-width="50" id="v7q9k">
-                <box direction="column" padding-top=".5" padding-start="1.5" padding-bottom="{woAssetLocationds.item.islinear ?'0':'0.5'}" size="80" hidden="{!woAssetLocationds.item._imagelibref}" vertical-align="center" horizontal-align="start" fill-parent-horizontal="true" id="bbnye">
-                  <image src="{woAssetLocationds.item._imagelibref}" id="rqjkd"/>
-                </box>
-                <box direction="column" padding-start="{!woAssetLocationds.item._imagelibref &amp;&amp; woAssetLocationds.item.islinear ?'.5':'1.5'}" padding-top=".5" padding-bottom="{woAssetLocationds.item.islinear ?'0':'0.5'}" size="80" hidden="{woAssetLocationds.item._imagelibref || woDetailResource.item.pluscloop}" background-color="ui-02" vertical-align="center" horizontal-align="center" fill-parent-horizontal="true" id="nq3vw">
-                  <image src="{woAssetLocationds.item._imagelibref}" placeholder="{true}" height="{app.device.screen.size === 'sm' ? 70 : 130}" id="wjn9w"/>
-                </box>
-              </adaptive-column>
-            </adaptive-row>
-            <box direction="column" vertical-align="center" fill-parent-horizontal="true" padding-start="1" padding-top="0.5" padding-bottom="0.5" id="r59j9">
-              <adaptive-row hidden="{app.device.isMaximoMobile ? !page.state.linearAsset: !woAssetLocationds.item.islinear}" id="djd2a">
-                <adaptive-column small-width="100" medium-width="100" large-width="50" id="gyxen">
-                  <field label="Direction" padding="top" id="kpn4b">
-                    <sub-field value="{woAssetLocationds.item.direction}" id="adyke"/>
-                  </field>
-                </adaptive-column>
-                <adaptive-column small-width="100" medium-width="100" large-width="50" id="eryjy">
-                  <field label="Linear Referncing Method (LRM)" padding="top" id="ywz7a">
-                    <sub-field value="{woAssetLocationds.item.lrm}" id="qp47n"/>
-                  </field>
-                </adaptive-column>
-              </adaptive-row>
-            </box>
-          </middle>
-        </border-layout>
-      </box>
-      <box direction="column" background-color="ui-01" hidden="{!(woDetailResource.item.iscalibration || woDetailResource.item.pluscloop)}" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-top="1" padding-bottom="0" id="nk74a">
-        <border-layout padding="false" background-color="ui-01" fill-parent="true" top-border="true" middle-border="false" id="v5a5b">
-          <top id="wzmm2">
-            <border-layout fill-parent="true" padding="false" id="zwe9a">
-              <start width="99" id="xrb49">
-                <box direction="row" padding-start="1" vertical-align="center" fill-parent-vertical="true" padding-top="0" padding-bottom="0" id="r4935">
-                  <label label="Calibration details" theme="20-regular" id="j8b6p"/>
-                </box>
-              </start>
-              <end id="g99k6">
-                <border-layout id="p86vw">
-                  <start horizontal-align="end" id="jqwe9">
-                    <box vertical-align="center" hidden="{!woDetailResource.item.pluscloop === true}" fill-parent-vertical="true" padding="0" id="ab69e">
-                      <tag-group tags="{[{label: 'Loop location'}]}" id="y7pd_"/>
+      <box direction="column" id="jkknb" fill-parent-horizontal="true" padding-bottom="0" padding-top="0">
+        <data-list id="q439v" datasource="woPlanTaskDetailds" on-item-click="onTaskItemClick" show-search="false" data-list-height-hint="75" item-to-open="{page.state.itemToOpen}" no-select-behavior="true">
+          <!-- renderer for list item details -->
+          <list-item id="r6bdn_outer">
+            <box direction="column" fill-parent-horizontal="true" id="tskitemwrap01">
+              <!-- Single header row — green background + white text when all specs filled -->
+              <box fill-parent-horizontal="true" background-color="{item.computedAllSpecsFilled ? 'support-02' : ''}" padding="0.5" id="tskrowbox01">
+                <border-layout fill-parent="true" padding="false" id="gar9_">
+                  <start width="10" id="vzp4j" vertical-align="center">
+                    <box fill-parent-horizontal="true" id="kw5bn">
+                      <label label="{item.taskid}." theme="20-regular" id="e9rgg" color="{item.computedAllSpecsFilled ? 'white0' : ''}"/>
                     </box>
                   </start>
-                  <end id="n46k6">
-                    <button padding="false" label="{app.state.screen.size === 'sm' ? '' : 'Calibration'}" icon="carbon:calibrate" kind="secondary" on-click="navigateToCalibration" on-click-arg="{woDetailResource.item}" hidden="{woDetailResource.item.iscalibration === false || woDetailResource.item.PLUSCLOOP === false}" tag-type="dark-gray" tag-value="{woDetailResource.item.pluscloop ? page.state.totalpluscwodscount : woDetailResource.item.pluscwodscount}" action-icon-fill="blue" id="mrpmg"/>
-                  </end>
-                </border-layout>
-              </end>
-            </border-layout>
-          </top>
-          <middle id="agmbr" horizontal-overflow="hidden">
-            <adaptive-row id="ax5_x">
-              <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="mkr3">
-                <border-layout fill-parent="true" padding="false" id="geygb">
-                  <middle id="xbwv_">
-                    <box padding-top="0.5" padding-start="1" direction="row" horizontal-align="start" vertical-align="start" id="rkrvd">
-                      <field label="Physical location" id="mrp_e">
-                        <sub-field value="{woDetailResource.item.pluscphyloc}" id="n7v_b"/>
-                      </field>
+                  <middle id="kaz_j" vertical-align="center">
+                    <box fill-parent-horizontal="true" id="k3gmr">
+                      <label label="{item.description}" theme="16-bold" wrap="true" color="{item.computedAllSpecsFilled ? 'white0' : ''}" id="q_k3x"/>
                     </box>
-                    <box padding-top=".5" padding-start="1" direction="row" horizontal-align="start" vertical-align="start" id="j3g7g">
-                      <border-layout fill-parent="true" id="pgxj8" padding="false">
-                        <top id="q53a2">
-                          <label hidden="{!woDetailResource.item.pluscphyloc_longdescription}" label="Long description" theme="14-regular" id="g7wz_"/>
-                        </top>
-                        <middle id="expd7">
-                          <box hidden="{!woDetailResource.item.pluscphyloc_longdescription}" direction="row" children-sizes="100" fill-parent-horizontal="true" fill-parent-vertical="true" fill-child="true" manage-children="true" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '0'}" id="b3pj5">
-                            <rich-text-viewer content="{woDetailResource.item.pluscphyloc_longdescription}" content-limit="256" stripped="true" padding="0.5" id="gre5j"/>
-                            <button hidden="{!woDetailResource.item.pluscphyloc_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" dialog="calibrationDetailsDialog" id="n3eq7"/>
+                  </middle>
+                  <end width="15" id="tskprogend" vertical-align="center" horizontal-align="end">
+                    <box fill-parent-horizontal="true" id="tskprogbox01">
+                      <label label="{item.computedSpecProgress}" theme="16-bold" hidden="{!item.workorderspec || !item.workorderspec.length}" id="tskspecprogresslbl01" color="{item.computedAllSpecsFilled ? 'white0' : ''}"/>
+                    </box>
+                  </end></border-layout>
+              </box>
+              <!-- Expanded detail section - shown when this item is open -->
+              <box direction="column" fill-parent-horizontal="true" hidden="{page.state.itemToOpen != item.workorderid}" id="tskdetailbox01">
+                <border-layout fill-parent="true" middle-border="{item.computedBorderDisplay}" top-border="{item.description_longdescription || app.state.isAssistAccessible || (page.state.inspectionAccess &amp;&amp; item.inspectionbatchresult)}" padding="false" id="b5zn8">
+                  <top id="x29yd">
+                    <box direction="column" fill-parent-horizontal="true" id="mpk_z">
+                      <border-layout fill-parent="true" hidden="true" padding="false" top-border="true" id="exnz_">
+                        <bottom id="x7pb_">
+                          <box id="jk_89" fill-parent-horizontal="true" border-top="true">
+                            <tag-group align="none" tags="{item.computedTaskStatus}" hidden="true" id="gxm55"/>
                           </box>
-                        </middle>
+                        </bottom>
+                      </border-layout>
+                      <border-layout fill-parent="true" hidden="{item.woflowcontrolled &amp;&amp; !item.computedPredecessorString}" middle-border="{!item.hideLockIcon || !item.computedParentAssetLocation || item.pointnum}" bottom-border="{!item.hideLockIcon &amp;&amp; !item.computedParentAssetLocation &amp;&amp; !item.description_longdescription}" padding="false" id="kmkr8">
+                        <bottom vertical-align="center" id="g8wn7">
+                          <box fill-parent-horizontal="true" padding-bottom="1" padding-top="1" hidden="{item.hideLockIcon}" id="ra58z">
+                            <label label="Complete task {item.computedPredecessorString} first." wrap="true" hidden="{item.hideLockIcon}" id="jrqqj"/>
+                          </box>
+                        </bottom>
                       </border-layout>
                     </box>
+                  </top>
+                  <middle id="g9vn6" horizontal-overflow="hidden">
+                    <border-layout top-border="true" bottom-border="true" fill-parent="true" hidden="{item.computedParentAssetLocation}" width="100" padding="false" id="byn5n">
+                      <start id="m3je8" horizontal-overflow="hidden">
+                        <border-layout fill-parent="true" width="100" padding="false" id="rn5qm">
+                          <top id="hju87"/>
+                          <middle vertical-align="center" id="hjul9" horizontal-overflow="hidden">
+                            <adaptive-row id="hj868">
+                              <adaptive-column large-width="80" small-width="80" medium-width="70" id="gh_89">
+                                <adaptive-row id="sl_7h">
+                                  <adaptive-column large-width="45" small-width="100" medium-width="100" id="nkj98" small-horizontal-align="start" large-horizontal-align="start" medium-horizontal-align="start">
+                                    <border-layout fill-parent="true" id="dsk78">
+                                      <start id="n3747" vertical-align="center">
+                                        <button icon="carbon:asset" id="wrrn7"/>
+                                      </start>
+                                      <middle id="y5x7m" vertical-align="center">
+                                        <box padding-top="0.5" padding-bottom="0.5" padding-start="-0.5" padding-end="0.5" direction="column" vertical-align="center" fill-parent-horizontal="true" id="j3ke3">
+                                          <field hide-label="true" padding="none" empty-field-placeholder="-" value="{item.assetnum}" id="jy394"/>
+                                          <field wrap="true" hide-label="true" padding="none" empty-field-placeholder="-" value="{item.assetdescription}" id="bgpk2"/>
+                                        </box>
+                                      </middle>
+                                    </border-layout>
+                                  </adaptive-column>
+                                  <adaptive-column large-width="45" small-width="80" medium-width="100" id="gh68g" small-horizontal-align="start" large-horizontal-align="start" medium-horizontal-align="start">
+                                    <border-layout id="gfk78">
+                                      <start id="vj87f" vertical-align="center">
+                                        <button icon="carbon:location" id="cs779"/>
+                                      </start>
+                                      <middle id="hsd99" vertical-align="center">
+                                        <box padding-top="0.5" padding-bottom="0.5" padding-start="-0.5" padding-end="0.5" direction="column" children-hide-overflow="true" vertical-align="center" id="gjf90">
+                                          <field hide-label="true" padding="none" empty-field-placeholder="-" value="{item.location}" id="ds_u8"/>
+                                          <field wrap="true" hide-label="true" padding="none" empty-field-placeholder="-" value="{item.locationdesc}" id="pds6r"/>
+                                        </box>
+                                      </middle>
+                                    </border-layout>
+                                  </adaptive-column>
+                                </adaptive-row>
+                              </adaptive-column>
+                              <adaptive-column large-width="20" small-width="10" medium-width="30" id="hkj67" small-horizontal-align="end" large-horizontal-align="end" medium-horizontal-align="end">
+                                <box id="jh7jm" padding-top="{app.state.screen.size === 'sm' ? '1':'0' }" vertical-align="center" fill-parent-vertical="true">
+                                  <button id="dgfg7" hidden="{!item.hasHref &amp;&amp; item.taskid != page.state.currentTaskId}" icon="Carbon:chevron--right" disabled="{!item.hideLockIcon}" kind="ghost" on-click="redirectToAssetDetails" on-click-arg="{{'item': item}}"/>
+                                </box>
+                              </adaptive-column>
+                            </adaptive-row>
+                          </middle>
+                        </border-layout>
+                      </start>
+                    
+                    </border-layout>
                   </middle>
+                  <bottom id="vpjq7">
+                    <border-layout fill-parent="true" width="100" padding="true" id="naa4p">
+                      <top id="jwyx_">
+                        <border-layout hidden="{!item.description_longdescription}" bottom-border="true" padding="true" fill-parent="true" id="g2ze5">
+                          <start id="mj4nj" width="80">
+                            <box direction="row" padding="0.5" id="kjv96">
+                              <rich-text-viewer id="q98gx" content="{item.description_longdescription}" stripped="true" content-limit="350"/>
+                            </box>
+                          </start>
+                          <middle id="p955q" width="5" vertical-align="end" horizontal-align="end">
+                            <button id="bknra" icon="carbon:maximize" kind="ghost" on-click="openTaskLongDesc" on-click-arg="{item}"/>
+                          </middle>
+                        </border-layout>
+                      </top>
+                      <middle id="bpqrg">
+                        <border-layout fill-parent="true" width="100" top-border="true" hidden="{!item.asset || !item.asset[0].plusacatid || item.computedParentAssetLocation || app.state.selectedWoListDs != 'todaywoassignedDS'}" id="v6vn4">
+                          <start width="90" vertical-align="center" id="yaedd">
+                            <border-layout fill-parent="true" top-border="{(item.asset &amp;&amp; item.asset[0].plusacatid) || !item.computedParentAssetLocation}" id="eabmn">
+                              <top id="kbv8k"/>
+                              <middle vertical-align="center" id="yq5mn">
+                                <box id="by53g">
+                                  <label label="Asset configuration manager" theme="16-bold" id="mpb9q"/>
+                                </box>
+                              </middle>
+                            </border-layout>
+                          </start>
+                          <end width="10" vertical-align="center" horizontal-align="end" id="gxrpz">
+                            <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{(item.asset &amp;&amp;item.asset[0].plusacatid) || !item.computedParentAssetLocation}" id="ze2dr">
+                              <button icon="maximo:asset--settings" on-click="navigateToAcm" on-click-arg="{{'item': {...item,wonum: page.params.wonum},'datasource': woPlanTaskDetailds}}" disabled="{!page.state.assetSwicthAccess}" id="qb92j"/>
+                            </box>
+                          </end></border-layout>
+                        <border-layout fill-parent="true" width="100" top-border="true" hidden="{!item.pointnum}" id="ew3mj">
+                          <start width="90" vertical-align="center" id="m9m6x">
+                            <border-layout fill-parent="true" id="k4gkp" top-border="{item.assetnum &amp;&amp; item.assetdescription &amp;&amp; item.description_longdescription &amp;&amp; item.locationdesc}">
+                              <top id="dsdz4"/>
+                              <middle vertical-align="center" id="fd5hk">
+                                <adaptive-row id="daz23">
+                                  <adaptive-column small-width="100" id="qggmy">
+                                    <box padding-top="0.5" padding-bottom="0.5" id="dsd_7">
+                                      <label label="Conduct a measurement" padding="top" theme="16-bold" id="mnq_b"/>
+                                    </box>
+                                  </adaptive-column>
+                                  <adaptive-column small-width="100" id="ar_5x">
+                                    <box padding-bottom="0.5" id="sfd_7">
+                                      <field value="{item.measurepoint.description}" padding="bottom" hide-label="true" id="dya97"/>
+                                    </box>
+                                  </adaptive-column>
+                                </adaptive-row>
+                              </middle>
+                            </border-layout>
+                          </start>
+                          <end width="10" vertical-align="center" horizontal-align="end" id="gxbym">
+                            <box id="r2dj4" vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{item.assetdescription &amp;&amp; item.description_longdescription}">
+                              <button disabled="{!item.hideLockIcon}" icon="Carbon:operation--gauge" id="r98jq" on-click="openMeasurementDrawer" on-click-arg="{{'item':item,'datasource':woPlanTaskDetailds}}"/>
+                            </box>
+                          </end></border-layout>
+                        <border-layout fill-parent="true" width="100" top-border="true" id="pr2v8" hidden="{(item.computedParentAssetLocation || item.pointnum) || (!item.assetmetercount &amp;&amp; !item.locationmetercount)}">
+                          <start width="90" vertical-align="center" id="prpwp">
+                            <border-layout fill-parent="true" top-border="{item.pointnum || !item.computedParentAssetLocation}" id="xam3m">
+                              <top id="pw2pj"/>
+                              <middle vertical-align="center" id="zdnz3">
+                                <box id="x3kr9">
+                                  <label label="Enter meter reading" theme="16-bold" id="bzbb_"/>
+                                </box>
+                              </middle>
+                            </border-layout>
+                          </start>
+                          <end width="10" vertical-align="center" horizontal-align="end" id="p585k">
+                            <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{item.pointnum || !item.computedParentAssetLocation}" id="ab_3n">
+                              <button disabled="{!item.hideLockIcon}" icon="Carbon:operation--gauge" on-click="openMeterReadingDrawer" on-click-arg="{{'item': item}}" id="md7yq"/>
+                            </box>
+                          </end></border-layout>
+                        <border-layout fill-parent="true" hidden="{item.inspectionbatchresult === undefined || !page.state.inspectionAccess}" id="ekea_">
+                          <start id="k9na_" width="95">
+                            <border-layout fill-parent="true" top-border="{item.description_longdescription || !item.computedParentAssetLocation || item.pointnum}" id="z36nn">
+                              <top id="yj9nr"/>
+                              <middle vertical-align="center" id="we7bd">
+                                <box id="jkn_78" padding-top="0.5" padding-bottom="0.5">
+                                  <adaptive-row id="b3x88">
+                                    <adaptive-column small-width="100" id="dx4gn">
+                                      <label label="Conduct an inspection" padding="top" theme="16-bold" id="dsd_5"/>
+                                    </adaptive-column>
+                                    <adaptive-column small-width="100" id="fx_7j">
+                                      <wrapped-text size="medium" label="{item.inspname}" sub-label="{item.inspectionbatchresult ? item.inspectionbatchresult[0].inspresult : ''}" id="fd_87" truncation-type="end"/>
+                                    </adaptive-column>
+                                    <!-- GRAPHITE-44838 - it should be re-introduced when mobile limitation gets resolved
+                          <adaptive-column small-width="50" medium-width="33" id="gpray">
+                            <tag-group align="start" tags="{[{label: `${item.inspectionbatchresult ? item.inspectionbatchresult[0].status_description : ''}`}]}" id="gj6gj"/>
+                          </adaptive-column> -->
+                                  </adaptive-row>
+                                </box>
+                              </middle>
+                            </border-layout>
+                          </start>
+                          <middle id="qzbgj" width="5" vertical-align="center" horizontal-align="end">
+                            <box fill-parent-vertical="true" fill-parent-horizontal="true" vertical-align="center" id="fdk89" border-top="{item.description_longdescription || !item.computedParentAssetLocation || item.pointnum}">
+                              <button id="qer7r" icon="maximo:inspections" disabled="{!item.hideLockIcon}" kind="ghost" on-click="loadApp" on-click-arg="{{appName: app.state.appnames.inspection, context: {page: 'execution_panel', inspectionresultid: item.inspectionbatchresult[0].inspresultid, href: item.inspectionbatchresult[0].href}}}"/>
+                            </box>
+                          </middle>
+                        </border-layout>
+                      </middle>
+                    </border-layout>
+                  </bottom>
                 </border-layout>
-              </adaptive-column>
-              <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="nxppb">
-                <border-layout id="kj8v_">
-                  <middle id="p6dxa">
-                    <box padding-top="0.5" padding-start="1" direction="row" horizontal-align="start" vertical-align="start" id="nqw7w">
-                      <field label="Calibration overdue date" id="x5rj2">
-                        <sub-field value="{woDetailResource.item.pluscoverduedate}" type="datetime" id="vde6e"/>
-                      </field>
+                <!-- Change Status button row -->
+                <!-- <border-layout fill-parent="true" padding="false" top-border="true" id="tskChangeStatusRow01">
+                  <start width="90" vertical-align="center" id="tskChangeStatusStart01">
+                    <box padding-top="0.5" padding-bottom="0.5" padding-start="1" id="tskChangeStatusLabelBox01">
+                      <label label="Change status" theme="16-bold" id="tskChangeStatusLabel01"/>
+                      <label label="{item.status_description}" theme="14-regular" color="gray60" id="tskChangeStatusCurrent01"/>
                     </box>
-                    <box padding-top="0.5" padding-start="1" direction="row" padding-bottom="0.5" id="jm3wd">
-                      <field label="Next calibration overdue date" id="bkdgq">
-                        <sub-field value="{woDetailResource.item.pluscnextdate}" type="datetime" id="vx395"/>
-                      </field>
+                  </start>       
+                       
+                </border-layout> -->
+                <!-- Task Specification Inline Data -->
+                <box direction="column" fill-parent-horizontal="true" hidden="{!item.workorderspec || !item.workorderspec.length || (item.status !== 'INPRG' &amp;&amp; item.status !== 'COMP' &amp;&amp; item.status_maxvalue !== 'INPRG' &amp;&amp; item.status_maxvalue !== 'COMP')}" id="tskspecrow01" border-top="true">
+                  <box padding-start="1" padding-top="0.5" direction="row" fill-parent-horizontal="true" id="tskspecinlinehdr01">
+                    <box direction="column" fill-parent-horizontal="true" id="tskspecinlinehdrbox01">
+                      <label label="Checklists" theme="16-bold" id="tskspecrowlabel01"/>
                     </box>
-                  </middle>
-                </border-layout>
-              </adaptive-column>
-            </adaptive-row>
-          </middle>
-        </border-layout>
-      </box>
-      <box direction="column" id="jarw5" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-top="1" padding-bottom="0">
-        <navigator width="100%" theme="ui-05" mode="list" fade-background-color="false" id="wr9je">
-          <navigator-tile tile-label="Calibration label" pictogram="carbon:calibrate" onclick-action="change-page" onclick-action-arg="{{&quot;name&quot;: &quot;generateCalibrationLabel&quot;, params: { href: woDetailResource.item.href }}}" hidden="{(woDetailResource.item.status_maxvalue !== 'COMP' &amp;&amp; woDetailResource.item.status_maxvalue !== 'CLOSE') || !woDetailResource.item.pmnum || !woDetailResource.item.pluscloop}" id="xr44j"/>
-          <navigator-tile tile-label="Multiple assets and locations" pictogram="maximo:add-record" onclick-action="showMultiAssetPage" onclick-action-arg="{{'href':woDetailResource.item.href, 'ds':woDetailResource}}" hidden="{(!woMultiAssetLocationds.state.itemCount)}" badge-value="{page.state.multiAssetCount}" id="e4nz2" badge-type="dark-gray"/>
-          <navigator-tile tile-label="Assignment History" onclick-action="openAssignmentHistory" onclick-action-arg="{{'item':woDetailResource.item}}" badge-type="dark-gray" id="j9kq_"/>
-          <navigator-tile tile-label="Safety plan" pictogram="carbon:location-hazard" onclick-action="openHazardDrawer" onclick-action-arg="{{'item':woDetailResource.item}}" hidden="{page.state.loading || page.state.isSafetyPlanReviewed}" badge-type="dark-gray" id="e945r"/>
-          <navigator-tile tile-label="Attachments" pictogram="maximo:document--attachments" onclick-action="showAttachmentPage" onclick-action-arg="{{'item':woDetailResource.item}}" id="dzzpa" badge-value="{app.state.doclinksCount}" badge-type="dark-gray"/>
-          <navigator-tile tile-label="Follow-up work" pictogram="maximo:add-record" onclick-action="showRelatedWOPage" onclick-action-arg="{{'item':woDetailResource.item}}" badge-value="{page.state.followupCount}" id="vrry3" badge-type="dark-gray" hidden="{woDetailResource.item.istask}"/>
-          <navigator-tile tile-label="Checklists" pictogram="maximo:services" onclick-action="showSpecifications" hidden="{woSpecification.items.length === 0}" id="yx2ky"/>
-          <navigator-tile tile-label="Collaborate" pictogram="maximo:customer--service" onclick-action="gotoAssistApp" onclick-action-arg="{{'item':woDetailResource.item}}" badge-type="dark-gray" hidden="{!app.state.isAssistAccessible}" id="nj7pm"/>
-        </navigator>
+                    <box horizontal-align="end" vertical-align="center" padding-end="1" id="tskspecinlinesavebox01">
+                      <button icon="carbon:checkmark" kind="primary" loading="{page.state.taskSpecLoader}" on-click="saveTaskSpecification" on-click-arg="{{'item': item, 'datasource': woPlanTaskDetailds}}" id="tskspecinlinesavebtn01"/>
+                    </box>
+                  </box>
+                  <repeat datasource="{woPlanTaskDetailds.getChildDatasource('workorderspec', item)}" id="tskspecinlinerepeat01">
+                    <box slot="item" direction="column" fill-parent-horizontal="true" padding-start="1" padding-end="1" padding-top="0.5" padding-bottom="0.5" border-bottom="true" id="tskspecinlineitembox01">
+                      <field value="{item.assetattributedesc || item.assetattrid_description || item.assetattrid}" override-required="true" field-class-name="16-bold" padding="none" hide-label="true" id="tskspecinlinelabel01"/>
+                      <border-layout fill-parent="true" padding="false" id="tskspecinlinevalueborder01">
+                        <start width="85" horizontal-overflow="hidden" id="tskspecinlinevalstart01">
+                          <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecinlinevalbox01">
+                            <dropdown datasource="alnDomainDS" selected-item="{item.alnvalue}" datasource-value-field="value" datasource-text-field="value" datasource-icon-field="iconName" datasource-icon-color-field="name" on-change="onTaskSpecDropdownChange" on-change-arg="{{'spec': item}}" id="tskspecinlinedd01"/>
+                            <smart-input label="Remarks" value="{item.remarks}" id="tskspecinlinevalrem01"/>
+                          </box>
+                        </start>
+                        
+                      
+                        
+                      </border-layout>
+                    </box>
+                  </repeat>
+                </box>
+              </box>
+              <!-- end tskdetailbox01 -->
+            </box>
+            <!-- end tskitemwrap01 -->
+          </list-item>
+        </data-list>
       </box>
       <border-layout width="100%" padding="true" id="dwz28">
         <middle horizontal-align="start" vertical-align="center" id="gme44">
@@ -3329,6 +3081,7 @@
                         <field label="Type" value="Item" swap-position="false" id="rg2mg"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="jn6pk">
@@ -3343,8 +3096,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="j2ryw">
                       <button icon="carbon:chevron--right" on-click="openItemListLookup" on-click-arg="{{'page':page,'app':app}}" hidden="{page.params.mr.mrnum}" kind="ghost" padding="false" id="r8p38"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.isItemSelected}" id="byjmx">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="p_k9n">
@@ -3358,8 +3110,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="mdkxn">
                       <button icon="carbon:chevron--right" on-click="openStoreRoomListLookup" hidden="{!page.state.multipleStore}" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="m9qe3"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.hasConditionCode}" id="pjnd7">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="ybkqz">
@@ -3373,8 +3124,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="b49e5">
                       <button icon="carbon:chevron--right" on-click="openConditionCodeLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="p6gyv"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-top=".5" direction="column" fill-parent-horizontal="true" id="bva6_">
                   <smart-input value="{mrLineListDS.item.qty}" readonly="{page.params.mr.mrnum}" required="{!page.params.mr.mrnum}" label="Quantity" min="0" input-kind="DECIMAL" id="g_ywm"/>
@@ -3386,6 +3136,7 @@
                         <field label="Issue unit" value="{mrLineListDS.item.issueunit}" swap-position="false" id="e3xjy"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.isItemSelected}" id="jee5z">
@@ -3397,6 +3148,7 @@
                         </field>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.isItemSelected}" id="erpzd">
@@ -3408,6 +3160,7 @@
                         </field>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
               </start>
@@ -3433,8 +3186,7 @@
               <middle width="90" id="r3rkd"/>
               <end direction="row" vertical-align="end" horizontal-align="end" id="dmzqz">
                 <button kind="ghost" padding="false" icon="carbon:add" on-click="openMaterialListDrawer" on-click-arg="{{'page':page,'app':app}}" hidden="{page.params.mr.mrnum}" id="pdy3z"/>
-              </end>
-            </border-layout>
+              </end></border-layout>
           </top>
           <middle id="ny2va">
             <data-list datasource="mrLineDsJson" margin="false" show-search="false" empty-row-style="true" empty-set-string="Add materials" id="yxbyd">
@@ -3454,10 +3206,8 @@
                       <box direction="row" children-hide-overflow="true" padding-top="0.5" padding-end=".5" vertical-align="center" horizontal-align="end" fill-parent="true" id="vxz7q">
                         <button icon="carbon:chevron--right" on-click="viewMrline" on-click-arg="{{'page':page,'app':app, 'item': item}}" kind="ghost" padding="false" id="q34za"/>
                       </box>
-                    </end>
-                  </border-layout>
-                </end>
-              </border-layout>
+                    </end></border-layout>
+                </end></border-layout>
             </data-list>
           </middle>
         </border-layout>
@@ -3652,6 +3402,7 @@
                         <label label="{item.computedItemNum}" theme="16-bold" padding="top" id="p5kke"/>
                         <label label="{item.locationsdesc}" theme="16-regular" id="qnvj5"/>
                       </start>
+                    
                     </border-layout>
                   </adaptive-column>
                   <adaptive-column small-width="100" medium-width="100" large-width="50" xlarge-width="50" id="vxmvr">
@@ -3661,11 +3412,11 @@
                         <box fill-parent-horizontal="true" padding-start="{app.state.screen.size === 'sm' ? 0.5 : 3.75}" padding-top="{app.state.screen.size === 'sm' ? '-0.5':'-0.8'}" id="j3rv7">
                           <smart-input input-kind="INTEGER" label="" value="{item.reservedqty}" on-change="validateNonRotatingItem" on-change-arg="{{'isInvalid':event.isInvalid}}" min="1" id="nevvn"/>
                         </box>
-                      </end>
-                    </border-layout>
+                      </end></border-layout>
                   </adaptive-column>
                 </adaptive-row>
               </start>
+            
             </border-layout>
           </data-list>
         </panel>
@@ -4109,8 +3860,7 @@
               <middle id="pqrdm" width="100"/>
               <end direction="row" vertical-align="end" horizontal-align="end" id="xsas8">
                 <button icon="carbon:edit" padding="false" kind="ghost" id="z7ej9" on-click="openFailureDetails" disabled="{(!page.state.editWo) || !app.checkSigOption(`${app.state.woOSName}.FAILUREREP`)}" on-click-arg="{{'item':woDetailsReportWork.item,'datasource':'woDetailsReportWork'}}"/>
-              </end>
-            </border-layout>
+              </end></border-layout>
           </top>
           <middle id="pr8g6">
             <border-layout fill-parent="true" padding="false" top-border="true" id="de_2y">
@@ -4167,6 +3917,7 @@
                         <field label="Rotating asset" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.rotassetnum}" id="mzvp7"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="ka25k">
@@ -4178,6 +3929,7 @@
                         </field>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="nmya7">
@@ -4187,6 +3939,7 @@
                         <field label="Tool" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.itemnum}" id="mgvwp"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="jnpgv">
@@ -4196,6 +3949,7 @@
                         <field label="Technician" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.plusctechnician}" id="vjbna"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="djvr7">
@@ -4205,6 +3959,7 @@
                         <field label="Quantity" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.toolqty}" id="r6969"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="bvaqz">
@@ -4214,6 +3969,7 @@
                         <field label="Hours" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.toolhrs}" id="ank36"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="vpbvg">
@@ -4223,6 +3979,7 @@
                         <field label="Manufacturer" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.pluscmanufacturer}" id="b77aw"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="qdp_2">
@@ -4232,6 +3989,7 @@
                         <field label="Lot number" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.plusclotnum}" id="q35a7"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="v9jxb">
@@ -4241,6 +3999,7 @@
                         <field label="Solution type" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.plusctype}" id="kx_dz"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="ydyqk">
@@ -4252,6 +4011,7 @@
                         </field>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="y8pk_">
@@ -4263,6 +4023,7 @@
                         </field>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="zpk97">
@@ -4274,6 +4035,7 @@
                         </field>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
               </start>
@@ -4299,8 +4061,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="d72db">
                       <button icon="carbon:chevron--right" on-click="openLaborLookup" on-click-arg="{{'page':page,'app':app,'orgid':woDetailsReportWork.item.orgid}}" kind="ghost" padding="false" disabled="{reportworkLaborDetailds.item.timerstatus_maxvalue === 'ACTIVE' || reportworkLaborDetailds.item.timerstatus_maxvalue === 'COMPLETE'}" id="e85dm"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="ye3yb">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="j2rxw">
@@ -4311,8 +4072,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="kxa47">
                       <button icon="carbon:chevron--right" on-click="openTransTypeLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="nj99a"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box id="nz2am" fill-parent-horizontal="true">
                   <border-layout fill-parent="true" padding="true" top-border="false" middle-border="true" id="gxg5b">
@@ -4324,8 +4084,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="g3rgn">
                       <button icon="carbon:chevron--right" on-click="openCraftSkillLookup" hidden="{page.state.isAddAction &amp;&amp; page.state.multipleLabors}" on-click-arg="{{'page':page,'app':app, 'openLookup': true}}" kind="ghost" padding="false" id="bzer7"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box id="d67_y">
                   <border-layout fill-parent="true" padding="true" id="vmv95">
@@ -4334,6 +4093,7 @@
                         <field label="Skill level" field-class-name="16-regular" swap-position="false" value="{page.state.isAddAction &amp;&amp; page.state.multipleLabors ? '' : page.state.skilllevel}" id="r83pw"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box id="x32qm" border-top="true" fill-parent-horizontal="true">
@@ -4343,6 +4103,7 @@
                         <field label="Vendor" field-class-name="16-regular" swap-position="false" value="{page.state.isAddAction &amp;&amp; page.state.multipleLabors ? '' : page.state.vendor}" id="mw3xr"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box id="rjdpm" fill-parent-horizontal="true">
@@ -4352,6 +4113,7 @@
                         <field label="Contract" field-class-name="16-regular" swap-position="false" value="{page.state.isAddAction &amp;&amp; page.state.multipleLabors ? '' : page.state.contractnum}" id="g246e"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-top=".5" direction="column" fill-parent-horizontal="true" id="z9er7">
@@ -4382,8 +4144,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="e8amq">
                       <button icon="carbon:chevron--right" on-click="openTaskLookup" hidden="{(page.state.isAddAction &amp;&amp; page.state.multipleLabors) || page.state.reportWorkTaskCount === 0}" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="egq9y"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box direction="column" fill-parent-horizontal="true" id="kmm22">
                   <border-layout fill-parent="true" padding="true" top-border="true" middle-border="true" id="eymg6">
@@ -4397,8 +4158,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="egr73">
                       <button icon="carbon:chevron--right" hidden="{page.state.premiumEdit || (page.state.isAddAction &amp;&amp; page.state.multipleLabors)}" on-click="openPremiumPayCodeLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="nzz__"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-top=".5" border-bottom="true" fill-parent-horizontal="true" hidden="{!page.state.premiumpaydescription}" id="xg6q5">
                   <smart-input value="{reportworkLaborDetailds.item.premiumpayhours}" hide-step-buttons="false" required="true" id="Premiumpayhours" label="Premium pay hours"/>
@@ -4410,6 +4170,7 @@
                         <field label="Premium pay rate" field-class-name="16-regular" swap-position="false" value="{page.state.displayrate}" id="jvwxm"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box id="vgk95" hidden="{!page.state.premiumpaydescription}">
@@ -4419,9 +4180,11 @@
                         <field label="Premium rate type" field-class-name="16-regular" swap-position="false" value="{page.state.displayratetype}" id="bpmrd"/>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
               </start>
+            
             </border-layout>
             <button icon="carbon:Trash-can" label="Delete entry" loading="{page.state.workloading}" on-click="onDeleteEntry" hidden="{page.state.hideDeleteTimer}" padding="true" kind="danger" id="wp_a6"/>
           </panel>
@@ -4458,8 +4221,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="wrkd5">
                       <button icon="carbon:chevron--right" on-click="openMaterialLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="dmn9g"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.itemnum}" id="j72nb">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="ngv8b">
@@ -4473,8 +4235,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="y3gjr">
                       <button icon="carbon:chevron--right" on-click="openStoreRoomLookup" hidden="{!page.state.multipleLocations}" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="ggmp4"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.itemnum}" id="yby85">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="zr73g">
@@ -4488,8 +4249,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="wb7mj">
                       <button icon="carbon:chevron--right" on-click="openBinLookup" hidden="{!page.state.multipleBins}" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="en9gd"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.isRotating}" id="bea86">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="kx7ma">
@@ -4503,8 +4263,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="rm49a">
                       <button icon="carbon:chevron--right" on-click="openRotatingAssetLookup" on-click-arg="{{'page':page,'app':app}}" hidden="{!page.state.multipleRotatingAsset}" kind="ghost" padding="false" id="dewgv"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-top=".5" direction="column" fill-parent-horizontal="true" id="px854">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="pd4vw">
@@ -4525,8 +4284,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="pjwk6">
                       <button icon="carbon:chevron--right" hidden="{page.state.reportWorkTaskCount === 0}" on-click="openTaskLookup" on-click-arg="{{'page':page,'app':app,'type':'material'}}" kind="ghost" padding="false" id="z4x3r"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="xnbzn">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="z8azr">
@@ -4537,10 +4295,10 @@
                     </start>
                     <end width="10" background-color="ui-01" id="v5pw3">
                       <button icon="carbon:chevron--right" on-click="openTransactionTypeLookup" hidden="{reportWorkActualMaterialDs.item.assetnum}" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="dwpwj"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
               </start>
+            
             </border-layout>
           </panel>
           <button-group slot="header-button" id="g8ga8">
@@ -4586,8 +4344,7 @@
                     </middle>
                     <end width="10" background-color="ui-01" id="g44dx" hidden="{page.state.hideAssetLookup}">
                       <button icon="carbon:chevron--right" loading="{rotatingAssetDS.state.loading}" on-click="openCalRotatingAssetLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="ym25e"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="qzyw4" hidden="{!page.state.assetCalDueDate}">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="ja25y">
@@ -4598,6 +4355,7 @@
                         </field>
                       </box>
                     </start>
+                  
                   </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="mqb47">
@@ -4615,8 +4373,7 @@
                     </middle>
                     <end width="10" background-color="ui-01" id="m5nkw" hidden="{page.state.hideToolLookup}">
                       <button icon="carbon:chevron--right" loading="{toolDS.state.loading}" on-click="openToolsLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="nawq9"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="kd3ey">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="vqd3e">
@@ -4629,8 +4386,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="q8e6m">
                       <button icon="carbon:chevron--right" on-click="openTechnicianLookup" on-click-arg="{{'page':page,'app':app,'orgid':woDetailsReportWork.item.orgid}}" kind="ghost" padding="false" id="zvr9p"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom=".25" direction="column" fill-parent-horizontal="true" id="gn5gk">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="ynv6e">
@@ -4657,8 +4413,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="deqnv">
                       <button icon="carbon:chevron--right" on-click="openManufacturerLookup" on-click-arg="{{'page':page,'app':app,'orgid':woDetailsReportWork.item.orgid}}" kind="ghost" padding="false" id="wd3a9"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom=".25" direction="column" fill-parent-horizontal="true" id="w4zdk">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="pek_3">
@@ -4703,6 +4458,7 @@
                   </border-layout>
                 </box>
               </start>
+            
             </border-layout>
           </panel>
           <button-group slot="header-button" id="e_2rw">
@@ -4725,8 +4481,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="gz7z7">
                       <button icon="carbon:chevron--right" on-click="openToolsLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="jxr6v"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.itemnum}" id="jz847">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="z2ab6">
@@ -4743,8 +4498,7 @@
                     </middle>
                     <end width="10" background-color="ui-01" id="a346a">
                       <button icon="carbon:chevron--right" on-click="openToolStoreLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="zvnxr"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.itemnum}" id="ywgy9">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="jaqvd">
@@ -4758,8 +4512,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="zgg74">
                       <button icon="carbon:chevron--right" on-click="openToolBinLookup" hidden="{!page.state.multipleBins}" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="v33zb"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.isRotating}" id="kk8na">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="p5rnk">
@@ -4773,8 +4526,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="vmkr6">
                       <button icon="carbon:chevron--right" on-click="openToolRotatingAssetLookup" on-click-arg="{{'page':page,'app':app}}" hidden="{!page.state.multipleRotatingAsset}" kind="ghost" padding="false" id="p5gvy"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.itemnum || woDetailsReportWork.item.pluscwodscount === 0 || !woDetailsReportWork.item.iscalibration}" id="v8bw9">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="b3a_2">
@@ -4787,8 +4539,7 @@
                     </start>
                     <end width="10" background-color="ui-01" id="aw4rg">
                       <button icon="carbon:chevron--right" on-click="openTechnicianLookup" on-click-arg="{{'page':page,'app':app,'orgid':woDetailsReportWork.item.orgid}}" kind="ghost" padding="false" id="b24v_"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
                 <box padding-bottom=".25" direction="column" fill-parent-horizontal="true" id="e292e">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="ewxwx">
@@ -4816,10 +4567,10 @@
                     </start>
                     <end width="10" background-color="ui-01" id="pv22p">
                       <button icon="carbon:chevron--right" hidden="{page.state.reportWorkTaskCount === 0}" on-click="openTaskLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="dqzjj"/>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
               </start>
+            
             </border-layout>
           </panel>
           <button-group slot="header-button" id="g3kgd">
@@ -5082,8 +4833,7 @@
                   <box direction="row" children-hide-overflow="true" padding-top="0.5" padding-end=".5" vertical-align="center" horizontal-align="end" fill-parent="true" id="n55gx">
                     <label label="{item.issuetype}" padding="default" override-required="true" id="ge5we"/>
                   </box>
-                </end>
-              </border-layout>
+                </end></border-layout>
             </data-list>
           </middle>
         </border-layout>
@@ -5105,8 +4855,7 @@
                   <menu-item label="Select issued tools" on-click="openReportToolsPage" on-click-arg="{{'item': woDetailsReportWork.item, 'type':'issued'}}" icon="carbon:edit" id="wwqw7"/>
                   <menu-item label="Add tools" on-click="openToolsDrawer" on-click-arg="{{'page':page,'app':app ,'item':woDetailsReportWork.item }}" icon="carbon:add" id="m_gqp"/>
                 </menu-button>
-              </end>
-            </border-layout>
+              </end></border-layout>
           </top>
           <middle id="bbwzm">
             <data-list datasource="reportWorkActualToolsDs" margin="false" show-search="false" empty-row-style="true" empty-set-string="No tools reported." id="yp_g8">
@@ -5126,8 +4875,7 @@
                   <box fill-parent="true" padding="0" horizontal-align="end" id="mwvgg">
                     <button icon="carbon:chevron--right" kind="ghost" padding="false" on-click="openToolsDetailsDrawer" hidden="{!page.state.showToolDetails}" on-click-arg="{{'itemnum':item.itemnum,'anywhererefid':item.anywhererefid}}" id="j2m9k"/>
                   </box>
-                </end>
-              </border-layout>
+                </end></border-layout>
             </data-list>
           </middle>
         </border-layout>
@@ -5170,8 +4918,7 @@
                         <box fill-parent="true" padding="0" horizontal-align="end" id="japw4">
                           <button icon="carbon:chevron--right" kind="ghost" padding="false" on-click="openFailureList" hidden="{item.readonly}" on-click-arg="{{'item':item,'index':index}}" loading="{((!page.state.isfailurelistloaded) || page.state.listLoading) &amp;&amp; (item.isLoading)}" disabled="{((!page.state.isfailurelistloaded)|| page.state.listLoading) &amp;&amp; !(item.isLoading)}" id="j5anr"/>
                         </box>
-                      </end>
-                    </border-layout>
+                      </end></border-layout>
                   </data-list>
                 </box>
               </top>
@@ -5195,8 +4942,7 @@
                       <box fill-parent="true" padding="0" horizontal-align="end" id="x__7y">
                         <button icon="carbon:chevron--right" kind="ghost" padding="false" on-click="editFailureDate" hidden="{item.readonly}" on-click-arg="{{'item':item,'index':index}}" loading="{((!page.state.isfailurelistloaded) || page.state.listLoading) &amp;&amp; (item.isLoading)}" disabled="{((!page.state.isfailurelistloaded)|| page.state.listLoading) &amp;&amp; !(item.isLoading)}" id="w4y6w"/>
                       </box>
-                    </end>
-                  </border-layout>
+                    </end></border-layout>
                 </box>
               </top>
             </border-layout>
@@ -5211,8 +4957,7 @@
                 </start>
                 <end horizontal-align="end" vertical-align="center" direction="column" id="x45eq">
                   <button icon="carbon:arrow--right" kind="secondary" padding="false" on-click="updateAndSaveFailureList" loading="{((!page.state.isfailurelistloaded)|| page.state.listLoading) &amp;&amp; (item.isLoading)}" disabled="{(!page.state.isfailurelistloaded)|| page.state.listLoading}" on-click-arg="{{'item':item,'index':1}}" id="mrm4e"/>
-                </end>
-              </border-layout>
+                </end></border-layout>
             </data-list>
           </box>
         </split-view-column>
@@ -5225,8 +4970,7 @@
                 </start>
                 <end shrink="0" width="17" vertical-align="center" horizontal-align="end" direction="column" id="dzmxk">
                   <button icon="carbon:arrow--right" kind="secondary" padding="false" on-click="updateAndSaveFailureList" loading="{((!page.state.isfailurelistloaded)|| page.state.listLoading) &amp;&amp; (item.isLoading)}" disabled="{(!page.state.isfailurelistloaded)|| page.state.listLoading}" on-click-arg="{{'item':item,'index':2}}" id="ynnqx"/>
-                </end>
-              </border-layout>
+                </end></border-layout>
             </data-list>
           </box>
         </split-view-column>
@@ -5239,8 +4983,7 @@
                 </start>
                 <end shrink="0" width="17" vertical-align="center" horizontal-align="end" direction="column" id="ax2ew">
                   <button icon="carbon:arrow--right" kind="secondary" padding="false" on-click="updateAndSaveFailureList" on-click-arg="{{'item':item,'index':3}}" loading="{((!page.state.isfailurelistloaded)|| page.state.listLoading) &amp;&amp; (item.isLoading)}" disabled="{(!page.state.isfailurelistloaded)|| page.state.listLoading}" id="ej4y7"/>
-                </end>
-              </border-layout>
+                </end></border-layout>
             </data-list>
           </box>
         </split-view-column>
@@ -5253,8 +4996,7 @@
                 </start>
                 <end shrink="0" width="17" vertical-align="center" horizontal-align="end" direction="column" id="k85q7">
                   <button icon="carbon:arrow--right" kind="secondary" padding="false" on-click="updateAndSaveFailureList" on-click-arg="{{'item':item,'index':4}}" loading="{((!page.state.isfailurelistloaded)|| page.state.listLoading) &amp;&amp; (item.isLoading)}" disabled="{(!page.state.isfailurelistloaded)|| page.state.listLoading}" id="qdpa6"/>
-                </end>
-              </border-layout>
+                </end></border-layout>
             </data-list>
           </box>
         </split-view-column>
@@ -5346,8 +5088,7 @@
                     <box vertical-align="center" direction="column" horizontal-align="end" fill-parent="true" id="raa_7">
                       <button icon="carbon:chevron--right" kind="ghost" hidden="{item.cinum}" on-click="openMultiAssetCard" on-click-arg="{{'item': item, 'prevPage': 'mapmultiAssetlist'}}" padding="false" id="a59z_"/>
                     </box>
-                  </end>
-                </border-layout>
+                  </end></border-layout>
               </data-list>
             </map-overlay>
             <map-overlay hidden="{!(page.state.showMapOverlay===1)}" position="bottom" left="{page.state.mapPaddingLeft}" right="{page.state.mapPaddingRight}" height="{page.state.mapMultiAssetCardHeight}" width="100%" bottom="0rem" id="rvj24">
@@ -5357,6 +5098,7 @@
                     <button icon="carbon:chevron--left" kind="ghost" on-click="openPrevPage" padding="false" id="kypr2"/>
                   </box>
                 </start>
+              
               </border-layout>
               <include src="./multiasset-card-group.xml" id="nmder"/>
             </map-overlay>
@@ -5554,8 +5296,7 @@
                     <box direction="column" id="e_3r4">
                       <button icon="carbon:chevron--right" kind="ghost" hidden="{item.hideChevron}" loading="{item.wonum === page.state.wonumVal &amp;&amp;page.state.loading}" on-click="openAssetLocHstryDtlsPage" on-click-arg="{{'item': item,'source':'asset'}}" padding="false" id="n2pmd"/>
                     </box>
-                  </end>
-                </border-layout>
+                  </end></border-layout>
               </list-item>
             </data-list>
           </top>
@@ -5583,8 +5324,7 @@
                     <box direction="column" id="an_rr">
                       <button icon="carbon:chevron--right" kind="ghost" hidden="{item.hideLocChevron}" loading="{item.wonum === page.state.wonumVal &amp;&amp;page.state.loading}" on-click="openAssetLocHstryDtlsPage" on-click-arg="{{'item': item,'source':'loc'}}" padding="false" id="wp9zm"/>
                     </box>
-                  </end>
-                </border-layout>
+                  </end></border-layout>
               </list-item>
             </data-list>
           </top>
@@ -5787,8 +5527,7 @@
             </middle>
             <end horizontal-align="end" vertical-align="center" direction="column" id="b2mjk">
               <button icon="Carbon:chevron--right" kind="ghost" padding="false" on-click="openWorkTypeLookup" on-click-arg="{{'page':page,'app':app, 'item':dsWoedit.item}}" id="edp_e"/>
-            </end>
-          </border-layout>
+            </end></border-layout>
           <border-layout fill-parent="true" width="100%" padding="true" id="yymyd">
             <start direction="row" horizontal-overflow="hidden" vertical-align="center" width="60" shrink="0" id="gyn9z">
               <field label="Classification" value="{dsWoedit.item.hierarchypath}" empty-field-placeholder="Select classification" swap-position="false" id="bpn2g"/>
@@ -5798,8 +5537,7 @@
             </middle>
             <end horizontal-align="end" vertical-align="center" direction="column" id="vrq_z">
               <button icon="Carbon:chevron--right" kind="ghost" padding="false" on-click="openClassification" id="v9qv2"/>
-            </end>
-          </border-layout>
+            </end></border-layout>
         </box>
         <border-layout padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'false' : 'true'}" fill-parent="true" width="100%" id="nqgrp">
           <top id="q636m">
@@ -5821,6 +5559,7 @@
                 </smart-input>
               </box>
             </start>
+          
           </border-layout>
         </box>
         <box direction="column" background-color="field-01" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 0 : 0.5}" id="v4amx">
@@ -5834,6 +5573,7 @@
                 </smart-input>
               </box>
             </start>
+          
           </border-layout>
         </box>
         <border-layout hidden="{!page.state.hasMultiAssetLocCI}" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md'}" fill-parent="true" width="100%" id="wzv_v">
@@ -5859,8 +5599,7 @@
                   <button icon="carbon:Trash-can" hidden="{item.hideDeleteIcon}" on-click="deleteMultiLocCi" on-click-arg="{{'item':item}}" kind="danger" id="ze32d"/>
                   <button icon="carbon:undo" hidden="{!item.hideDeleteIcon}" on-click="undoMultiLocCi" on-click-arg="{{'item':item}}" kind="secondary" id="xzr76"/>
                 </button-group>
-              </end>
-            </border-layout>
+              </end></border-layout>
           </data-list>
         </box>
         <border-layout hidden="{!page.state.assetLinear}" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'false' : 'true'}" fill-parent="true" width="100%" id="anb63">
@@ -5939,6 +5678,7 @@
                   <button slot="button-group" kind="secondary" on-click="openEndZRefernceLookup" on-click-arg="{{'ref':'end'}}" label="Search" icon="Carbon:search" id="vqwe4"/>
                 </smart-input>
               </start>
+            
             </border-layout>
           </box>
         </box>
@@ -6101,8 +5841,7 @@
             </middle>
             <end horizontal-align="end" vertical-align="center" direction="column" id="vrnrb">
               <button icon="Carbon:chevron--right" kind="ghost" padding="false" on-click="openWorkTypeLookup" on-click-arg="{{'page':page,'app':app, 'item':dsCreateWo.item}}" id="k62p3"/>
-            </end>
-          </border-layout>
+            </end></border-layout>
           <border-layout fill-parent="true" width="100%" padding="true" id="pj7n3">
             <start direction="row" horizontal-overflow="hidden" vertical-align="center" width="60" shrink="0" id="z4kz6">
               <field label="Classification" value="{dsCreateWo.item.hierarchypath}" empty-field-placeholder="Select classification" swap-position="false" id="wba74"/>
@@ -6112,8 +5851,7 @@
             </middle>
             <end horizontal-align="end" vertical-align="center" direction="column" id="yqapg">
               <button icon="Carbon:chevron--right" kind="ghost" padding="false" on-click="openClassification" id="yzv7a"/>
-            </end>
-          </border-layout>
+            </end></border-layout>
         </box>
         <border-layout padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'false' : 'true'}" fill-parent="true" width="100%" id="jkjrb">
           <top id="xvmdk">
@@ -6135,6 +5873,7 @@
                 </smart-input>
               </box>
             </start>
+          
           </border-layout>
         </box>
         <box direction="column" background-color="field-01" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 0 : 0.5}" id="dak6x">
@@ -6148,6 +5887,7 @@
                 </smart-input>
               </box>
             </start>
+          
           </border-layout>
         </box>
         <border-layout hidden="{!page.state.assetLinear}" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'false' : 'true'}" fill-parent="true" width="100%" id="e7_re">
@@ -6226,6 +5966,7 @@
                   <button slot="button-group" kind="secondary" on-click="openEndZRefernceLookup" on-click-arg="{{'ref':'end'}}" label="Search" icon="Carbon:search" id="g4348"/>
                 </smart-input>
               </start>
+            
             </border-layout>
           </box>
         </box>
