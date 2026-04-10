@@ -1004,18 +1004,41 @@ class WorkOrderDetailsController {
 
   /**
    * Redirects to attachments page for a specific task item.
-   * Called from the inline task checklist attachment button.
+   * Called from the inline task checklist navigator-tile.
+   *
+   * The task's href from woPlanTaskDetailds is a relational URL
+   * (e.g. .../woactivity/456) which the attachment page's
+   * igtapiwodetail datasource cannot load directly.
+   * We build a direct href using the parent WO's base URL pattern
+   * and the task's own workorderid.
    */
   showTaskAttachmentPage(event) {
     const taskItem = event?.item;
-    if (!taskItem || !taskItem.href) {
-      log.e(TAG, 'showTaskAttachmentPage: no task item or href');
+    if (!taskItem) {
+      log.e(TAG, 'showTaskAttachmentPage: no task item');
       return;
     }
+
+    // Build a direct igtapiwodetail href for the task
+    const parentWo = this.page.findDatasource('woDetailResource')?.item;
+    let taskHref = taskItem.href;
+
+    if (parentWo?.href && taskItem.workorderid) {
+      // Parent href is like /oslc/os/igtapiwodetail/123
+      // Replace the parent's workorderid with the task's workorderid
+      const baseUrl = parentWo.href.substring(0, parentWo.href.lastIndexOf('/'));
+      taskHref = `${baseUrl}/${taskItem.workorderid}`;
+    }
+
+    if (!taskHref) {
+      log.e(TAG, 'showTaskAttachmentPage: unable to build task href');
+      return;
+    }
+
     this.app.state.woStatus = taskItem.status_maxvalue;
     this.app.setCurrentPage({
       name: 'attachments',
-      params: { itemhref: taskItem.href },
+      params: { itemhref: taskHref },
     });
   }
 
