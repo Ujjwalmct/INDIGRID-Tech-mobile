@@ -819,11 +819,13 @@ class TaskController {
    */
   async saveTaskSpecification(event) {
     try {
+      this.page.state.taskSpecLoader = true;
       const taskDS = this.app.findDatasource('woPlanTaskDetailds');
       const parentTask = event?.item;
 
       if (!taskDS || !parentTask) {
         log.e(TAG, 'Cannot save: missing datasource or parent task reference');
+        this.page.state.taskSpecLoader = false;
         return;
       }
 
@@ -834,24 +836,50 @@ class TaskController {
         const nowISO = this.app.dataFormatter.convertDatetoISO(new Date());
         const personId = this.app?.client?.userInfo?.personid || this.app?.userInfo?.personid;
 
-        // Update the workorderspec on the parent task item directly,
-        // mirroring the pattern used in WorkOrderDetailsController.saveSpecification()
-        parentTask.workorderspec = specs.map(spec => ({
-          ...spec,
-          igtentered: (spec.alnvalue && spec.alnvalue.trim() !== '') ? nowISO : spec.igtentered,
-          igtenteredby: (spec.alnvalue && spec.alnvalue.trim() !== '') ? personId : spec.igtenteredby
+        specs.forEach(spec => {
+          if (spec.alnvalue && String(spec.alnvalue).trim() !== '') {
+            spec.igtentered = spec.igtentered || nowISO;
+            spec.igtenteredby = spec.igtenteredby || personId;
+          }
+        });
+
+        // Build the IGTWOACTIVITYSPECALN payload for the task
+        const specPayload = specs.map(spec => ({
+          workorderspecid: spec.workorderspecid,
+          assetattrid: spec.assetattrid,
+          assetattrid_description: spec.assetattrid_description || spec.assetattributedesc || '',
+          alnvalue: spec.alnvalue || '',
+          remarks: spec.remarks || '',
+          igtentered: spec.igtentered || '',
+          igtenteredby: spec.igtenteredby || ''
         }));
 
-        let interactive = { interactive: !Device.get().isMaximoMobile };
-        interactive.localPayload = {
-          ...parentTask,
-          workorderspec: parentTask.workorderspec
+        // ★ Use taskDS.put() to PATCH the task record directly at its own href.
+        // This sends the IGTWOACTIVITYSPECALN data to the server correctly.
+        const putPayload = {
+          workorderid: parentTask.workorderid,
+          href: parentTask.href,
+          IGTWOACTIVITYSPECALN: specPayload
         };
 
-        await taskDS.save(interactive);
+        const putOptions = {
+          responseProperties: 'workorderid,IGTWOACTIVITYSPECALN',
+          localPayload: {
+            ...putPayload,
+            workorderspec: specs
+          }
+        };
+
+        console.log('=== SAVING task specs via put() ===');
+        console.log('Task:', parentTask.taskid, 'workorderid:', parentTask.workorderid);
+        console.log('Payload:', JSON.parse(JSON.stringify(specPayload)));
+
+        await taskDS.put(putPayload, putOptions);
+
+        console.log('=== Save complete ===');
 
         // Check if all specs are filled — if so change task status to INSPCOMP
-        const allFilled = specs.every(s => s.alnvalue && s.alnvalue.trim() !== '');
+        const allFilled = specs.every(s => s.alnvalue && String(s.alnvalue).trim() !== '');
 
         if (allFilled) {
           try {
@@ -901,22 +929,36 @@ class TaskController {
           }
         }
 
-        // Reload and recompute spec progress
-        await taskDS.forceReload();
+        // Recompute spec progress for the current task in memory
         const dataController = taskDS.dataController;
-        if (dataController && taskDS.items) {
-          taskDS.items.forEach(task => {
-            task.computedSpecProgress = dataController.computedSpecProgress(task);
-            task.computedAllSpecsFilled = dataController.computedAllSpecsFilled(task);
-          });
+        if (dataController) {
+          parentTask.computedSpecProgress = dataController.computedSpecProgress(parentTask);
+          parentTask.computedAllSpecsFilled = dataController.computedAllSpecsFilled(parentTask);
+        }
+
+        // ★ Reload the task datasource so the mobile UI reflects the saved values
+        try {
+          if (Device.get().isMaximoMobile) {
+            let externalStatusList = await SynonymUtil.getExternalStatusList(this.app, ['INPRG', 'COMP']);
+            await taskDS.initializeQbe();
+            taskDS.setQBE('status', 'in', externalStatusList);
+            await taskDS.searchQBE(undefined, true);
+          } else {
+            await taskDS.forceReload();
+          }
+        } catch (reloadErr) {
+          log.t(TAG, 'Non-critical: task list reload after spec save failed', reloadErr);
         }
       }
 
+      this.page.state.taskSpecLoader = false;
       log.t(TAG, 'Task specifications saved successfully');
+      this.app.toast(this.app.getLocalizedLabel('spec_save_success', 'Checklist saved successfully'), 'success');
     }
     catch (error) {
+      this.page.state.taskSpecLoader = false;
       log.e(TAG, 'Error saving task specifications', error);
-      this.app.toast('Failed to save specifications', 'error');
+      this.app.toast(this.app.getLocalizedLabel('spec_save_failed', 'Failed to save checklist'), 'error');
     }
   }
 

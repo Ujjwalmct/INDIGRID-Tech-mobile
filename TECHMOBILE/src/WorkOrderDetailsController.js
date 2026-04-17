@@ -2011,63 +2011,9 @@ class WorkOrderDetailsController {
       }
       // --- End geofencing ---
 
-      // ★ Load alnDomainDS with the correct domain values BEFORE expanding
-      // the task row, so the dropdown never renders with stale data.
-      const taskItem = event?.item || event;
-      if (taskItem && taskItem.workorderspec && taskItem.workorderspec.length > 0) {
-        await this._loadAlnDomainForTask(taskItem);
-      }
-
-      // Only NOW expand the row — dropdown will render with correct data
+      // Only NOW expand the row
       this.page.state.itemToOpen = workorderid;
       this.page.state.openTaskId = taskid;
-    }
-  }
-
-  /**
-   * Loads alnDomainDS with the correct domain values for the given task's
-   * workorderspec items. All specs within a task share the same domain.
-   * Resolves domainid from assetAttributeDS if not already on the spec.
-   * @param {Object} taskItem - the clicked task item
-   */
-  async _loadAlnDomainForTask(taskItem) {
-    try {
-      const specs = taskItem.workorderspec || [];
-      if (!specs.length) return;
-
-      // Find the first spec that has or could have an ALN domain
-      const firstAlnSpec = specs.find(
-        s => s.domainid || s.datatype_maxvalue === 'ALN' || s.alnvalue !== undefined
-      );
-      if (!firstAlnSpec) return;
-
-      // Resolve domainid — prefer what's already on the spec
-      let domainId = firstAlnSpec.domainid;
-      if (!domainId) {
-        const assetAttrDS = this.app.findDatasource('assetAttributeDS');
-        if (assetAttrDS) {
-          await assetAttrDS.initializeQbe();
-          assetAttrDS.setQBE('assetattrid', '=', firstAlnSpec.assetattrid);
-          const results = await assetAttrDS.searchQBE();
-          if (results && results.length > 0) {
-            domainId = results[0].domainid;
-            // Stamp domainid on ALL specs so future opens are instant
-            specs.forEach(s => { if (!s.domainid) s.domainid = domainId; });
-          }
-        }
-      }
-
-      if (!domainId) return;
-
-      const alnDS = this.app.findDatasource('alnDomainDS');
-      if (alnDS) {
-        await alnDS.clearState();
-        await alnDS.initializeQbe();
-        alnDS.setQBE('domainid', '=', domainId);
-        await alnDS.searchQBE();
-      }
-    } catch (e) {
-      log.e(TAG, 'Error loading alnDomainDS for task', e);
     }
   }
 

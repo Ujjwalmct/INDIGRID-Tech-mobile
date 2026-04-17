@@ -43,7 +43,6 @@
       <button kind="secondary" icon="maximo:materialsandtools" on-click="openDrawer" on-click-arg="{{'item': item, 'datasource': wodetails}}" hidden="{item.computedDisableButton}" id="br_wn"/>
       <button kind="secondary" icon="carbon:map" hidden="{!item.autolocate || !app.state.isMapValid}" on-click="openMapPage" on-click-arg="{{'item': item, 'prevPage': 'schedulecardlist'}}" id="jya7d"/>
       <button kind="secondary" icon="carbon:document" loading="{item.wonum === page.state.currentItem &amp;&amp; page.state.chatLogLoading}" on-click="openWorkLogDrawer" on-click-arg="{{'item': item}}" id="eyw9b"/>
-      
       <button kind="secondary" icon="carbon:operation--gauge" on-click="openMeterReadingDrawer" hidden="{(!item.assetmetercount &amp;&amp; !item.locationmetercount)}" on-click-arg="{{'item': item}}" disabled="{!app.checkSigOption(`${app.state.woOSName}.ENTERREADINGS`)}" id="vqxv2"/>
       <button kind="secondary" icon="carbon:study--previous" loading="{item.wonum === page.state.currentItem &amp;&amp; app.state.assignmentLoading}" on-click="openReassignmentDialog" on-click-arg="{{'item': item, 'datasource': wodetails}}" tag-type="dark-gray" hidden="{['COMP', 'CAN', 'CLOSE'].includes(item.status_maxvalue) || !app.checkSigOption(`${app.state.woOSName}.ALLOWREASSIGNMENT`)}" id="reassignment_list"/>
     </button-group>

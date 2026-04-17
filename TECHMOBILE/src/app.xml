@@ -801,7 +801,8 @@
                 <box padding-end="0.75" id="mqzqk">
                   <button label="OK" icon="carbon:checkmark--outline" on-click="closeMismatchAssetScan" kind="primary" id="ywwe6"/>
                 </box>
-              </end></border-layout>
+              </end>
+            </border-layout>
           </bottom>
         </border-layout>
       </box>
@@ -826,7 +827,8 @@
                 <box padding-end="0.75" id="vaqrg">
                   <button label="Skip" hidden="{app.checkSigOption(`${app.state.woOSName}.MANDATEASSETSCAN`)}" icon="carbon:chevron--right" kind="secondary" icon-placement="start" on-click="skipAssetScan" id="am_6r"/>
                 </box>
-              </end></border-layout>
+              </end>
+            </border-layout>
           </bottom>
         </border-layout>
       </box>
@@ -885,7 +887,6 @@
           <start vertical-align="center" id="eqbjv">
             <label label="{item.label}" id="q4rw3"/>
           </start>
-        
         </border-layout>
       </list-item>
     </lookup>
@@ -895,7 +896,6 @@
           <start vertical-align="center" id="d4549">
             <label label="{item.label}" id="wg79a"/>
           </start>
-        
         </border-layout>
       </list-item>
     </lookup>
@@ -1290,7 +1290,8 @@
                     <box vertical-align="center" direction="column" horizontal-align="end" fill-parent="true" id="jw9e3">
                       <button icon="carbon:chevron--right" kind="ghost" on-click="openWOCard" on-click-arg="{{'item': item, 'prevPage': 'mapwolist'}}" padding="false" id="kxndj"/>
                     </box>
-                  </end></border-layout>
+                  </end>
+                </border-layout>
               </data-list>
             </map-overlay>
             <map-overlay hidden="{!(page.state.showMapOverlay===1)}" position="bottom" left="{page.state.mapPaddingLeft}" right="{page.state.mapPaddingRight}" height="{page.state.mapWOCardHeight}" width="100%" bottom="0rem" id="v5np9">
@@ -1300,7 +1301,6 @@
                     <button icon="carbon:chevron--left" kind="ghost" on-click="openPrevPage" padding="false" id="qbm84"/>
                   </box>
                 </start>
-              
               </border-layout>
               <include src="./wo-card-group.xml" id="jwq72"/>
             </map-overlay>
@@ -1390,7 +1390,8 @@
                   </middle>
                   <end direction="row" vertical-align="center" id="p5vjg">
                     <label label="{item.itemqty}" theme="20-regular" id="arge_"/>
-                  </end></border-layout>
+                  </end>
+                </border-layout>
               </data-list>
             </panel>
             <panel id="pnbm3">
@@ -1408,7 +1409,8 @@
                   </middle>
                   <end direction="row" vertical-align="center" id="bg3e8">
                     <label label="{item.itemqty}" theme="20-regular" id="pv8v8"/>
-                  </end></border-layout>
+                  </end>
+                </border-layout>
               </data-list>
             </panel>
           </box>
@@ -1461,7 +1463,6 @@
                   <start id="bavpg">
                     <text-area id="statusMemo" value="{page.state.statusMemo}" on-change="setStatusMemo" placeholder="Add a comment about the status change" max-length="{page.state.memoMaxLength}" label="Add a comment (optional)"/>
                   </start>
-                
                 </border-layout>
               </box>
             </panel>
@@ -1499,7 +1500,6 @@
                         </bottom>
                       </border-layout>
                     </start>
-                  
                   </border-layout>
                 </box>
               </middle>
@@ -1510,7 +1510,8 @@
                 <box vertical-align="center" direction="row" hidden="{!woDetailds.item.splanreviewdate}" horizontal-align="end" padding-top="1" padding-end="0.5" fill-parent="true" id="ajmmv">
                   <icon icon="Carbon:checkmark--outline" fill="green" id="pd2z_"/>
                 </box>
-              </end></border-layout>
+              </end>
+            </border-layout>
             <panel id="kgm2g">
               <data-list datasource="wohazardmaterials" hidden="{!wohazardmaterials.state.itemCount}" show-search="false" title="Hazardous materials" id="m4a69">
                 <border-layout slot="item" padding="false" fill-parent="true" id="pdg5z">
@@ -1522,7 +1523,6 @@
                       </repeat>
                     </box>
                   </start>
-                
                 </border-layout>
               </data-list>
             </panel>
@@ -1537,7 +1537,6 @@
                       </repeat>
                     </box>
                   </start>
-                
                 </border-layout>
               </data-list>
             </panel>
@@ -1682,7 +1681,8 @@
                       </start>
                       <end width="15" background-color="ui-01" id="tskspecvalend01">
                         <button icon="carbon:chevron--right" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspeclookupbtn01"/>
-                      </end></border-layout>
+                      </end>
+                    </border-layout>
                   </box>
                 </top>
               </border-layout>
@@ -1695,7 +1695,6 @@
         <!-- Task Specification ALN Domain Lookup -->
         <lookup id="taskSpecAlnDomainLookup" show-search="true" enable-barcode-scanner="true" lookup-heading="Domain" datasource="alnDomainDS" on-item-click="chooseTaskSpecDomain" border="true" lookup-attributes="{['value', 'description']}" height="400"/>
       </dialogs>
-      
       <box direction="column" id="n52rz">
         <border-layout fill-parent="true" id="pv9ae">
           <top horizontal-align="end" id="vbqx4">
@@ -2284,7 +2283,8 @@
                       <box vertical-align="center" direction="row" horizontal-align="end" padding-end="0.5" fill-parent="true" id="z2gx8">
                         <action-tag id="statusTag" class-name="14-regular" label="{item.status}" type="gray" icon-hidden="true"/>
                       </box>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </list-item>
               </data-list>
             </panel>
@@ -2319,7 +2319,6 @@
                         </bottom>
                       </border-layout>
                     </start>
-                  
                   </border-layout>
                 </box>
               </middle>
@@ -2330,7 +2329,8 @@
                 <box vertical-align="center" direction="row" hidden="{!woDetailds.item.splanreviewdate}" horizontal-align="end" padding-top="1" padding-end="0.5" fill-parent="true" id="b7prm">
                   <icon icon="Carbon:checkmark--outline" fill="green" id="y3wnw"/>
                 </box>
-              </end></border-layout>
+              </end>
+            </border-layout>
             <panel id="zxam4">
               <data-list datasource="wohazardmaterials" hidden="{!wohazardmaterials.state.itemCount}" show-search="false" title="Hazardous materials" id="j8gnm">
                 <border-layout slot="item" padding="false" fill-parent="true" id="kr9n8">
@@ -2342,7 +2342,6 @@
                       </repeat>
                     </box>
                   </start>
-                
                 </border-layout>
               </data-list>
             </panel>
@@ -2357,7 +2356,6 @@
                       </repeat>
                     </box>
                   </start>
-                
                 </border-layout>
               </data-list>
             </panel>
@@ -2382,7 +2380,8 @@
                     <box direction="row" children-hide-overflow="true" padding-top="0.5" padding-end=".5" vertical-align="center" horizontal-align="end" fill-parent="true" id="q4_8b">
                       <button icon="carbon:chevron--right" on-click="openMaterialRequestPage" on-click-arg="{{'page':page,'app':app,'item':woDetailResource.item,'mritem':item}}" kind="ghost" padding="false" id="bj_by"/>
                     </box>
-                  </end></border-layout>
+                  </end>
+                </border-layout>
               </data-list>
             </panel>
             <panel id="kp7e4">
@@ -2396,7 +2395,8 @@
                     <box padding-end="0.5" id="wb9yn">
                       <label label="{item.itemqty}" theme="20-regular" id="k9v2m"/>
                     </box>
-                  </end></border-layout>
+                  </end>
+                </border-layout>
               </data-list>
             </panel>
             <panel id="n4mmp">
@@ -2415,7 +2415,8 @@
                     <box padding-end="0.5" id="b5gmw">
                       <label label="{item.itemqty}" theme="20-regular" id="zbn73"/>
                     </box>
-                  </end></border-layout>
+                  </end>
+                </border-layout>
               </data-list>
               <border-layout fill-parent="true" id="rkmk4" hidden="{woDetailsToolds.state.itemCount || woDetailsMaterialds.state.itemCount || mrDS.state.itemCount || mrRequest.state.itemCount}">
                 <top id="z6b9y" horizontal-align="center">
@@ -2482,7 +2483,8 @@
                     <box padding-end="0.75" id="jm97y">
                       <button label="OK" icon="carbon:checkmark--outline" kind="primary" on-click="closeMisMatchDialog" id="vp487"/>
                     </box>
-                  </end></border-layout>
+                  </end>
+                </border-layout>
               </bottom>
             </border-layout>
           </box>
@@ -2503,7 +2505,8 @@
                     </start>
                     <end width="40" background-color="ui-01" id="eq23_" horizontal-align="end">
                       <button-toggle-group options="{page.state.upDownButtonGroupdata}" on-change="handleToggled" on-change-arg="{{item:event, isrunning:woDetailResource.item.assetisrunning}}" id="nab88"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-start="1" padding-end=".5" padding-top=".5" padding-bottom=".5" direction="column" fill-parent-horizontal="true" id="k7yxv" hidden="{page.state.hideUp}">
                   <smart-input show-verbose="{false}" on-change="validateDownTimeDate" value="{downTimeReportAsset.item.statuschangedate}" required="true" label="Status date" id="eynwp" input-kind="DATETIME" vertical="true"/>
@@ -2518,10 +2521,10 @@
                     </start>
                     <end width="10" background-color="ui-01" id="w49da">
                       <button icon="carbon:chevron--right" on-click="openDowntimeCodeLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="vvg8_"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
               </start>
-            
             </border-layout>
           </panel>
           <button-group slot="header-button" id="ramrx">
@@ -2572,7 +2575,8 @@
                           <sub-field value="{item.datevalue}" type="date" id="b__wa"/>
                         </field>
                       </box>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </top>
               </border-layout>
             </data-list>
@@ -2619,10 +2623,10 @@
                           </start>
                           <end width="10" background-color="ui-01" id="wqqdb">
                             <button icon="carbon:chevron--right" loading="{page.state.lookupLoader}" on-click="openSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="kvryj"/>
-                          </end></border-layout>
+                          </end>
+                        </border-layout>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </top>
               </border-layout>
@@ -2684,7 +2688,7 @@
             <box padding-start="1" padding-end="1" id="bk7dw" padding-top=".75" padding-bottom=".75">
               <label label="Tasks" theme="20-regular" id="bp5bq"/>
             </box>
-          </top>    
+          </top>
         </border-layout>
       </box>
       <box direction="column" id="jkknb" fill-parent-horizontal="true" padding-bottom="0" padding-top="0" hidden="{page.state.taskLoading}">
@@ -2709,7 +2713,8 @@
                     <box fill-parent-horizontal="true" id="tskprogbox01">
                       <label label="{item.computedSpecProgress}" theme="16-bold" hidden="{!item.workorderspec || !item.workorderspec.length}" id="tskspecprogresslbl01" color="{item.computedAllSpecsFilled ? 'white0' : ''}"/>
                     </box>
-                  </end></border-layout>
+                  </end>
+                </border-layout>
               </box>
               <!-- Expanded detail section - shown when this item is open -->
               <box direction="column" fill-parent-horizontal="true" hidden="{page.state.itemToOpen != item.workorderid}" id="tskdetailbox01">
@@ -2778,7 +2783,6 @@
                           </middle>
                         </border-layout>
                       </start>
-                    
                     </border-layout>
                   </middle>
                   <bottom id="vpjq7">
@@ -2811,7 +2815,8 @@
                             <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{(item.asset &amp;&amp;item.asset[0].plusacatid) || !item.computedParentAssetLocation}" id="ze2dr">
                               <button icon="maximo:asset--settings" on-click="navigateToAcm" on-click-arg="{{'item': {...item,wonum: page.params.wonum},'datasource': woPlanTaskDetailds}}" disabled="{!page.state.assetSwicthAccess}" id="qb92j"/>
                             </box>
-                          </end></border-layout>
+                          </end>
+                        </border-layout>
                         <border-layout fill-parent="true" width="100" top-border="true" hidden="{!item.pointnum}" id="ew3mj">
                           <start width="90" vertical-align="center" id="m9m6x">
                             <border-layout fill-parent="true" id="k4gkp" top-border="{item.assetnum &amp;&amp; item.assetdescription &amp;&amp; item.description_longdescription &amp;&amp; item.locationdesc}">
@@ -2836,7 +2841,8 @@
                             <box id="r2dj4" vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{item.assetdescription &amp;&amp; item.description_longdescription}">
                               <button disabled="{!item.hideLockIcon}" icon="Carbon:operation--gauge" id="r98jq" on-click="openMeasurementDrawer" on-click-arg="{{'item':item,'datasource':woPlanTaskDetailds}}"/>
                             </box>
-                          </end></border-layout>
+                          </end>
+                        </border-layout>
                         <border-layout fill-parent="true" width="100" top-border="true" id="pr2v8" hidden="{(item.computedParentAssetLocation || item.pointnum) || (!item.assetmetercount &amp;&amp; !item.locationmetercount)}">
                           <start width="90" vertical-align="center" id="prpwp">
                             <border-layout fill-parent="true" top-border="{item.pointnum || !item.computedParentAssetLocation}" id="xam3m">
@@ -2852,7 +2858,8 @@
                             <box vertical-align="center" horizontal-align="end" fill-parent-horizontal="true" fill-parent-vertical="true" border-top="{item.pointnum || !item.computedParentAssetLocation}" id="ab_3n">
                               <button disabled="{!item.hideLockIcon}" icon="Carbon:operation--gauge" on-click="openMeterReadingDrawer" on-click-arg="{{'item': item}}" id="md7yq"/>
                             </box>
-                          </end></border-layout>
+                          </end>
+                        </border-layout>
                         <border-layout fill-parent="true" hidden="{item.inspectionbatchresult === undefined || !page.state.inspectionAccess}" id="ekea_">
                           <start id="k9na_" width="95">
                             <border-layout fill-parent="true" top-border="{item.description_longdescription || !item.computedParentAssetLocation || item.pointnum}" id="z36nn">
@@ -2910,7 +2917,18 @@
                     <box slot="item" direction="column" fill-parent-horizontal="true" padding-start="1" padding-end="1" padding-top="0.5" padding-bottom="0.5" border-bottom="true" id="tskspecinlineitembox01">
                       <field value="{item.assetattributedesc}" override-required="true" field-class-name="16-bold" padding="none" hide-label="true" id="tskspecinlinelabel01"/>
                       <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecinlinevalbox01">
-                        <dropdown label="Value" datasource="alnDomainDS" selected-item="{item.alnvalue}" datasource-value-field="value" datasource-text-field="value" on-change="onTaskSpecDropdownChange" on-change-arg="{{'spec': item}}" id="tskspecinlinedd01"/>
+                        <border-layout fill-parent="true" padding="false" middle-border="true" id="tskspecvalbdr02">
+                          <start width="85" background-color="ui-01" horizontal-overflow="hidden" id="tskspecvalst02">
+                            <box direction="column" padding-start="0.5" fill-parent-horizontal="true" id="tskspecvalibox02">
+                              <field label="Value" swap-position="false" id="tskspecvaliboxf02">
+                                <sub-field value="{item.alnvalue}" id="tskspecvaliboxsf02"/>
+                              </field>
+                            </box>
+                          </start>
+                          <end width="15" background-color="ui-01" id="tskspecvalend02">
+                            <button icon="carbon:chevron--right" on-click="openTaskSpecLookup" on-click-arg="{{'page':page,'item':item}}" kind="ghost" padding="false" id="tskspeclookupbtn02"/>
+                          </end>
+                        </border-layout>
                         <smart-input label="Remarks" value="{item.remarks}" id="tskspecinlinevalrem01"/>
                       </box>
                     </box>
@@ -3082,7 +3100,6 @@
                         <field label="Type" value="Item" swap-position="false" id="rg2mg"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="jn6pk">
@@ -3097,7 +3114,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="j2ryw">
                       <button icon="carbon:chevron--right" on-click="openItemListLookup" on-click-arg="{{'page':page,'app':app}}" hidden="{page.params.mr.mrnum}" kind="ghost" padding="false" id="r8p38"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.isItemSelected}" id="byjmx">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="p_k9n">
@@ -3111,7 +3129,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="mdkxn">
                       <button icon="carbon:chevron--right" on-click="openStoreRoomListLookup" hidden="{!page.state.multipleStore}" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="m9qe3"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.hasConditionCode}" id="pjnd7">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="ybkqz">
@@ -3125,7 +3144,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="b49e5">
                       <button icon="carbon:chevron--right" on-click="openConditionCodeLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="p6gyv"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-top=".5" direction="column" fill-parent-horizontal="true" id="bva6_">
                   <smart-input value="{mrLineListDS.item.qty}" readonly="{page.params.mr.mrnum}" required="{!page.params.mr.mrnum}" label="Quantity" min="0" input-kind="DECIMAL" id="g_ywm"/>
@@ -3137,7 +3157,6 @@
                         <field label="Issue unit" value="{mrLineListDS.item.issueunit}" swap-position="false" id="e3xjy"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.isItemSelected}" id="jee5z">
@@ -3149,7 +3168,6 @@
                         </field>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.isItemSelected}" id="erpzd">
@@ -3161,7 +3179,6 @@
                         </field>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
               </start>
@@ -3187,7 +3204,8 @@
               <middle width="90" id="r3rkd"/>
               <end direction="row" vertical-align="end" horizontal-align="end" id="dmzqz">
                 <button kind="ghost" padding="false" icon="carbon:add" on-click="openMaterialListDrawer" on-click-arg="{{'page':page,'app':app}}" hidden="{page.params.mr.mrnum}" id="pdy3z"/>
-              </end></border-layout>
+              </end>
+            </border-layout>
           </top>
           <middle id="ny2va">
             <data-list datasource="mrLineDsJson" margin="false" show-search="false" empty-row-style="true" empty-set-string="Add materials" id="yxbyd">
@@ -3207,8 +3225,10 @@
                       <box direction="row" children-hide-overflow="true" padding-top="0.5" padding-end=".5" vertical-align="center" horizontal-align="end" fill-parent="true" id="vxz7q">
                         <button icon="carbon:chevron--right" on-click="viewMrline" on-click-arg="{{'page':page,'app':app, 'item': item}}" kind="ghost" padding="false" id="q34za"/>
                       </box>
-                    </end></border-layout>
-                </end></border-layout>
+                    </end>
+                  </border-layout>
+                </end>
+              </border-layout>
             </data-list>
           </middle>
         </border-layout>
@@ -3403,7 +3423,6 @@
                         <label label="{item.computedItemNum}" theme="16-bold" padding="top" id="p5kke"/>
                         <label label="{item.locationsdesc}" theme="16-regular" id="qnvj5"/>
                       </start>
-                    
                     </border-layout>
                   </adaptive-column>
                   <adaptive-column small-width="100" medium-width="100" large-width="50" xlarge-width="50" id="vxmvr">
@@ -3413,11 +3432,11 @@
                         <box fill-parent-horizontal="true" padding-start="{app.state.screen.size === 'sm' ? 0.5 : 3.75}" padding-top="{app.state.screen.size === 'sm' ? '-0.5':'-0.8'}" id="j3rv7">
                           <smart-input input-kind="INTEGER" label="" value="{item.reservedqty}" on-change="validateNonRotatingItem" on-change-arg="{{'isInvalid':event.isInvalid}}" min="1" id="nevvn"/>
                         </box>
-                      </end></border-layout>
+                      </end>
+                    </border-layout>
                   </adaptive-column>
                 </adaptive-row>
               </start>
-            
             </border-layout>
           </data-list>
         </panel>
@@ -3861,7 +3880,8 @@
               <middle id="pqrdm" width="100"/>
               <end direction="row" vertical-align="end" horizontal-align="end" id="xsas8">
                 <button icon="carbon:edit" padding="false" kind="ghost" id="z7ej9" on-click="openFailureDetails" disabled="{(!page.state.editWo) || !app.checkSigOption(`${app.state.woOSName}.FAILUREREP`)}" on-click-arg="{{'item':woDetailsReportWork.item,'datasource':'woDetailsReportWork'}}"/>
-              </end></border-layout>
+              </end>
+            </border-layout>
           </top>
           <middle id="pr8g6">
             <border-layout fill-parent="true" padding="false" top-border="true" id="de_2y">
@@ -3918,7 +3938,6 @@
                         <field label="Rotating asset" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.rotassetnum}" id="mzvp7"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="ka25k">
@@ -3930,7 +3949,6 @@
                         </field>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="nmya7">
@@ -3940,7 +3958,6 @@
                         <field label="Tool" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.itemnum}" id="mgvwp"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="jnpgv">
@@ -3950,7 +3967,6 @@
                         <field label="Technician" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.plusctechnician}" id="vjbna"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="djvr7">
@@ -3960,7 +3976,6 @@
                         <field label="Quantity" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.toolqty}" id="r6969"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="bvaqz">
@@ -3970,7 +3985,6 @@
                         <field label="Hours" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.toolhrs}" id="ank36"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="vpbvg">
@@ -3980,7 +3994,6 @@
                         <field label="Manufacturer" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.pluscmanufacturer}" id="b77aw"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="qdp_2">
@@ -3990,7 +4003,6 @@
                         <field label="Lot number" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.plusclotnum}" id="q35a7"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="v9jxb">
@@ -4000,7 +4012,6 @@
                         <field label="Solution type" field-class-name="16-regular" swap-position="false" value="{reportWorkActualToolsDs.item.plusctype}" id="kx_dz"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="ydyqk">
@@ -4012,7 +4023,6 @@
                         </field>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="y8pk_">
@@ -4024,7 +4034,6 @@
                         </field>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-start="0.5" padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="zpk97">
@@ -4036,7 +4045,6 @@
                         </field>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
               </start>
@@ -4062,7 +4070,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="d72db">
                       <button icon="carbon:chevron--right" on-click="openLaborLookup" on-click-arg="{{'page':page,'app':app,'orgid':woDetailsReportWork.item.orgid}}" kind="ghost" padding="false" disabled="{reportworkLaborDetailds.item.timerstatus_maxvalue === 'ACTIVE' || reportworkLaborDetailds.item.timerstatus_maxvalue === 'COMPLETE'}" id="e85dm"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="ye3yb">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="j2rxw">
@@ -4073,7 +4082,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="kxa47">
                       <button icon="carbon:chevron--right" on-click="openTransTypeLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="nj99a"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box id="nz2am" fill-parent-horizontal="true">
                   <border-layout fill-parent="true" padding="true" top-border="false" middle-border="true" id="gxg5b">
@@ -4085,7 +4095,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="g3rgn">
                       <button icon="carbon:chevron--right" on-click="openCraftSkillLookup" hidden="{page.state.isAddAction &amp;&amp; page.state.multipleLabors}" on-click-arg="{{'page':page,'app':app, 'openLookup': true}}" kind="ghost" padding="false" id="bzer7"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box id="d67_y">
                   <border-layout fill-parent="true" padding="true" id="vmv95">
@@ -4094,7 +4105,6 @@
                         <field label="Skill level" field-class-name="16-regular" swap-position="false" value="{page.state.isAddAction &amp;&amp; page.state.multipleLabors ? '' : page.state.skilllevel}" id="r83pw"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box id="x32qm" border-top="true" fill-parent-horizontal="true">
@@ -4104,7 +4114,6 @@
                         <field label="Vendor" field-class-name="16-regular" swap-position="false" value="{page.state.isAddAction &amp;&amp; page.state.multipleLabors ? '' : page.state.vendor}" id="mw3xr"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box id="rjdpm" fill-parent-horizontal="true">
@@ -4114,7 +4123,6 @@
                         <field label="Contract" field-class-name="16-regular" swap-position="false" value="{page.state.isAddAction &amp;&amp; page.state.multipleLabors ? '' : page.state.contractnum}" id="g246e"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-top=".5" direction="column" fill-parent-horizontal="true" id="z9er7">
@@ -4145,7 +4153,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="e8amq">
                       <button icon="carbon:chevron--right" on-click="openTaskLookup" hidden="{(page.state.isAddAction &amp;&amp; page.state.multipleLabors) || page.state.reportWorkTaskCount === 0}" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="egq9y"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box direction="column" fill-parent-horizontal="true" id="kmm22">
                   <border-layout fill-parent="true" padding="true" top-border="true" middle-border="true" id="eymg6">
@@ -4159,7 +4168,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="egr73">
                       <button icon="carbon:chevron--right" hidden="{page.state.premiumEdit || (page.state.isAddAction &amp;&amp; page.state.multipleLabors)}" on-click="openPremiumPayCodeLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="nzz__"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-top=".5" border-bottom="true" fill-parent-horizontal="true" hidden="{!page.state.premiumpaydescription}" id="xg6q5">
                   <smart-input value="{reportworkLaborDetailds.item.premiumpayhours}" hide-step-buttons="false" required="true" id="Premiumpayhours" label="Premium pay hours"/>
@@ -4171,7 +4181,6 @@
                         <field label="Premium pay rate" field-class-name="16-regular" swap-position="false" value="{page.state.displayrate}" id="jvwxm"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box id="vgk95" hidden="{!page.state.premiumpaydescription}">
@@ -4181,11 +4190,9 @@
                         <field label="Premium rate type" field-class-name="16-regular" swap-position="false" value="{page.state.displayratetype}" id="bpmrd"/>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
               </start>
-            
             </border-layout>
             <button icon="carbon:Trash-can" label="Delete entry" loading="{page.state.workloading}" on-click="onDeleteEntry" hidden="{page.state.hideDeleteTimer}" padding="true" kind="danger" id="wp_a6"/>
           </panel>
@@ -4222,7 +4229,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="wrkd5">
                       <button icon="carbon:chevron--right" on-click="openMaterialLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="dmn9g"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.itemnum}" id="j72nb">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="ngv8b">
@@ -4236,7 +4244,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="y3gjr">
                       <button icon="carbon:chevron--right" on-click="openStoreRoomLookup" hidden="{!page.state.multipleLocations}" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="ggmp4"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.itemnum}" id="yby85">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="zr73g">
@@ -4250,7 +4259,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="wb7mj">
                       <button icon="carbon:chevron--right" on-click="openBinLookup" hidden="{!page.state.multipleBins}" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="en9gd"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.isRotating}" id="bea86">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="kx7ma">
@@ -4264,7 +4274,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="rm49a">
                       <button icon="carbon:chevron--right" on-click="openRotatingAssetLookup" on-click-arg="{{'page':page,'app':app}}" hidden="{!page.state.multipleRotatingAsset}" kind="ghost" padding="false" id="dewgv"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-top=".5" direction="column" fill-parent-horizontal="true" id="px854">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="pd4vw">
@@ -4285,7 +4296,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="pjwk6">
                       <button icon="carbon:chevron--right" hidden="{page.state.reportWorkTaskCount === 0}" on-click="openTaskLookup" on-click-arg="{{'page':page,'app':app,'type':'material'}}" kind="ghost" padding="false" id="z4x3r"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="xnbzn">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="z8azr">
@@ -4296,10 +4308,10 @@
                     </start>
                     <end width="10" background-color="ui-01" id="v5pw3">
                       <button icon="carbon:chevron--right" on-click="openTransactionTypeLookup" hidden="{reportWorkActualMaterialDs.item.assetnum}" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="dwpwj"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
               </start>
-            
             </border-layout>
           </panel>
           <button-group slot="header-button" id="g8ga8">
@@ -4345,7 +4357,8 @@
                     </middle>
                     <end width="10" background-color="ui-01" id="g44dx" hidden="{page.state.hideAssetLookup}">
                       <button icon="carbon:chevron--right" loading="{rotatingAssetDS.state.loading}" on-click="openCalRotatingAssetLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="ym25e"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="qzyw4" hidden="{!page.state.assetCalDueDate}">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="ja25y">
@@ -4356,7 +4369,6 @@
                         </field>
                       </box>
                     </start>
-                  
                   </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="mqb47">
@@ -4374,7 +4386,8 @@
                     </middle>
                     <end width="10" background-color="ui-01" id="m5nkw" hidden="{page.state.hideToolLookup}">
                       <button icon="carbon:chevron--right" loading="{toolDS.state.loading}" on-click="openToolsLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="nawq9"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" id="kd3ey">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="vqd3e">
@@ -4387,7 +4400,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="q8e6m">
                       <button icon="carbon:chevron--right" on-click="openTechnicianLookup" on-click-arg="{{'page':page,'app':app,'orgid':woDetailsReportWork.item.orgid}}" kind="ghost" padding="false" id="zvr9p"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom=".25" direction="column" fill-parent-horizontal="true" id="gn5gk">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="ynv6e">
@@ -4414,7 +4428,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="deqnv">
                       <button icon="carbon:chevron--right" on-click="openManufacturerLookup" on-click-arg="{{'page':page,'app':app,'orgid':woDetailsReportWork.item.orgid}}" kind="ghost" padding="false" id="wd3a9"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom=".25" direction="column" fill-parent-horizontal="true" id="w4zdk">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="pek_3">
@@ -4459,7 +4474,6 @@
                   </border-layout>
                 </box>
               </start>
-            
             </border-layout>
           </panel>
           <button-group slot="header-button" id="e_2rw">
@@ -4482,7 +4496,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="gz7z7">
                       <button icon="carbon:chevron--right" on-click="openToolsLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="jxr6v"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.itemnum}" id="jz847">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="z2ab6">
@@ -4499,7 +4514,8 @@
                     </middle>
                     <end width="10" background-color="ui-01" id="a346a">
                       <button icon="carbon:chevron--right" on-click="openToolStoreLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="zvnxr"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.itemnum}" id="ywgy9">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="jaqvd">
@@ -4513,7 +4529,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="zgg74">
                       <button icon="carbon:chevron--right" on-click="openToolBinLookup" hidden="{!page.state.multipleBins}" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="v33zb"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.isRotating}" id="kk8na">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="p5rnk">
@@ -4527,7 +4544,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="vmkr6">
                       <button icon="carbon:chevron--right" on-click="openToolRotatingAssetLookup" on-click-arg="{{'page':page,'app':app}}" hidden="{!page.state.multipleRotatingAsset}" kind="ghost" padding="false" id="p5gvy"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom="0.25" direction="column" fill-parent-horizontal="true" hidden="{!page.state.itemnum || woDetailsReportWork.item.pluscwodscount === 0 || !woDetailsReportWork.item.iscalibration}" id="v8bw9">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="b3a_2">
@@ -4540,7 +4558,8 @@
                     </start>
                     <end width="10" background-color="ui-01" id="aw4rg">
                       <button icon="carbon:chevron--right" on-click="openTechnicianLookup" on-click-arg="{{'page':page,'app':app,'orgid':woDetailsReportWork.item.orgid}}" kind="ghost" padding="false" id="b24v_"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
                 <box padding-bottom=".25" direction="column" fill-parent-horizontal="true" id="e292e">
                   <border-layout fill-parent="true" padding="true" middle-border="true" id="ewxwx">
@@ -4568,10 +4587,10 @@
                     </start>
                     <end width="10" background-color="ui-01" id="pv22p">
                       <button icon="carbon:chevron--right" hidden="{page.state.reportWorkTaskCount === 0}" on-click="openTaskLookup" on-click-arg="{{'page':page,'app':app}}" kind="ghost" padding="false" id="dqzjj"/>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
               </start>
-            
             </border-layout>
           </panel>
           <button-group slot="header-button" id="g3kgd">
@@ -4662,7 +4681,8 @@
               <middle id="pqrxm" width="100"/>
               <end direction="row" vertical-align="end" horizontal-align="end" id="xwyn8">
                 <button kind="ghost" padding="false" icon="carbon:add" on-click="openReportTimeDrawer" hidden="{woDetailsReportWork.item.status_maxvalue === 'WAPPR' || woDetailsReportWork.item.status_maxvalue === 'CAN' || woDetailsReportWork.item.status_maxvalue === 'CLOSE'}" disabled="{!app.checkSigOption(`${app.state.woOSName}.ACTUALLABORS`) || page.state.laborEditDialogLoader}" on-click-arg="{{'item': item, 'action':'add'}}" id="ygndp"/>
-              </end></border-layout>
+              </end>
+            </border-layout>
           </top>
           <middle id="nvy6z">
             <data-list datasource="reportworkLaborDetailds" hidden="{page.state.groupedByLabor ? true : false}" margin="false" show-search="false" empty-row-style="true" empty-set-string="No labor time reported." id="brqe2">
@@ -4683,7 +4703,8 @@
                               <sub-field value="{item.starttime}" type="datetime_time_only" id="wmm_8"/>
                             </field>
                           </box>
-                        </end></border-layout>
+                        </end>
+                      </border-layout>
                       <border-layout fill-parent="true" width="100" id="j6xmb">
                         <start width="40" id="azbwx">
                           <label label="{item.computedfinishdate}" theme="16-regular" id="kennv"/>
@@ -4697,7 +4718,8 @@
                               <sub-field value="{item.finishtime}" type="datetime_time_only" id="zrxk5"/>
                             </field>
                           </box>
-                        </end></border-layout>
+                        </end>
+                      </border-layout>
                     </box>
                   </adaptive-column>
                   <adaptive-column small-width="80" medium-width="90" large-width="25" small-horizontal-align="start" medium-horizontal-align="start" large-horizontal-align="start" id="q6jx92">
@@ -4743,7 +4765,8 @@
                               <sub-field value="{item.starttime}" type="time" id="derbk"/>
                             </field>
                           </box>
-                        </end></border-layout>
+                        </end>
+                      </border-layout>
                       <box children-hide-overflow="true" padding-top="-0.5" id="agv79">
                         <border-layout fill-parent="true" width="100" id="bak8p">
                           <start width="40" id="djgek">
@@ -4758,7 +4781,8 @@
                                 <sub-field value="{item.finishtime}" type="time" id="j55ad"/>
                               </field>
                             </box>
-                          </end></border-layout>
+                          </end>
+                        </border-layout>
                       </box>
                     </box>
                   </adaptive-column>
@@ -4810,7 +4834,8 @@
                   <menu-item label="Select asset spare parts" on-click="openAssetSparePart" on-click-arg="{{'item': woDetailsReportWork.item}}" icon="carbon:chevron--right" id="ywky7"/>
                   <menu-item label="Add items" on-click="openMaterialsDrawer" on-click-arg="{{'page':page,'app':app ,'item':woDetailsReportWork.item }}" icon="carbon:add" hidden="{!app.checkSigOption(`${app.state.woOSName}.ACTUALMATERIAL`)}" id="qrxpm"/>
                 </menu-button>
-              </end></border-layout>
+              </end>
+            </border-layout>
           </top>
           <middle id="qzjak">
             <data-list datasource="reportWorkActualMaterialDs" margin="false" show-search="false" empty-row-style="true" empty-set-string="No materials reported." id="q5vk4">
@@ -4828,7 +4853,8 @@
                   <box direction="row" children-hide-overflow="true" padding-top="0.5" padding-end=".5" vertical-align="center" horizontal-align="end" fill-parent="true" id="n55gx">
                     <label label="{item.issuetype}" padding="default" override-required="true" id="ge5we"/>
                   </box>
-                </end></border-layout>
+                </end>
+              </border-layout>
             </data-list>
           </middle>
         </border-layout>
@@ -4850,7 +4876,8 @@
                   <menu-item label="Select issued tools" on-click="openReportToolsPage" on-click-arg="{{'item': woDetailsReportWork.item, 'type':'issued'}}" icon="carbon:edit" id="wwqw7"/>
                   <menu-item label="Add tools" on-click="openToolsDrawer" on-click-arg="{{'page':page,'app':app ,'item':woDetailsReportWork.item }}" icon="carbon:add" id="m_gqp"/>
                 </menu-button>
-              </end></border-layout>
+              </end>
+            </border-layout>
           </top>
           <middle id="bbwzm">
             <data-list datasource="reportWorkActualToolsDs" margin="false" show-search="false" empty-row-style="true" empty-set-string="No tools reported." id="yp_g8">
@@ -4870,7 +4897,8 @@
                   <box fill-parent="true" padding="0" horizontal-align="end" id="mwvgg">
                     <button icon="carbon:chevron--right" kind="ghost" padding="false" on-click="openToolsDetailsDrawer" hidden="{!page.state.showToolDetails}" on-click-arg="{{'itemnum':item.itemnum,'anywhererefid':item.anywhererefid}}" id="j2m9k"/>
                   </box>
-                </end></border-layout>
+                </end>
+              </border-layout>
             </data-list>
           </middle>
         </border-layout>
@@ -4913,7 +4941,8 @@
                         <box fill-parent="true" padding="0" horizontal-align="end" id="japw4">
                           <button icon="carbon:chevron--right" kind="ghost" padding="false" on-click="openFailureList" hidden="{item.readonly}" on-click-arg="{{'item':item,'index':index}}" loading="{((!page.state.isfailurelistloaded) || page.state.listLoading) &amp;&amp; (item.isLoading)}" disabled="{((!page.state.isfailurelistloaded)|| page.state.listLoading) &amp;&amp; !(item.isLoading)}" id="j5anr"/>
                         </box>
-                      </end></border-layout>
+                      </end>
+                    </border-layout>
                   </data-list>
                 </box>
               </top>
@@ -4937,7 +4966,8 @@
                       <box fill-parent="true" padding="0" horizontal-align="end" id="x__7y">
                         <button icon="carbon:chevron--right" kind="ghost" padding="false" on-click="editFailureDate" hidden="{item.readonly}" on-click-arg="{{'item':item,'index':index}}" loading="{((!page.state.isfailurelistloaded) || page.state.listLoading) &amp;&amp; (item.isLoading)}" disabled="{((!page.state.isfailurelistloaded)|| page.state.listLoading) &amp;&amp; !(item.isLoading)}" id="w4y6w"/>
                       </box>
-                    </end></border-layout>
+                    </end>
+                  </border-layout>
                 </box>
               </top>
             </border-layout>
@@ -4952,7 +4982,8 @@
                 </start>
                 <end horizontal-align="end" vertical-align="center" direction="column" id="x45eq">
                   <button icon="carbon:arrow--right" kind="secondary" padding="false" on-click="updateAndSaveFailureList" loading="{((!page.state.isfailurelistloaded)|| page.state.listLoading) &amp;&amp; (item.isLoading)}" disabled="{(!page.state.isfailurelistloaded)|| page.state.listLoading}" on-click-arg="{{'item':item,'index':1}}" id="mrm4e"/>
-                </end></border-layout>
+                </end>
+              </border-layout>
             </data-list>
           </box>
         </split-view-column>
@@ -4965,7 +4996,8 @@
                 </start>
                 <end shrink="0" width="17" vertical-align="center" horizontal-align="end" direction="column" id="dzmxk">
                   <button icon="carbon:arrow--right" kind="secondary" padding="false" on-click="updateAndSaveFailureList" loading="{((!page.state.isfailurelistloaded)|| page.state.listLoading) &amp;&amp; (item.isLoading)}" disabled="{(!page.state.isfailurelistloaded)|| page.state.listLoading}" on-click-arg="{{'item':item,'index':2}}" id="ynnqx"/>
-                </end></border-layout>
+                </end>
+              </border-layout>
             </data-list>
           </box>
         </split-view-column>
@@ -4978,7 +5010,8 @@
                 </start>
                 <end shrink="0" width="17" vertical-align="center" horizontal-align="end" direction="column" id="ax2ew">
                   <button icon="carbon:arrow--right" kind="secondary" padding="false" on-click="updateAndSaveFailureList" on-click-arg="{{'item':item,'index':3}}" loading="{((!page.state.isfailurelistloaded)|| page.state.listLoading) &amp;&amp; (item.isLoading)}" disabled="{(!page.state.isfailurelistloaded)|| page.state.listLoading}" id="ej4y7"/>
-                </end></border-layout>
+                </end>
+              </border-layout>
             </data-list>
           </box>
         </split-view-column>
@@ -4991,7 +5024,8 @@
                 </start>
                 <end shrink="0" width="17" vertical-align="center" horizontal-align="end" direction="column" id="k85q7">
                   <button icon="carbon:arrow--right" kind="secondary" padding="false" on-click="updateAndSaveFailureList" on-click-arg="{{'item':item,'index':4}}" loading="{((!page.state.isfailurelistloaded)|| page.state.listLoading) &amp;&amp; (item.isLoading)}" disabled="{(!page.state.isfailurelistloaded)|| page.state.listLoading}" id="qdpa6"/>
-                </end></border-layout>
+                </end>
+              </border-layout>
             </data-list>
           </box>
         </split-view-column>
@@ -5083,7 +5117,8 @@
                     <box vertical-align="center" direction="column" horizontal-align="end" fill-parent="true" id="raa_7">
                       <button icon="carbon:chevron--right" kind="ghost" hidden="{item.cinum}" on-click="openMultiAssetCard" on-click-arg="{{'item': item, 'prevPage': 'mapmultiAssetlist'}}" padding="false" id="a59z_"/>
                     </box>
-                  </end></border-layout>
+                  </end>
+                </border-layout>
               </data-list>
             </map-overlay>
             <map-overlay hidden="{!(page.state.showMapOverlay===1)}" position="bottom" left="{page.state.mapPaddingLeft}" right="{page.state.mapPaddingRight}" height="{page.state.mapMultiAssetCardHeight}" width="100%" bottom="0rem" id="rvj24">
@@ -5093,7 +5128,6 @@
                     <button icon="carbon:chevron--left" kind="ghost" on-click="openPrevPage" padding="false" id="kypr2"/>
                   </box>
                 </start>
-              
               </border-layout>
               <include src="./multiasset-card-group.xml" id="nmder"/>
             </map-overlay>
@@ -5291,7 +5325,8 @@
                     <box direction="column" id="e_3r4">
                       <button icon="carbon:chevron--right" kind="ghost" hidden="{item.hideChevron}" loading="{item.wonum === page.state.wonumVal &amp;&amp;page.state.loading}" on-click="openAssetLocHstryDtlsPage" on-click-arg="{{'item': item,'source':'asset'}}" padding="false" id="n2pmd"/>
                     </box>
-                  </end></border-layout>
+                  </end>
+                </border-layout>
               </list-item>
             </data-list>
           </top>
@@ -5319,7 +5354,8 @@
                     <box direction="column" id="an_rr">
                       <button icon="carbon:chevron--right" kind="ghost" hidden="{item.hideLocChevron}" loading="{item.wonum === page.state.wonumVal &amp;&amp;page.state.loading}" on-click="openAssetLocHstryDtlsPage" on-click-arg="{{'item': item,'source':'loc'}}" padding="false" id="wp9zm"/>
                     </box>
-                  </end></border-layout>
+                  </end>
+                </border-layout>
               </list-item>
             </data-list>
           </top>
@@ -5522,7 +5558,8 @@
             </middle>
             <end horizontal-align="end" vertical-align="center" direction="column" id="b2mjk">
               <button icon="Carbon:chevron--right" kind="ghost" padding="false" on-click="openWorkTypeLookup" on-click-arg="{{'page':page,'app':app, 'item':dsWoedit.item}}" id="edp_e"/>
-            </end></border-layout>
+            </end>
+          </border-layout>
           <border-layout fill-parent="true" width="100%" padding="true" id="yymyd">
             <start direction="row" horizontal-overflow="hidden" vertical-align="center" width="60" shrink="0" id="gyn9z">
               <field label="Classification" value="{dsWoedit.item.hierarchypath}" empty-field-placeholder="Select classification" swap-position="false" id="bpn2g"/>
@@ -5532,7 +5569,8 @@
             </middle>
             <end horizontal-align="end" vertical-align="center" direction="column" id="vrq_z">
               <button icon="Carbon:chevron--right" kind="ghost" padding="false" on-click="openClassification" id="v9qv2"/>
-            </end></border-layout>
+            </end>
+          </border-layout>
         </box>
         <border-layout padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'false' : 'true'}" fill-parent="true" width="100%" id="nqgrp">
           <top id="q636m">
@@ -5554,7 +5592,6 @@
                 </smart-input>
               </box>
             </start>
-          
           </border-layout>
         </box>
         <box direction="column" background-color="field-01" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 0 : 0.5}" id="v4amx">
@@ -5568,7 +5605,6 @@
                 </smart-input>
               </box>
             </start>
-          
           </border-layout>
         </box>
         <border-layout hidden="{!page.state.hasMultiAssetLocCI}" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md'}" fill-parent="true" width="100%" id="wzv_v">
@@ -5594,7 +5630,8 @@
                   <button icon="carbon:Trash-can" hidden="{item.hideDeleteIcon}" on-click="deleteMultiLocCi" on-click-arg="{{'item':item}}" kind="danger" id="ze32d"/>
                   <button icon="carbon:undo" hidden="{!item.hideDeleteIcon}" on-click="undoMultiLocCi" on-click-arg="{{'item':item}}" kind="secondary" id="xzr76"/>
                 </button-group>
-              </end></border-layout>
+              </end>
+            </border-layout>
           </data-list>
         </box>
         <border-layout hidden="{!page.state.assetLinear}" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'false' : 'true'}" fill-parent="true" width="100%" id="anb63">
@@ -5673,7 +5710,6 @@
                   <button slot="button-group" kind="secondary" on-click="openEndZRefernceLookup" on-click-arg="{{'ref':'end'}}" label="Search" icon="Carbon:search" id="vqwe4"/>
                 </smart-input>
               </start>
-            
             </border-layout>
           </box>
         </box>
@@ -5836,7 +5872,8 @@
             </middle>
             <end horizontal-align="end" vertical-align="center" direction="column" id="vrnrb">
               <button icon="Carbon:chevron--right" kind="ghost" padding="false" on-click="openWorkTypeLookup" on-click-arg="{{'page':page,'app':app, 'item':dsCreateWo.item}}" id="k62p3"/>
-            </end></border-layout>
+            </end>
+          </border-layout>
           <border-layout fill-parent="true" width="100%" padding="true" id="pj7n3">
             <start direction="row" horizontal-overflow="hidden" vertical-align="center" width="60" shrink="0" id="z4kz6">
               <field label="Classification" value="{dsCreateWo.item.hierarchypath}" empty-field-placeholder="Select classification" swap-position="false" id="wba74"/>
@@ -5846,7 +5883,8 @@
             </middle>
             <end horizontal-align="end" vertical-align="center" direction="column" id="yqapg">
               <button icon="Carbon:chevron--right" kind="ghost" padding="false" on-click="openClassification" id="yzv7a"/>
-            </end></border-layout>
+            </end>
+          </border-layout>
         </box>
         <border-layout padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'false' : 'true'}" fill-parent="true" width="100%" id="jkjrb">
           <top id="xvmdk">
@@ -5868,7 +5906,6 @@
                 </smart-input>
               </box>
             </start>
-          
           </border-layout>
         </box>
         <box direction="column" background-color="field-01" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 0 : 0.5}" id="dak6x">
@@ -5882,7 +5919,6 @@
                 </smart-input>
               </box>
             </start>
-          
           </border-layout>
         </box>
         <border-layout hidden="{!page.state.assetLinear}" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'false' : 'true'}" fill-parent="true" width="100%" id="e7_re">
@@ -5961,7 +5997,6 @@
                   <button slot="button-group" kind="secondary" on-click="openEndZRefernceLookup" on-click-arg="{{'ref':'end'}}" label="Search" icon="Carbon:search" id="g4348"/>
                 </smart-input>
               </start>
-            
             </border-layout>
           </box>
         </box>
